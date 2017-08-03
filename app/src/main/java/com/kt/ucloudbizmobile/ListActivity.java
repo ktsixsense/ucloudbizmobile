@@ -1,12 +1,23 @@
 package com.kt.ucloudbizmobile;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TabHost;
+import android.widget.TextView;
+import android.widget.Toast;
 
-public class ListActivity extends Activity {
+
+public class ListActivity extends Activity implements MyEventListener{
+
+    private CustomDialog mCustomDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +37,7 @@ public class ListActivity extends Activity {
         ListView listView = (ListView) findViewById(R.id.listServer);
         ListViewServerAdapter adapter = new ListViewServerAdapter();
         listView.setAdapter(adapter);
+        adapter.setMyEventListener(this);
 
         // Data
         adapter.addItem("Test 1", "사용");
@@ -48,5 +60,36 @@ public class ListActivity extends Activity {
         ts3.setContent(R.id.content3);
         ts3.setIndicator("Network");
         tabHost.addTab(ts3);
+
+      }
+
+    @Override
+    public void onMyEvent(ActionType act, int test) {
+        if(act == ActionType.Action_WatchButton_Click)
+        {
+            Log.d("1", act + "event!" + test);
+        }
+        if(act == ActionType.Action_Servername_Click)
+        {
+            Log.d("1", act + "event!" + test);
+            mCustomDialog = new CustomDialog(this,
+                    "[다이얼로그 제목]", // 제목
+                    "다이얼로그 내용 표시하기", // 내용
+                    leftListener// 왼쪽 버튼 이벤트
+                    ); // 오른쪽 버튼 이벤트
+            mCustomDialog.show();
+
+
+        }
+
     }
+
+    private View.OnClickListener leftListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            Toast.makeText(getApplicationContext(), "왼쪽버튼 클릭",
+                    Toast.LENGTH_SHORT).show();
+            mCustomDialog.dismiss();
+        }
+    };
+
 }

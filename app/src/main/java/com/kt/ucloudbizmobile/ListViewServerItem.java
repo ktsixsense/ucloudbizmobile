@@ -1,6 +1,8 @@
 package com.kt.ucloudbizmobile;
 
 import android.graphics.drawable.Drawable;
+import android.util.Log;
+import android.view.View;
 
 /**
  * Created by Kpresent on 2017. 8. 1..
@@ -43,5 +45,9 @@ public class ListViewServerItem {
 
     public void setServerStatus(String serverStatus) {
         this.serverStatus = serverStatus;
+    }
+
+    public void onClickText1(View v) {
+        Log.d("1", "onclick text13");
     }
 }

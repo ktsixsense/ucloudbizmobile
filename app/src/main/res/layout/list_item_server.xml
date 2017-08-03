@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -14,8 +15,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="4"
+        android:clickable="true"
+        android:onClick="onClickText1"
         android:text="Server Name"
-        android:textSize="20dp" />
+        android:textSize="20dp"
+        tools:onClick="onClickText1" />
 
     <RelativeLayout
         android:id="@+id/imageStatus"
@@ -38,5 +42,12 @@
         android:layout_weight="1"
         android:text="online"
         android:textSize="20dp" />
+
+    <Button
+        android:id="@+id/btn_watch"
+        android:layout_width="56dp"
+        android:layout_height="wrap_content"
+        android:onClick="OnClickWatch"
+        android:text="감시" />
 
 </LinearLayout>
