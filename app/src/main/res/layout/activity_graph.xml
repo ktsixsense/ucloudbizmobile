@@ -7,4 +7,31 @@
         android:layout_height="200dip"
         android:id="@+id/graph_metric1" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_grpah_30"
+            android:layout_width="56dp"
+            android:layout_height="wrap_content"
+            android:onClick="OnClickGraph_30"
+            android:text="30" ></Button>
+        <Button
+            android:id="@+id/btn_grpah_120"
+            android:layout_width="56dp"
+            android:layout_height="wrap_content"
+            android:onClick="OnClickGraph_120"
+            android:text="120" ></Button>
+        <Button
+            android:id="@+id/btn_grpah_600"
+            android:layout_width="56dp"
+            android:layout_height="wrap_content"
+            android:onClick="OnClickGraph_600"
+            android:text="600" ></Button>
+
+    </LinearLayout>
+
+
 </LinearLayout>
