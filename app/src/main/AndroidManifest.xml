@@ -17,6 +17,7 @@
         </activity>
         <activity android:name=".ListActivity"></activity>
         <activity android:name=".MetricActivity"></activity>
+        <activity android:name=".GraphActivity"></activity>
     </application>
 
 </manifest>

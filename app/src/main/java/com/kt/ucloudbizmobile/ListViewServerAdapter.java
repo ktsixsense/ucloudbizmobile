@@ -71,20 +71,13 @@ public class ListViewServerAdapter extends BaseAdapter  {
             @Override
             public void onClick(View v) {
                 mListener.onMyEvent(Action_Servername_Click,(int)pos);
-                //Intent intent = new Intent(MainActivity.this, ListActivity.class);
-                //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                //startActivity(intent);
             }
         });
 
         holder.buttonwatch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 mListener.onMyEvent(Action_WatchButton_Click,(int)pos);
-                //Intent intent = new Intent(MainActivity.this, ListActivity.class);
-                //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                //startActivity(intent);
             }
         });
         return convertView;

@@ -2,9 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-
+    android:layout_height="match_parent"
+   >
     <TextView
         android:id="@+id/textmetric"
         android:layout_width="0dp"
@@ -38,5 +37,10 @@
         android:text="Value"
         android:textSize="20dp" />
 
-
+    <Button
+        android:id="@+id/btn_grpah"
+        android:layout_width="56dp"
+        android:layout_height="wrap_content"
+        android:onClick="OnClickGraph"
+        android:text="G" />
 </LinearLayout>

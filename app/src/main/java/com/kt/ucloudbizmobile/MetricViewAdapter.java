@@ -12,6 +12,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import static com.kt.ucloudbizmobile.ActionType.Action_GraphButton_Click;
 import static com.kt.ucloudbizmobile.ActionType.Action_Servername_Click;
 import static com.kt.ucloudbizmobile.ActionType.Action_WatchButton_Click;
 
@@ -28,6 +29,7 @@ public class MetricViewAdapter extends BaseAdapter  {
         TextView Metricname;
         TextView Metricgroup;
         TextView Metricvalue;
+        Button ButtonGraph;
 
         int position;
     }
@@ -55,11 +57,19 @@ public class MetricViewAdapter extends BaseAdapter  {
         holder.Metricname = (TextView) convertView.findViewById(R.id.textmetricname);
         holder.Metricgroup = (TextView) convertView.findViewById(R.id.textgroup);
         holder.Metricvalue = (TextView) convertView.findViewById(R.id.textvalue);
+        holder.ButtonGraph = (Button) convertView.findViewById(R.id.btn_grpah);
 
         holder.Metrictype.setText(item.getMetricType());
         holder.Metricname.setText(item.getMetricName());
         holder.Metricgroup.setText(item.getMetricGroup());
         holder.Metricvalue.setText(item.getMetricValue());
+
+        holder.ButtonGraph.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onMyEvent(Action_GraphButton_Click,(int)pos);
+            }
+        });
 
         return convertView;
     }

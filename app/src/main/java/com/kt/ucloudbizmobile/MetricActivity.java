@@ -44,23 +44,11 @@ public class MetricActivity extends Activity implements MyEventListener{
 
     @Override
     public void onMyEvent(ActionType act, int test) {
-         /*  if(act == ActionType.Action_WatchButton_Click)
+        if(act == ActionType.Action_GraphButton_Click)
         {
-            Log.d("1", act + "event!" + test);
-            Intent intent = new Intent(ListActivity.this, MetricActivity.class);
+            Intent intent = new Intent(MetricActivity.this, GraphActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         }
-     if(act == ActionType.Action_Servername_Click)
-        {
-            Log.d("1", act + "event!" + test);
-            mCustomDialog = new CustomDialog(this,
-                    "[다이얼로그 제목]", // 제목
-                    "다이얼로그 내용 표시하기", // 내용
-                    leftListener// 왼쪽 버튼 이벤트
-            ); // 오른쪽 버튼 이벤트
-            mCustomDialog.show();
-        }
-*/
     }
 }
