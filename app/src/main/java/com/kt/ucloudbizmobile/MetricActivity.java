@@ -19,40 +19,39 @@ import android.widget.Toast;
 
 public class MetricActivity extends Activity implements MyEventListener{
 
+    public MetricActivity() {
+        Log.d("sangil","died?1");
+    }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d("sangil","died?1");
         setContentView(R.layout.activity_metric);
 
         // #1
-
-        Spinner locSpinner = (Spinner) findViewById(R.id.locSpinner);
-        ListView listView = (ListView) findViewById(R.id.listServer);
+        Log.d("sangil","died?2");
+        Spinner locSpinner = (Spinner) findViewById(R.id.locSpinner_metric);
+        ListView listView = (ListView) findViewById(R.id.listMetric);
         MetricViewAdapter adapter = new MetricViewAdapter();
         listView.setAdapter(adapter);
         adapter.setMyEventListener(this);
+        Log.d("sangil","died?3");
         // Data
-        adapter.addItem("Test 1", "사용");
-        adapter.addItem("Test 2", "사용");
-        adapter.addItem("Test 3", "사용");
-        adapter.addItem("Test 4", "정지");
-        adapter.addItem("Test 5", "사용");
-        adapter.addItem("Test 6", "정지");
-        adapter.addItem("Test 7", "정지");
-        adapter.addItem("Test 8", "정지");
-
+        adapter.addItem("Cpu 점유율","감시1","group1","30%");
+        adapter.addItem("Mem 점유율","감시1","group1","30%");
     }
 
     @Override
     public void onMyEvent(ActionType act, int test) {
-        if(act == ActionType.Action_WatchButton_Click)
+         /*  if(act == ActionType.Action_WatchButton_Click)
         {
             Log.d("1", act + "event!" + test);
             Intent intent = new Intent(ListActivity.this, MetricActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         }
-        if(act == ActionType.Action_Servername_Click)
+     if(act == ActionType.Action_Servername_Click)
         {
             Log.d("1", act + "event!" + test);
             mCustomDialog = new CustomDialog(this,
@@ -62,6 +61,6 @@ public class MetricActivity extends Activity implements MyEventListener{
             ); // 오른쪽 버튼 이벤트
             mCustomDialog.show();
         }
-
+*/
     }
 }

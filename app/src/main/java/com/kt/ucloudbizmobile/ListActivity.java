@@ -67,7 +67,6 @@ public class ListActivity extends Activity implements MyEventListener{
     public void onMyEvent(ActionType act, int test) {
         if(act == ActionType.Action_WatchButton_Click)
         {
-            Log.d("1", act + "event!" + test);
             Intent intent = new Intent(ListActivity.this, MetricActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);

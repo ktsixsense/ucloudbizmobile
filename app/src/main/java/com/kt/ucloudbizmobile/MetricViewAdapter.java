@@ -24,69 +24,43 @@ public class MetricViewAdapter extends BaseAdapter  {
     private MyEventListener mListener;
 
     static class ViewHolder_Metric {
-        TextView Servername;
-        TextView Serverstatus;
-        ImageView Colorstatus;
-        Button buttonwatch;
+        TextView Metrictype;
+        TextView Metricname;
+        TextView Metricgroup;
+        TextView Metricvalue;
+
         int position;
     }
-    private ArrayList<ListViewServerItem> listViewServerItemList = new ArrayList<ListViewServerItem>();
+    private ArrayList<MetricViewItem> listViewMetricItemList = new ArrayList<MetricViewItem>();
     public ViewHolder_Metric holder=new ViewHolder_Metric();
 
-    public MetricViewAdapter() {
-    }
+    public MetricViewAdapter() {   }
 
     @Override
     public int getCount() {
-        return listViewServerItemList.size();
+        return listViewMetricItemList.size();
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final int pos = position;
         final Context context = parent.getContext();
-
-
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.list_item_server, parent, false);
-
-            holder.Servername = (TextView) convertView.findViewById(R.id.textServerName);
-            holder.Serverstatus = (TextView) convertView.findViewById(R.id.textServerStatus);
-            holder.Colorstatus = (ImageView) convertView.findViewById(R.id.colorStatus);
-            holder.buttonwatch = (Button) convertView.findViewById(R.id.btn_watch);
+            convertView = inflater.inflate(R.layout.list_item_metric, parent, false);
         }
+        MetricViewItem item = listViewMetricItemList.get(position);
 
-        ImageView colorStatus = (ImageView) convertView.findViewById(R.id.colorStatus);
-        TextView textServerName = (TextView) convertView.findViewById(R.id.textServerName);
-        TextView textServerStatus = (TextView) convertView.findViewById(R.id.textServerStatus);
+        holder.Metrictype = (TextView) convertView.findViewById(R.id.textmetric);
+        holder.Metricname = (TextView) convertView.findViewById(R.id.textmetricname);
+        holder.Metricgroup = (TextView) convertView.findViewById(R.id.textgroup);
+        holder.Metricvalue = (TextView) convertView.findViewById(R.id.textvalue);
 
-        ListViewServerItem item = listViewServerItemList.get(position);
+        holder.Metrictype.setText(item.getMetricType());
+        holder.Metricname.setText(item.getMetricName());
+        holder.Metricgroup.setText(item.getMetricGroup());
+        holder.Metricvalue.setText(item.getMetricValue());
 
-        colorStatus.setImageDrawable(item.getImageStatus());
-        textServerName.setText(item.getServerName());
-        textServerStatus.setText(item.getServerStatus());
-
-        holder.Servername.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onMyEvent(Action_Servername_Click,(int)pos);
-                //Intent intent = new Intent(MainActivity.this, ListActivity.class);
-                //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                //startActivity(intent);
-            }
-        });
-
-        holder.buttonwatch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                mListener.onMyEvent(Action_WatchButton_Click,(int)pos);
-                //Intent intent = new Intent(MainActivity.this, ListActivity.class);
-                //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                //startActivity(intent);
-            }
-        });
         return convertView;
     }
 
@@ -97,17 +71,18 @@ public class MetricViewAdapter extends BaseAdapter  {
 
     @Override
     public Object getItem(int position) {
-        return listViewServerItemList.get(position);
+        return listViewMetricItemList.get(position);
     }
 
-    public void addItem(String name, String status) {
-        ListViewServerItem item = new ListViewServerItem();
+    public void addItem(String type, String name,String group, String value ) {
+        MetricViewItem item = new MetricViewItem();
 
-        //item.setImageStatus(icon);
-        item.setServerName(name);
-        item.setServerStatus(status);
+        item.setMetricType(type);
+        item.setMetricName(name);
+        item.setMetricGroup(group);
+        item.setMetricValue(value);
 
-        listViewServerItemList.add(item);
+        listViewMetricItemList.add(item);
     }
 
     public void setMyEventListener(MyEventListener listener) { mListener = listener; }

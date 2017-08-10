@@ -13,7 +13,7 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
-            android:id="@+id/content1"
+            android:id="@+id/content1_metric"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -21,7 +21,7 @@
 
 
             <Spinner
-                android:id="@+id/locSpinner"
+                android:id="@+id/locSpinner_metric"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:entries="@array/location"></Spinner>
@@ -73,7 +73,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"></ListView>
         </LinearLayout>
-
+    </FrameLayout>
 
 
 

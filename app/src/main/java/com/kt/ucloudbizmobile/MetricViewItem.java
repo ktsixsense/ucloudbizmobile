@@ -1,12 +1,51 @@
 package com.kt.ucloudbizmobile;
 
+import android.graphics.drawable.Drawable;
+import android.util.Log;
+import android.view.View;
+
 /**
  * Created by Administrator on 2017-08-03.
  */
 
 public class MetricViewItem {
-    String strMetric;
-    boolean isChecked;
-    String serverName;
-    String serverStatus;
+
+    String MetricType;
+    String MetricName;
+    String MetricGroup;
+    String MetricValue;
+
+
+    public String getMetricType() {
+        return MetricType;
+    }
+
+    public void setMetricType(String MetricType) {
+        this.MetricType = MetricType;
+    }
+
+    public String getMetricName() {
+        return MetricName;
+    }
+
+    public void setMetricName(String MetricName) {
+        this.MetricName = MetricName;
+    }
+
+    public String getMetricGroup() {
+        return MetricGroup;
+    }
+
+    public void setMetricGroup(String MetricGroup) {
+        this.MetricGroup = MetricGroup;
+    }
+
+    public String getMetricValue() {
+        return MetricValue;
+    }
+
+    public void setMetricValue(String MetricValue) {
+        this.MetricValue = MetricValue;
+    }
+
 }
