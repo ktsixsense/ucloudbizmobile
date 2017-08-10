@@ -150,16 +150,16 @@ public class GraphActivity extends Activity {
         // set date label formatter
 
      //   graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
-        graph.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
+     //   graph.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
 
 // set manual x bounds to have nice steps
         graph.getViewport().setMinX(dp[0].getX());
         graph.getViewport().setMaxX(dp[m_count-1].getX());
-        graph.getViewport().setXAxisBoundsManual(true);
+     //   graph.getViewport().setXAxisBoundsManual(true);
 
 // as we use dates as labels, the human rounding to nice readable numbers
 // is not necessary
-        graph.getGridLabelRenderer().setHumanRounding(false);
+       // graph.getGridLabelRenderer().setHumanRounding(false);
 
         return true;
     }
