@@ -19,11 +19,11 @@ import static com.kt.ucloudbizmobile.ActionType.Action_WatchButton_Click;
  * Created by Kpresent on 2017. 8. 1..
  */
 
-public class ListViewServerAdapter extends BaseAdapter  {
+public class MetricViewAdapter extends BaseAdapter  {
 
     private MyEventListener mListener;
 
-    static class ViewHolder_List {
+    static class ViewHolder_Metric {
         TextView Servername;
         TextView Serverstatus;
         ImageView Colorstatus;
@@ -31,9 +31,9 @@ public class ListViewServerAdapter extends BaseAdapter  {
         int position;
     }
     private ArrayList<ListViewServerItem> listViewServerItemList = new ArrayList<ListViewServerItem>();
-    public ViewHolder_List holder=new ViewHolder_List();
+    public ViewHolder_Metric holder=new ViewHolder_Metric();
 
-    public ListViewServerAdapter() {
+    public MetricViewAdapter() {
     }
 
     @Override
