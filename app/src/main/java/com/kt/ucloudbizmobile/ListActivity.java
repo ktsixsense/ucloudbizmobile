@@ -31,6 +31,8 @@ public class ListActivity extends Activity implements MyEventListener{
 
     private CustomDialog mCustomDialog;
     ListView listView = null;
+    ListView listView2 = null;
+    ListView listView3 = null;
     ListViewServerAdapter adapter = null;
 
     @Override
