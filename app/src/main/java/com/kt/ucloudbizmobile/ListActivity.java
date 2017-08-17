@@ -34,7 +34,7 @@ public class ListActivity extends Activity implements MyEventListener{
     ListView listView2 = null;
     ListView listView3 = null;
     ListViewServerAdapter adapter = null;
-
+    getHttpResponse m_response=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,8 +57,10 @@ public class ListActivity extends Activity implements MyEventListener{
         String secretKey = "NmczQzPOE-CoYLbKpvo3UHJSaZ_6e9SC3tJIYsMIoiTJYMWMn8x-DpzBRTzzSkk0xegYz7g2yrvt_8jRrScxHQ";
 
         String finalURL = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", false, "all");
+        m_response = new getHttpResponse();
+        m_response.setActivity(this);
         try {
-            new getHttpResponse().execute(new URL(finalURL));
+            m_response.execute(new URL(finalURL));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -110,7 +112,7 @@ public class ListActivity extends Activity implements MyEventListener{
 
     class getHttpResponse extends AsyncTask<URL, Server[], Server[]>
     {
-        @Override
+        private MyEventListener m_parentlistener;
         protected Server[] doInBackground(URL... urls) {
         URLConnection connection = null;
         try {
@@ -139,10 +141,17 @@ public class ListActivity extends Activity implements MyEventListener{
 
         return servers;
     }
+
+    void setActivity(MyEventListener lisnter)
+    {
+        m_parentlistener = lisnter;
+    }
         @Override
         protected void onPostExecute(Server[] servers) {
             adapter = new ListViewServerAdapter();
+            adapter.setMyEventListener(m_parentlistener);
             listView.setAdapter(adapter);
+
 
             for(int i=0; i<servers.length; i++){
                 adapter.addItem(servers[i].displayname, servers[i].state);
