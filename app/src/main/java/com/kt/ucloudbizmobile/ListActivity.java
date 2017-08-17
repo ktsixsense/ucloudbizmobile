@@ -2,6 +2,7 @@ package com.kt.ucloudbizmobile;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,10 +15,23 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Document;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 
 public class ListActivity extends Activity implements MyEventListener{
 
     private CustomDialog mCustomDialog;
+    ListView listView = null;
+    ListViewServerAdapter adapter = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,20 +48,19 @@ public class ListActivity extends Activity implements MyEventListener{
         tabHost.addTab(ts1);
 
         Spinner locSpinner = (Spinner) findViewById(R.id.locSpinner);
-        ListView listView = (ListView) findViewById(R.id.listServer);
-        ListViewServerAdapter adapter = new ListViewServerAdapter();
-        listView.setAdapter(adapter);
-        adapter.setMyEventListener(this);
+        listView = (ListView) findViewById(R.id.listServer);
 
-        // Data
-        adapter.addItem("Test 1", "사용");
-        adapter.addItem("Test 2", "사용");
-        adapter.addItem("Test 3", "사용");
-        adapter.addItem("Test 4", "정지");
-        adapter.addItem("Test 5", "사용");
-        adapter.addItem("Test 6", "정지");
-        adapter.addItem("Test 7", "정지");
-        adapter.addItem("Test 8", "정지");
+        // Key
+        String apiKey = "kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg";
+        String secretKey = "NmczQzPOE-CoYLbKpvo3UHJSaZ_6e9SC3tJIYsMIoiTJYMWMn8x-DpzBRTzzSkk0xegYz7g2yrvt_8jRrScxHQ";
+
+        String finalURL = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", false, "all");
+        try {
+            new getHttpResponse().execute(new URL(finalURL));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
 
         // #2
         TabHost.TabSpec ts2 = tabHost.newTabSpec("disk");
@@ -92,4 +105,46 @@ public class ListActivity extends Activity implements MyEventListener{
         }
     };
 
+
+    class getHttpResponse extends AsyncTask<URL, Server[], Server[]>
+    {
+        @Override
+        protected Server[] doInBackground(URL... urls) {
+        URLConnection connection = null;
+        try {
+            connection = urls[0].openConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        DocumentBuilderFactory objDocumentBuilderFactory = null;
+        DocumentBuilder objDocumentBuilder = null;
+        Document doc = null;
+        try{
+            objDocumentBuilderFactory = DocumentBuilderFactory.newInstance();
+            objDocumentBuilder = objDocumentBuilderFactory.newDocumentBuilder();
+            doc = objDocumentBuilder.parse(connection.getInputStream());
+            //Log.d("doc: ", doc.getNodeValue());
+        } catch(Exception ex){
+            Log.d("ParseXML Error", "ParseXML Error");
+            ex.printStackTrace();
+        }
+        ApiParser apiPar = new ApiParser();
+        int arrayLength = apiPar.getNumberOfResponse(doc);
+
+        Server[] servers = new Server[arrayLength];
+        servers = apiPar.parseServerList(doc, arrayLength);
+
+        return servers;
+    }
+        @Override
+        protected void onPostExecute(Server[] servers) {
+            adapter = new ListViewServerAdapter();
+            listView.setAdapter(adapter);
+
+            for(int i=0; i<servers.length; i++){
+                adapter.addItem(servers[i].displayname, servers[i].state);
+            }
+        }
+    }
 }
