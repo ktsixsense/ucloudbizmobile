@@ -17,7 +17,7 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/img_server_status"
+                android:id="@+id/img_disk_status"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:background="@drawable/ic_power_on" />
@@ -31,20 +31,20 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/txt_server_name"
+                android:id="@+id/txt_disk_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:text="Server Name"
+                android:text="Disk Name"
                 android:textSize="18dp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/txt_server_os"
+                android:id="@+id/txt_disk_size"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:text="Server OS"
+                android:text="Disk Size"
                 android:textSize="12dp" />
         </LinearLayout>
 
@@ -54,7 +54,7 @@
             android:layout_weight="1">
 
             <ImageButton
-                android:id="@+id/btn_server_monitor"
+                android:id="@+id/btn_disk_monitor"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_centerInParent="true"

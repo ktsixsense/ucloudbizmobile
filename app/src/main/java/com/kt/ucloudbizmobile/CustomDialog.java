@@ -49,6 +49,7 @@ public class CustomDialog extends Dialog {
         this.mRightClickListener = rightListener;
         bhide = false;
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,13 +69,13 @@ public class CustomDialog extends Dialog {
         mTextdisk = (TextView) findViewById(R.id.txt_title);
         mTextlife = (TextView) findViewById(R.id.txt_title);
 
-         mLeftButton = (Button) findViewById(R.id.btn_left);
+        mLeftButton = (Button) findViewById(R.id.btn_left);
         mRightButton = (Button) findViewById(R.id.btn_right);
-        if(bhide)
+        if (bhide)
             mRightButton.setVisibility(View.INVISIBLE);
 
         // 제목과 내용을 생성자에서 셋팅한다.
-      //  mTitleView.setText(mTitle);
+        //  mTitleView.setText(mTitle);
         //mContentView.setText(mContent);
 
         // 클릭 이벤트 셋팅

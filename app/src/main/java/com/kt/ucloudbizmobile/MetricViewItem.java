@@ -1,9 +1,5 @@
 package com.kt.ucloudbizmobile;
 
-import android.graphics.drawable.Drawable;
-import android.util.Log;
-import android.view.View;
-
 /**
  * Created by Administrator on 2017-08-03.
  */

@@ -6,21 +6,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.util.Log;
 
 import java.util.ArrayList;
 
 import static com.kt.ucloudbizmobile.ActionType.Action_GraphButton_Click;
-import static com.kt.ucloudbizmobile.ActionType.Action_Servername_Click;
-import static com.kt.ucloudbizmobile.ActionType.Action_WatchButton_Click;
 
 /**
  * Created by Kpresent on 2017. 8. 1..
  */
 
-public class MetricViewAdapter extends BaseAdapter  {
+public class MetricViewAdapter extends BaseAdapter {
 
     private MyEventListener mListener;
 
@@ -33,10 +29,12 @@ public class MetricViewAdapter extends BaseAdapter  {
 
         int position;
     }
-    private ArrayList<MetricViewItem> listViewMetricItemList = new ArrayList<MetricViewItem>();
-    public ViewHolder_Metric holder=new ViewHolder_Metric();
 
-    public MetricViewAdapter() {   }
+    private ArrayList<MetricViewItem> listViewMetricItemList = new ArrayList<MetricViewItem>();
+    public ViewHolder_Metric holder = new ViewHolder_Metric();
+
+    public MetricViewAdapter() {
+    }
 
     @Override
     public int getCount() {
@@ -67,7 +65,7 @@ public class MetricViewAdapter extends BaseAdapter  {
         holder.ButtonGraph.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onMyEvent(Action_GraphButton_Click,(int)pos);
+                mListener.onMyEvent(Action_GraphButton_Click, (int) pos);
             }
         });
 
@@ -84,7 +82,7 @@ public class MetricViewAdapter extends BaseAdapter  {
         return listViewMetricItemList.get(position);
     }
 
-    public void addItem(String type, String name,String group, String value ) {
+    public void addItem(String type, String name, String group, String value) {
         MetricViewItem item = new MetricViewItem();
 
         item.setMetricType(type);
@@ -95,6 +93,8 @@ public class MetricViewAdapter extends BaseAdapter  {
         listViewMetricItemList.add(item);
     }
 
-    public void setMyEventListener(MyEventListener listener) { mListener = listener; }
+    public void setMyEventListener(MyEventListener listener) {
+        mListener = listener;
+    }
 
 }

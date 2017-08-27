@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="location">
-        <item>All..</item>
+        <item>전체</item>
         <item>KOR-Central A</item>
         <item>KOR-Central B</item>
         <item>KOR-Seoul M</item>
