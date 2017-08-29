@@ -25,6 +25,12 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 
+import org.w3c.dom.Document;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MyEventListener {
@@ -95,21 +101,56 @@ public class MainActivity extends AppCompatActivity
         String secretKey = "NmczQzPOE-CoYLbKpvo3UHJSaZ_6e9SC3tJIYsMIoiTJYMWMn8x-DpzBRTzzSkk0xegYz7g2yrvt_8jRrScxHQ";
 
         AQuery aq = new AQuery(this);
+        final ApiParser parser = new ApiParser();
+
         String url = "https://api.ucloudbiz.olleh.com/server/v1/client/api?command=listVirtualMachines&apikey=kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg&signature=WgLcczEWC3Jf%2F4%2F7NJTqPuj1FrU%3D";
+        String cloudstack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", false, "all");
+        String cloudstack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", true, "all");
 
+        // cloudstack2
         aq.ajax(url, String.class, new AjaxCallback<String>() {
-
+            Server[] servers = null;
             @Override
-            public void callback(String url, String json, AjaxStatus status) {
+            public void callback(String cloudstack2, String json, AjaxStatus status) {
                 if (json != null) {
                     //successful ajax call, show status code and json content
-                    Toast.makeText(getApplicationContext(), status.getCode() + ": " + json, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), json, Toast.LENGTH_LONG).show();
+
+                    Document doc = parser.getDocument(json);
+                    int index = parser.getNumberOfResponse("server", doc);
+                    servers = new Server[index];
+                    servers = parser.parseServerList(doc, index);
+
+                    for (int i = 0; i < index; i++) {
+                        adapter.addItem(new ListServerItem(servers[i].displayname, servers[i].os, servers[i].state.equals("Running")));
+                    }
+
                 } else {
                     //ajax error, show error code
                     Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
                 }
             }
         });
+
+
+        // cloudstack1
+        aq.ajax(url, String.class, new AjaxCallback<String>() {
+
+            @Override
+            public void callback(String cloudstack1, String json, AjaxStatus status) {
+                if (json != null) {
+                    //successful ajax call, show status code and json content
+                    Toast.makeText(getApplicationContext(), status.getCode() + ": " + json, Toast.LENGTH_LONG).show();
+
+
+
+                } else {
+                    //ajax error, show error code
+                    Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
