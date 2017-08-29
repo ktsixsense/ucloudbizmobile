@@ -7,14 +7,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import java.io.InputStream;
 import java.io.StringReader;
-import java.net.URL;
-import java.net.URLConnection;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Created by aicel on 2017-08-10.
@@ -26,22 +22,25 @@ public class ApiParser {
         try {
             NodeList descNodes = doc.getElementsByTagName("virtualmachine");
             servers = new Server[numIndex];
-            if(descNodes != null) {
-                for(int i=0; i<numIndex;i++){
+            if (descNodes != null) {
+                for (int i = 0; i < numIndex; i++) {
                     Server temp = new Server();
-                    for(Node node = descNodes.item(i).getFirstChild(); node!=null; node=node.getNextSibling()){
-                        if(node.getNodeName().equals("displayname")){
+                    for (Node node = descNodes.item(i).getFirstChild(); node != null; node = node.getNextSibling()) {
+                        if (node.getNodeName().equals("displayname")) {
                             Log.d("displayname", node.getTextContent());
                             temp.displayname = node.getTextContent();
-                        }else if(node.getNodeName().equals("state")) {
+                        } else if (node.getNodeName().equals("state")) {
                             Log.d("state", node.getTextContent());
                             temp.state = node.getTextContent();
-                        }else if(node.getNodeName().equals("zoneid")) {
+                        } else if (node.getNodeName().equals("zoneid")) {
                             System.out.println(node.getTextContent());
                             temp.zoneid = node.getTextContent();
-                        }else if(node.getNodeName().equals("templatedisplaytext")) {
+                        } else if (node.getNodeName().equals("templatedisplaytext")) {
                             Log.d("os", node.getTextContent());
                             temp.os = node.getTextContent();
+                        } else if (node.getNodeName().equals("zonename")) {
+                            Log.d("zonename", node.getTextContent());
+                            temp.zonename = node.getTextContent();
                         }
                     }
                     servers[i] = temp;
@@ -52,9 +51,10 @@ public class ApiParser {
         }
         return servers;
     }
+
     public int getNumberOfResponse(String objects, Document doc) {
         NodeList descNodes = null;
-        switch(objects) {
+        switch (objects) {
             case "server":
                 descNodes = doc.getElementsByTagName("virtualmachine");
                 break;
@@ -79,9 +79,9 @@ public class ApiParser {
 
     public Document getDocument(String data) {
         Document tmp = null;
-        DocumentBuilderFactory factory  =  DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
-            DocumentBuilder builder    =  factory.newDocumentBuilder();
+            DocumentBuilder builder = factory.newDocumentBuilder();
             tmp = builder.parse(new InputSource(new StringReader(data)));
         } catch (Exception e) {
             e.printStackTrace();

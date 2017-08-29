@@ -1,6 +1,5 @@
 package com.kt.ucloudbizmobile;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Slide;
@@ -20,20 +19,19 @@ public class DetailServerActivity extends AppCompatActivity {
         getWindow().setEnterTransition(slide);
         setContentView(R.layout.activity_detail_server);
 
-        Intent intent = getIntent();
-        String test = intent.getStringExtra("data");
+        Server data = getIntent().getParcelableExtra("data");
 
         ListView listDetail = (ListView) findViewById(R.id.list_detail);
         TextView txtData = (TextView) findViewById(R.id.txt_detail_server_info);
-        txtData.setText(test);
+        txtData.setText("TEST 중");
 
         ListDetailAdapter adapter = new ListDetailAdapter();
         listDetail.setAdapter(adapter);
 
         // Sample Data
-        adapter.addItem("AAA", "121213");
-        adapter.addItem("BBB", "221232");
-        adapter.addItem("CCC", "123333");
-        adapter.addItem("DDD", "12142423");
+        adapter.addItem("AAA", data.os);
+        adapter.addItem("BBB", data.starttime);
+        adapter.addItem("CCC", data.state);
+        adapter.addItem("DDD", data.zonename);
     }
 }

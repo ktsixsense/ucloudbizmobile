@@ -27,15 +27,15 @@ import com.androidquery.callback.AjaxStatus;
 
 import org.w3c.dom.Document;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MyEventListener {
 
     private BackPressCloseHandler backPressCloseHandler;
+
+    ArrayList<Server> serverData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        serverData = new ArrayList<>();
 
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -83,7 +84,7 @@ public class MainActivity extends AppCompatActivity
         tabHost.addTab(ts1);
 
         ListView listView = (ListView) findViewById(R.id.listServer);
-        ListServerAdapter adapter = new ListServerAdapter();
+        final ListServerAdapter adapter = new ListServerAdapter();
         listView.setAdapter(adapter);
         adapter.setMyEventListener(this);
 
@@ -93,37 +94,67 @@ public class MainActivity extends AppCompatActivity
          * 2. adapter.addItemArray(ArrayList<ListServerItem>)
          **/
         // Sample data
-        for (int i = 0; i < 10; i++) {
-            adapter.addItem(new ListServerItem("Server Name " + (i + 1), "Server OS " + (i + 1), i % 3 == 0));
-        }
+//        for (int i = 0; i < 10; i++) {
+//            adapter.addItem(new ListServerItem("Server Name " + (i + 1), "Server OS " + (i + 1), i % 3 == 0));
+//        }
 
         String apiKey = "kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg";
         String secretKey = "NmczQzPOE-CoYLbKpvo3UHJSaZ_6e9SC3tJIYsMIoiTJYMWMn8x-DpzBRTzzSkk0xegYz7g2yrvt_8jRrScxHQ";
 
-        AQuery aq = new AQuery(this);
+        final AQuery aq = new AQuery(this);
         final ApiParser parser = new ApiParser();
 
-        String url = "https://api.ucloudbiz.olleh.com/server/v1/client/api?command=listVirtualMachines&apikey=kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg&signature=WgLcczEWC3Jf%2F4%2F7NJTqPuj1FrU%3D";
-        String cloudstack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", false, "all");
-        String cloudstack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", true, "all");
+        //String url = "https://api.ucloudbiz.olleh.com/server/v1/client/api?command=listVirtualMachines&apikey=kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg&signature=WgLcczEWC3Jf%2F4%2F7NJTqPuj1FrU%3D";
+        final String cloudstack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", false, "all");
+        final String cloudstack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", true, "all");
 
         // cloudstack2
-        aq.ajax(url, String.class, new AjaxCallback<String>() {
+        aq.ajax(cloudstack2, String.class, new AjaxCallback<String>() {
             Server[] servers = null;
+            ArrayList<ListServerItem> dataSet = new ArrayList<>();
+            int dataCount = 0;
+
             @Override
-            public void callback(String cloudstack2, String json, AjaxStatus status) {
+            public void callback(String url, String json, AjaxStatus status) {
                 if (json != null) {
                     //successful ajax call, show status code and json content
-                    Toast.makeText(getApplicationContext(), json, Toast.LENGTH_LONG).show();
-
                     Document doc = parser.getDocument(json);
                     int index = parser.getNumberOfResponse("server", doc);
                     servers = new Server[index];
                     servers = parser.parseServerList(doc, index);
 
                     for (int i = 0; i < index; i++) {
-                        adapter.addItem(new ListServerItem(servers[i].displayname, servers[i].os, servers[i].state.equals("Running")));
+                        dataSet.add(i, new ListServerItem(servers[i].displayname, servers[i].os, servers[i].state.equals("Running")));
+                        serverData.add(i, servers[i]);
+                        dataCount++;
                     }
+//                    adapter.addItemArray(dataSet);
+//                    adapter.notifyDataSetChanged();
+
+                    aq.ajax(cloudstack1, String.class, new AjaxCallback<String>() {
+
+                        @Override
+                        public void callback(String url, String json, AjaxStatus status) {
+                            if (json != null) {
+                                //successful ajax call, show status code and json content
+                                Document doc = parser.getDocument(json);
+                                int index = parser.getNumberOfResponse("server", doc);
+                                servers = new Server[index];
+                                servers = parser.parseServerList(doc, index);
+
+                                for (int i = 0; i < index; i++) {
+                                    dataSet.add(i + dataCount, new ListServerItem(servers[i].displayname, servers[i].os, servers[i].state.equals("Running")));
+                                    serverData.add(i + dataCount, servers[i]);
+                                }
+                                adapter.addItemArray(dataSet);
+                                adapter.notifyDataSetChanged();
+
+                            } else {
+                                //ajax error, show error code
+                                Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
 
                 } else {
                     //ajax error, show error code
@@ -131,35 +162,16 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-
-
-        // cloudstack1
-        aq.ajax(url, String.class, new AjaxCallback<String>() {
-
-            @Override
-            public void callback(String cloudstack1, String json, AjaxStatus status) {
-                if (json != null) {
-                    //successful ajax call, show status code and json content
-                    Toast.makeText(getApplicationContext(), status.getCode() + ": " + json, Toast.LENGTH_LONG).show();
-
-
-
-                } else {
-                    //ajax error, show error code
-                    Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String test = ((ListServerItem) adapterView.getItemAtPosition(i)).getServerName();
+                Server data = serverData.get(i);
+
                 //
                 Intent intent = new Intent(MainActivity.this, DetailServerActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra("data", test);
+                intent.putExtra("data", data);
 
                 Slide slide = new Slide();
                 slide.setSlideEdge(Gravity.LEFT);
