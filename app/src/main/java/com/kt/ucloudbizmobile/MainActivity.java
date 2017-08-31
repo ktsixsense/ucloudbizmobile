@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity
                     servers = parser.parseServerList(doc, index);
 
                     for (int i = 0; i < index; i++) {
-                        dataSet.add(i, new ListServerItem(servers[i].displayname, servers[i].os, servers[i].state.equals("Running")));
+                        dataSet.add(i, new ListServerItem(servers[i].displayname, servers[i].os, servers[i].zonename, servers[i].state.equals("Running")));
                         serverData.add(i, servers[i]);
                         dataCount++;
                     }
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity
                                 servers = parser.parseServerList(doc, index);
 
                                 for (int i = 0; i < index; i++) {
-                                    dataSet.add(i + dataCount, new ListServerItem(servers[i].displayname, servers[i].os, servers[i].state.equals("Running")));
+                                    dataSet.add(i + dataCount, new ListServerItem(servers[i].displayname, servers[i].os, servers[i].zonename, servers[i].state.equals("Running")));
                                     serverData.add(i + dataCount, servers[i]);
                                 }
                                 adapter.addItemArray(dataSet);
@@ -192,6 +192,10 @@ public class MainActivity extends AppCompatActivity
         ListDiskAdapter adapter2 = new ListDiskAdapter();
         listView2.setAdapter(adapter2);
         adapter2.setMyEventListener(this);
+
+        final String diskStack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVolumes", false, "all");
+        final String diskStack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVolumes", true, "all");
+
 
         // Sample data
         adapter2.addItem("Test A", "500GB", true);

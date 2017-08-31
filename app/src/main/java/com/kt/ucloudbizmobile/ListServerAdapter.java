@@ -66,7 +66,7 @@ public class ListServerAdapter extends BaseAdapter {
             ViewHolder_Server holder = (ViewHolder_Server) v.getTag();
 
             holder.txtServerName.setText(item.getServerName());
-            holder.txtServerOS.setText(item.getServerOS());
+            holder.txtServerOS.setText(item.getServerOS() + " / " + item.getServerZone());
             if (item.getStatus()) {
                 holder.imgStatus.setImageResource(R.drawable.ic_power_on);
             } else {

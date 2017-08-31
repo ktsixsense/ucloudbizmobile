@@ -52,6 +52,42 @@ public class ApiParser {
         return servers;
     }
 
+    public Disk[] parseDiskList(Document doc, int numIndex) {
+        Disk disks[] = null;
+        try {
+            NodeList descNodes = doc.getElementsByTagName("volume");
+            disks = new Disk[numIndex];
+            if (descNodes != null) {
+                for (int i = 0; i < numIndex; i++) {
+                    Disk temp = new Disk();
+                    for (Node node = descNodes.item(i).getFirstChild(); node != null; node = node.getNextSibling()) {
+                        if (node.getNodeName().equals("displayname")) {
+                            Log.d("displayname", node.getTextContent());
+                            temp.displayname = node.getTextContent();
+                        } else if (node.getNodeName().equals("size")) {
+                            Log.d("state", node.getTextContent());
+                            temp.state = node.getTextContent();
+                        } else if (node.getNodeName().equals("id")) {
+                            temp.volumeid = node.getTextContent();
+                        } else if (node.getNodeName().equals("virtualmachineid")) {
+                            temp.vmid = node.getTextContent();
+                        }else if (node.getNodeName().equals("vmdisplayname")) {
+                            Log.d("vmdisplayname", node.getTextContent());
+                            temp.vmname = node.getTextContent();
+                        } else if (node.getNodeName().equals("zonename")) {
+                            Log.d("zonename", node.getTextContent());
+                            temp.zonename = node.getTextContent();
+                        }
+                    }
+                    disks[i] = temp;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return disks;
+    }
+
     public metricStatistic[] parseMetricStatistics(Document doc) {
         metricStatistic metricstatistics[] = null;
         try {

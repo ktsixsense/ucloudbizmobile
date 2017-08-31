@@ -46,6 +46,7 @@
                 android:layout_marginLeft="5dp"
                 android:text="Server OS"
                 android:textSize="12dp" />
+
         </LinearLayout>
 
         <RelativeLayout
