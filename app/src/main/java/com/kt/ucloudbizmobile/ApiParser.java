@@ -52,6 +52,44 @@ public class ApiParser {
         }
         return servers;
     }
+
+    public metricStatistic[] parseMetricStatistics(Document doc) {
+        metricStatistic metricstatistics[] = null;
+        try {
+            NodeList forwardNode = doc.getElementsByTagName("getmetricstatisticsresponse");
+            String label = forwardNode.item(0).getFirstChild().getTextContent();
+            int count = Integer.parseInt(forwardNode.item(0).getFirstChild().getTextContent());
+
+            NodeList descNodes = doc.getElementsByTagName("metricstatistics");
+            metricstatistics = new metricStatistic[count];
+            if(descNodes != null) {
+                for(int i=0; i<count;i++){
+                    metricStatistic temp = new metricStatistic();
+                    for(Node node = descNodes.item(i).getFirstChild(); node!=null; node=node.getNextSibling()){
+                        if(node.getNodeName().equals("timestmap")){
+                            Log.d("timestamp", node.getTextContent());
+                            temp.timestamp = node.getTextContent();
+                        }else if(node.getNodeName().equals("unit")) {
+                            Log.d("unit", node.getTextContent());
+                            temp.unit = node.getTextContent();
+                        }else if(node.getNodeName().equals("maximum")) {
+                            Log.d("maximum", node.getTextContent());
+                            temp.Maximum = Double.parseDouble(node.getTextContent());
+                        }else if(node.getNodeName().equals("minimum")) {
+                            Log.d("minimum", node.getTextContent());
+                            temp.Minimum = Double.parseDouble(node.getTextContent());
+                        }
+                    }
+                    metricstatistics[i] = temp;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return metricstatistics;
+    }
+
+
     public int getNumberOfResponse(String objects, Document doc) {
         NodeList descNodes = null;
         switch(objects) {

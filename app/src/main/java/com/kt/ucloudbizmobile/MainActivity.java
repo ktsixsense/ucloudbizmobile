@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
 import android.transition.Slide;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -107,11 +108,12 @@ public class MainActivity extends AppCompatActivity
         String cloudstack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", false, "all");
         String cloudstack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", true, "all");
 
+        String watch_url_tmp = ApiGenerator.apiGeneratorWatch(apiKey, secretKey, "getMetricStatistics", false);
         // cloudstack2
-        aq.ajax(url, String.class, new AjaxCallback<String>() {
+        aq.ajax(cloudstack2, String.class, new AjaxCallback<String>() {
             Server[] servers = null;
             @Override
-            public void callback(String cloudstack2, String json, AjaxStatus status) {
+            public void callback(String url, String json, AjaxStatus status) {
                 if (json != null) {
                     //successful ajax call, show status code and json content
                     Toast.makeText(getApplicationContext(), json, Toast.LENGTH_LONG).show();
@@ -121,9 +123,9 @@ public class MainActivity extends AppCompatActivity
                     servers = new Server[index];
                     servers = parser.parseServerList(doc, index);
 
-                    for (int i = 0; i < index; i++) {
+                    /*for (int i = 0; i < index; i++) {
                         adapter.addItem(new ListServerItem(servers[i].displayname, servers[i].os, servers[i].state.equals("Running")));
-                    }
+                    }*/
 
                 } else {
                     //ajax error, show error code
@@ -279,7 +281,7 @@ public class MainActivity extends AppCompatActivity
             getWindow().setExitTransition(new Explode());
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
         } else if (id == R.id.nav_gallery) {
-            Intent intent = new Intent(MainActivity.this, AlarmActivity.class);
+            Intent intent = new Intent(MainActivity.this, GraphActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
             getWindow().setExitTransition(new Explode());

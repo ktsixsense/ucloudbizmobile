@@ -34,3 +34,14 @@ class Alarm {
 class Metric {
 
 }
+
+class metricStatistic {
+    String timestamp;
+    String unit;
+    double Maximum = -1;
+    double Minimum = -1;
+    double Sum = -1;
+    int SampleCount = -1;
+    double Average = -1;
+
+}
