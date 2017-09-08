@@ -199,3 +199,61 @@ public class ApiGenerator {
     }
 }
 
+    public static String apiGeneratorWatch_command(String _apiKey, String _secretKey, String _command, boolean isM2) {
+        HashMap<String, String> requests = new HashMap<String, String>();
+        String basicURL = "";
+        // 2. URL
+        if (isM2)
+            basicURL = "https://api.ucloudbiz.olleh.com/watch/v2/client/api?";
+        else
+            basicURL = "https://api.ucloudbiz.olleh.com/watch/v1/client/api?";
+
+
+        // 3. Key - dayer4 key
+        //String apiKey = "kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg";
+        //String secretKey = "NmczQzPOE-CoYLbKpvo3UHJSaZ_6e9SC3tJIYsMIoiTJYMWMn8x-DpzBRTzzSkk0xegYz7g2yrvt_8jRrScxHQ";
+
+        String apiKey = _apiKey;
+        String secretKey = _secretKey;
+        String command = _command;
+
+        // 4. commands
+        requests.put("apikey", apiKey);
+        //requests.put("productcode", "SSD 100G");
+        requests.put("command", command);
+      /*  requests.put("endtime", "2017-08-26T12:00:00.000");
+        requests.put("starttime", "2017-08-23T12:00:00.000");
+        requests.put("metricname", "CPUUtilization");
+        requests.put("namespace", "ucloud/server");
+        requests.put("statistics.member.1", "Maximum");
+        requests.put("unit", "Percent");
+        requests.put("period", "300");*/
+        //requests.put("name", "myapitestdisk2");
+
+        // Zone ID 입력할 경우에는 parameter로 던져주고 all을 입력하면 모든 zone 보여주도록
+        /*if(!zoneid.equals("all")) {
+            requests.put("zoneid", zoneid);
+        }*/
+
+        // 5. Signature
+        Map<String, String> sigMap = new TreeMap<String, String>(requests);
+        String signature = getSignature(sigMap, secretKey);
+
+        // 6. requests
+        String commandString = getCommandString(requests);
+
+        String finalURL = basicURL + commandString + "signature=" + signature;
+        finalURL = finalURL.substring(0, finalURL.length()-3);
+
+        Log.d("URL:", finalURL);
+
+        /*try {
+            new getHttpResponse().execute(new URL(finalURL));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }*/
+        return finalURL;
+    }
+}
+
+
