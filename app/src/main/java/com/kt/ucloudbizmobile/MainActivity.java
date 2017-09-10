@@ -10,9 +10,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
-import android.transition.Slide;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -175,10 +172,10 @@ public class MainActivity extends AppCompatActivity
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra("data", data);
 
-                Slide slide = new Slide();
-                slide.setSlideEdge(Gravity.LEFT);
-                getWindow().setExitTransition(slide);
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+//                Slide slide = new Slide();
+//                slide.setSlideEdge(Gravity.LEFT);
+//                getWindow().setExitTransition(slide);
+                startActivity(intent);
             }
         });
 
@@ -212,10 +209,10 @@ public class MainActivity extends AppCompatActivity
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra("data", test);
 
-                Slide slide = new Slide();
-                slide.setSlideEdge(Gravity.LEFT);
-                getWindow().setExitTransition(slide);
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+//                Slide slide = new Slide();
+//                slide.setSlideEdge(Gravity.LEFT);
+//                getWindow().setExitTransition(slide);
+                startActivity(intent);
             }
         });
 
@@ -244,10 +241,10 @@ public class MainActivity extends AppCompatActivity
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra("data", test);
 
-                Slide slide = new Slide();
-                slide.setSlideEdge(Gravity.LEFT);
-                getWindow().setExitTransition(slide);
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+//                Slide slide = new Slide();
+//                slide.setSlideEdge(Gravity.LEFT);
+//                getWindow().setExitTransition(slide);
+                startActivity(intent);
             }
         });
     }
