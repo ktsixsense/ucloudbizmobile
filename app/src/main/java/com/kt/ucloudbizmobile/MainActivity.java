@@ -297,7 +297,7 @@ public class MainActivity extends AppCompatActivity
             getWindow().setExitTransition(new Explode());
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
         } else if (id == R.id.nav_gallery) {
-            Intent intent = new Intent(MainActivity.this, GraphActivity.class);
+            Intent intent = new Intent(MainActivity.this, MetricActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
             getWindow().setExitTransition(new Explode());

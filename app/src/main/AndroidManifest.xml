@@ -28,6 +28,7 @@
         <activity android:name=".DetailDiskActivity" />
         <activity android:name=".DetailNetworkActivity" />
         <activity android:name=".GraphActivity" />
+        <activity android:name=".MetricActivity" />
         <activity android:name=".AlarmActivity"></activity>
     </application>
 

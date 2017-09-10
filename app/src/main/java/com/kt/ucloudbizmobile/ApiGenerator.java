@@ -164,13 +164,13 @@ public class ApiGenerator {
         requests.put("apikey", apiKey);
         //requests.put("productcode", "SSD 100G");
         requests.put("command", command);
-        requests.put("endtime", "2017-08-26T12:00:00.000");
-        requests.put("starttime", "2017-08-23T12:00:00.000");
+        requests.put("endtime", "2017-09-09T12:30:00.000");
+        requests.put("starttime", "2017-09-09T12:00:00.000");
         requests.put("metricname", "CPUUtilization");
         requests.put("namespace", "ucloud/server");
-        requests.put("statistics.member.1", "Maximum");
+        requests.put("statistics.member.1", "Average");
         requests.put("unit", "Percent");
-        requests.put("period", "300");
+        requests.put("period", "1");
         //requests.put("name", "myapitestdisk2");
 
         // Zone ID 입력할 경우에는 parameter로 던져주고 all을 입력하면 모든 zone 보여주도록
@@ -197,8 +197,6 @@ public class ApiGenerator {
         }*/
         return finalURL;
     }
-}
-
     public static String apiGeneratorWatch_command(String _apiKey, String _secretKey, String _command, boolean isM2) {
         HashMap<String, String> requests = new HashMap<String, String>();
         String basicURL = "";
@@ -219,21 +217,8 @@ public class ApiGenerator {
 
         // 4. commands
         requests.put("apikey", apiKey);
-        //requests.put("productcode", "SSD 100G");
         requests.put("command", command);
-      /*  requests.put("endtime", "2017-08-26T12:00:00.000");
-        requests.put("starttime", "2017-08-23T12:00:00.000");
-        requests.put("metricname", "CPUUtilization");
-        requests.put("namespace", "ucloud/server");
-        requests.put("statistics.member.1", "Maximum");
-        requests.put("unit", "Percent");
-        requests.put("period", "300");*/
-        //requests.put("name", "myapitestdisk2");
 
-        // Zone ID 입력할 경우에는 parameter로 던져주고 all을 입력하면 모든 zone 보여주도록
-        /*if(!zoneid.equals("all")) {
-            requests.put("zoneid", zoneid);
-        }*/
 
         // 5. Signature
         Map<String, String> sigMap = new TreeMap<String, String>(requests);
