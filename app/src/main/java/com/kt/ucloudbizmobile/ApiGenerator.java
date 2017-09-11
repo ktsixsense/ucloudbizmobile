@@ -15,10 +15,14 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 import javax.crypto.Mac;
@@ -142,7 +146,7 @@ public class ApiGenerator {
         return finalURL;
     }
 
-    public static String apiGeneratorWatch(String _apiKey, String _secretKey, String _command, boolean isM2) {
+    public static String apiGeneratorWatch(String _apiKey, String _secretKey, String _command, boolean isM2, Calendar calendar, int gaptype) {
         HashMap<String, String> requests = new HashMap<String, String>();
         String basicURL = "";
         // 2. URL
@@ -164,8 +168,14 @@ public class ApiGenerator {
         requests.put("apikey", apiKey);
         //requests.put("productcode", "SSD 100G");
         requests.put("command", command);
-        requests.put("endtime", "2017-09-09T12:30:00.000");
-        requests.put("starttime", "2017-09-09T12:00:00.000");
+
+        String strend = getStringfromDate(calendar.getTime());
+        Calendar c = calendar;
+        c.add(Calendar.MINUTE, (-1)*gaptype);
+        String strstart = getStringfromDate(c.getTime());
+
+        requests.put("endtime", strend);
+        requests.put("starttime", strstart);
         requests.put("metricname", "CPUUtilization");
         requests.put("namespace", "ucloud/server");
         requests.put("statistics.member.1", "Average");
@@ -197,6 +207,63 @@ public class ApiGenerator {
         }*/
         return finalURL;
     }
+
+    public static String apiGeneratorWatch(String _apiKey, String _secretKey, String _command, boolean isM2) {
+        HashMap<String, String> requests = new HashMap<String, String>();
+        String basicURL = "";
+        // 2. URL
+        if (isM2)
+            basicURL = "https://api.ucloudbiz.olleh.com/watch/v2/client/api?";
+        else
+            basicURL = "https://api.ucloudbiz.olleh.com/watch/v1/client/api?";
+
+
+        // 3. Key - dayer4 key
+        //String apiKey = "kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg";
+        //String secretKey = "NmczQzPOE-CoYLbKpvo3UHJSaZ_6e9SC3tJIYsMIoiTJYMWMn8x-DpzBRTzzSkk0xegYz7g2yrvt_8jRrScxHQ";
+
+        String apiKey = _apiKey;
+        String secretKey = _secretKey;
+        String command = _command;
+
+        // 4. commands
+        requests.put("apikey", apiKey);
+        //requests.put("productcode", "SSD 100G");
+        requests.put("command", command);
+        requests.put("endtime", "2017-09-09T12:00:00.000");
+        requests.put("starttime", "2017-09-09T12:30:00.000");
+        requests.put("metricname", "CPUUtilization");
+        requests.put("namespace", "ucloud/server");
+        requests.put("statistics.member.1", "Average");
+        requests.put("unit", "Percent");
+        requests.put("period", "1");
+        //requests.put("name", "myapitestdisk2");
+
+        // Zone ID 입력할 경우에는 parameter로 던져주고 all을 입력하면 모든 zone 보여주도록
+        /*if(!zoneid.equals("all")) {
+            requests.put("zoneid", zoneid);
+        }*/
+
+        // 5. Signature
+        Map<String, String> sigMap = new TreeMap<String, String>(requests);
+        String signature = getSignature(sigMap, secretKey);
+
+        // 6. requests
+        String commandString = getCommandString(requests);
+
+        String finalURL = basicURL + commandString + "signature=" + signature;
+        finalURL = finalURL.substring(0, finalURL.length()-3);
+
+        Log.d("URL:", finalURL);
+
+        /*try {
+            new getHttpResponse().execute(new URL(finalURL));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }*/
+        return finalURL;
+    }
+
     public static String apiGeneratorWatch_command(String _apiKey, String _secretKey, String _command, boolean isM2) {
         HashMap<String, String> requests = new HashMap<String, String>();
         String basicURL = "";
@@ -238,6 +305,19 @@ public class ApiGenerator {
             e.printStackTrace();
         }*/
         return finalURL;
+    }
+
+    public static String getStringfromDate(Date d)
+    {
+        //2017-09-09T12:30:00.000 양식에 맞춰 응답
+        String str1,str2;
+        SimpleDateFormat newformat = new SimpleDateFormat("yyyy-MM-dd");
+        newformat.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
+        str1 = newformat.format(d);
+        SimpleDateFormat newformat2 = new SimpleDateFormat("HH:mm:");
+        newformat2.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
+        str2 = newformat2.format(d);
+        return str1+"T"+str2+"00.000";
     }
 }
 

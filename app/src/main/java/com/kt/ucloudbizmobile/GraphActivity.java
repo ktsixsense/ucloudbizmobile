@@ -20,6 +20,7 @@ import org.w3c.dom.Document;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by LTR on 2017-08-10.
@@ -37,6 +38,7 @@ public class GraphActivity extends Activity {
     public GraphActivity() {
         m_count = 0;
         m_gap = 30;
+        m_data = null;
     }
 
     private String MakeCommand_Statics(String mainCommand, String metricName, String namespace, String dimensions, String unit, String period, String statistics, String starttime, String endtime)
@@ -54,7 +56,7 @@ public class GraphActivity extends Activity {
         fullcommand = mainCommand + metricName + namespace +dimensions + unit + period + statistics + starttime + endtime;
         return fullcommand;
     }
-    public void refresh_data()
+    public void refresh_data(Calendar req_calendar, final int req_gap)
     {
         /*
 ${API_URL}command=getMetricStatistics
@@ -80,9 +82,13 @@ ${API_URL}command=getMetricStatistics
         AQuery aq = new AQuery(this);
         final ApiParser parser = new ApiParser();
 
+        TimeZone seoul = TimeZone.getTimeZone("Asia/Seoul");
+        calendar = Calendar.getInstance();
+        datenow = calendar.getTime();
         //String fullcmd = MakeCommand_Statics("","","","","","","","","");
        // String watch_url_tmp = ApiGenerator.apiGeneratorWatch_command(apiKey, secretKey, fullcmd , false);
-        String watch_url_tmp = ApiGenerator.apiGeneratorWatch(apiKey, secretKey, "getMetricStatistics" , false);
+       // setgap(req_gap);
+        String watch_url_tmp = ApiGenerator.apiGeneratorWatch(apiKey, secretKey, "getMetricStatistics" , false, req_calendar,req_gap);
 
         aq.ajax(watch_url_tmp, String.class, new AjaxCallback<String>() {
             metricStat[] mStat =null;
@@ -98,7 +104,7 @@ ${API_URL}command=getMetricStatistics
                     mStat = parser.parseMetricStatistics(doc);
 
                     setdata(mStat);
-                    setgap(30);
+                    setgap(req_gap);
                     DrawGraph();
                 } else {
                     //ajax error, show error code
@@ -113,7 +119,8 @@ ${API_URL}command=getMetricStatistics
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_graph);
 
-        calendar = Calendar.getInstance();
+        TimeZone seoul = TimeZone.getTimeZone("Asia/Seoul");
+        calendar = Calendar.getInstance(seoul);
         datenow = calendar.getTime();
 
         GraphView graph = (GraphView) findViewById(R.id.graph_metric1);
@@ -122,7 +129,7 @@ ${API_URL}command=getMetricStatistics
         Button button120 = (Button) findViewById(R.id.btn_grpah_120);
         Button button600 = (Button) findViewById(R.id.btn_grpah_600);
 
-        refresh_data();
+        refresh_data(calendar,30);
        // int[] test_data = {2, 3, 2, 2, 2, 3, 5, 10, 12, 3, 2, 4, 5, 2, 6, 1, 2, 7, 2, 5};
      //   setdata(15, test_data);
 
@@ -130,7 +137,8 @@ ${API_URL}command=getMetricStatistics
             @Override
             public void onClick(View v) {
                 setgap(30);
-                DrawGraph();
+                refresh_data(calendar,30);
+              //  DrawGraph();
             }
         });
 
@@ -138,7 +146,8 @@ ${API_URL}command=getMetricStatistics
             @Override
             public void onClick(View v) {
                 setgap(120);
-                DrawGraph();
+                refresh_data(calendar,120);
+             //   DrawGraph();
             }
         });
 
@@ -146,7 +155,8 @@ ${API_URL}command=getMetricStatistics
             @Override
             public void onClick(View v) {
                 setgap(600);
-                DrawGraph();
+                refresh_data(calendar,600);
+              //  DrawGraph();
             }
         });
 
@@ -165,9 +175,10 @@ ${API_URL}command=getMetricStatistics
     public void setdata(metricStat[] mstat) {
         int i;
         int nCount = mstat.length;
-        if (m_count == 0) {
-            m_data = new double[nCount];
-        }
+        if (m_data != null)
+            m_data = null;
+        m_data = new double[nCount];
+
         m_count = nCount;
         for (i = 0; i < nCount; i++)
             m_data[i] = mstat[i].Average;
@@ -188,35 +199,67 @@ ${API_URL}command=getMetricStatistics
     public boolean DrawGraph() {
         DataPoint dp[];
 
-        dp = new DataPoint[m_count];
+        dp = new DataPoint[m_gap];
         if (m_gap == 30) {
             Calendar c = calendar;
             c.add(Calendar.MINUTE, -30);
-            int gap = 30 / m_count;
-            for (int i = 0; i < m_count; i++) {
+            int realxgap = 30 / m_count;
+            realxgap = 1;
+            for(int i = 0;i<m_gap - m_count;i++)
+            {
+                //데이타 부족시 빈데이타 삽입
                 Date d = c.getTime();
-                dp[i] = new DataPoint(d, m_data[i]);
-                c.add(Calendar.MINUTE, gap);
+                dp[i] = new DataPoint(i, 0);
+                c.add(Calendar.MINUTE, realxgap);
+            }
+            for (int i = m_gap - m_count; i < m_gap; i++) {
+                Date d = c.getTime();
+                if(m_data.length <= i-m_gap+m_count )
+                    break;
+                dp[i] = new DataPoint(i, m_data[i-m_gap+m_count]);
+                c.add(Calendar.MINUTE, realxgap);
             }
         }
         if (m_gap == 120) {
             Calendar c = calendar;
             c.add(Calendar.MINUTE, -120);
-            int gap = 120 / m_count;
-            for (int i = 0; i < m_count; i++) {
+            int realxgap = 120 / m_count;
+            realxgap = 1;
+            for(int i = 0;i<m_gap - m_count;i++)
+            {
+                //데이타 부족시 빈데이타 삽입
                 Date d = c.getTime();
-                dp[i] = new DataPoint(d, m_data[i]);
-                c.add(Calendar.MINUTE, gap);
+                dp[i] = new DataPoint(i, 0);
+                c.add(Calendar.MINUTE, realxgap);
+            }
+            for (int i = m_gap - m_count; i < m_gap; i++) {
+                Date d = c.getTime();
+                if(m_data.length <= i-m_gap+m_count )
+                    break;
+                dp[i] = new DataPoint(i, m_data[i-m_gap+m_count]);
+                c.add(Calendar.MINUTE, realxgap);
             }
         }
         if (m_gap == 600) {
             Calendar c = calendar;
             c.add(Calendar.MINUTE, -600);
             int gap = 600 / m_count;
-            for (int i = 0; i < m_count; i++) {
+            gap = 1;
+            int realxgap = 600 / m_count;
+            realxgap = 1;
+            for(int i = 0;i<m_gap - m_count;i++)
+            {
+                //데이타 부족시 빈데이타 삽입
                 Date d = c.getTime();
-                dp[i] = new DataPoint(d, m_data[i]);
-                c.add(Calendar.MINUTE, gap);
+                dp[i] = new DataPoint(i, 0);
+                c.add(Calendar.MINUTE, realxgap);
+            }
+            for (int i = m_gap - m_count; i < m_gap; i++) {
+                Date d = c.getTime();
+                if(m_data.length <= i-m_gap+m_count )
+                    break;
+                dp[i] = new DataPoint(i, m_data[i-m_gap+m_count]);
+                c.add(Calendar.MINUTE, realxgap);
             }
         }
 
@@ -231,11 +274,17 @@ ${API_URL}command=getMetricStatistics
         //   graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
         //   graph.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
 
-        graph.getViewport().setMinX(dp[0].getX());
-        graph.getViewport().setMaxX(dp[m_count - 1].getX());
+        graph.getViewport().setMinX(0);
+        graph.getViewport().setMaxX(m_gap);
 
         StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
-        staticLabelsFormatter.setHorizontalLabels(new String[] {"old", "middle", "new"});
+        graph.getGridLabelRenderer().setNumHorizontalLabels(4);
+        if(m_gap == 30)
+        staticLabelsFormatter.setHorizontalLabels(new String[] {"30분전","20분전", "10분전", "현재"});
+        if(m_gap == 120)
+            staticLabelsFormatter.setHorizontalLabels(new String[] {"120분전","80분전", "40분전", "현재"});
+        if(m_gap == 600)
+            staticLabelsFormatter.setHorizontalLabels(new String[] {"10시간전","6시간40분전", "3시간20분전", "현재"});
       //  staticLabelsFormatter.setVerticalLabels(new String[] {"low", "middle", "high"});
         graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
 
