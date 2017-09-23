@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity
     private BackPressCloseHandler backPressCloseHandler;
 
     ArrayList<Server> serverData;
+    ArrayList<Disk> diskData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         serverData = new ArrayList<>();
+        diskData = new ArrayList<>();
 
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -189,7 +191,7 @@ public class MainActivity extends AppCompatActivity
         tabHost.addTab(ts2);
 
         ListView listView2 = (ListView) findViewById(R.id.listDisk);
-        ListDiskAdapter adapter2 = new ListDiskAdapter();
+        final ListDiskAdapter adapter2 = new ListDiskAdapter();
         listView2.setAdapter(adapter2);
         adapter2.setMyEventListener(this);
 
@@ -198,10 +200,67 @@ public class MainActivity extends AppCompatActivity
 
 
         // Sample data
-        adapter2.addItem("Test A", "500GB", true);
+        /*adapter2.addItem("Test A", "500GB", true);
         adapter2.addItem("Test B", "250GB", false);
         adapter2.addItem("Test C", "200GB", false);
-        adapter2.addItem("Test D", "128GB", true);
+        adapter2.addItem("Test D", "128GB", true);*/
+
+        // cloudstack2
+        aq.ajax(diskStack2, String.class, new AjaxCallback<String>() {
+            Disk[] disks = null;
+            ArrayList<ListDiskItem> dataSet = new ArrayList<>();
+            int dataCount = 0;
+
+            @Override
+            public void callback(String url, String json, AjaxStatus status) {
+                if (json != null) {
+                    //successful ajax call, show status code and json content
+                    Document doc = parser.getDocument(json);
+                    int index = parser.getNumberOfResponse("disk", doc);
+                    disks = new Disk[index];
+                    disks = parser.parseDiskList(doc, index);
+
+                    for (int i = 0; i < index; i++) {
+                        dataSet.add(i, new ListDiskItem(disks[i].displayname, disks[i].size, disks[i].zonename, disks[i].state.equals("Running"), disks[i].vmname));
+                        diskData.add(i, disks[i]);
+                        dataCount++;
+                    }
+//                    adapter.addItemArray(dataSet);
+//                    adapter.notifyDataSetChanged();
+
+                    aq.ajax(diskStack1, String.class, new AjaxCallback<String>() {
+
+                        @Override
+                        public void callback(String url, String json, AjaxStatus status) {
+                            if (json != null) {
+                                //successful ajax call, show status code and json content
+                                Document doc = parser.getDocument(json);
+                                int index = parser.getNumberOfResponse("disk", doc);
+                                disks = new Disk[index];
+                                disks = parser.parseDiskList(doc, index);
+
+                                for (int i = 0; i < index; i++) {
+                                    dataSet.add(i, new ListDiskItem(disks[i].displayname, disks[i].size, disks[i].zonename, disks[i].state.equals("Running"), disks[i].vmname));
+                                    diskData.add(i, disks[i]);
+                                    dataCount++;
+                                }
+                                adapter2.addItemArray(dataSet);
+                                adapter2.notifyDataSetChanged();
+
+                            } else {
+                                //ajax error, show error code
+                                Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+
+                } else {
+                    //ajax error, show error code
+                    Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
 
         listView2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

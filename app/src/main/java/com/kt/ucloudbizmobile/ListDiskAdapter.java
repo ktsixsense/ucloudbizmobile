@@ -66,7 +66,7 @@ public class ListDiskAdapter extends BaseAdapter {
             ViewHolder_Disk holder = (ViewHolder_Disk) v.getTag();
 
             holder.txtDiskName.setText(item.getDiskName());
-            holder.txtDiskSize.setText(item.getDiskSize());
+            holder.txtDiskSize.setText(Long.parseLong(item.getDiskSize()) / 1073741824 + "GB / " + item.getDiskZone());
 
             if (item.getDiskStatus()) {
                 holder.imgStatus.setImageResource(R.drawable.ic_power_on);
@@ -99,8 +99,14 @@ public class ListDiskAdapter extends BaseAdapter {
         return listViewDiskItemList.get(position);
     }
 
-    public void addItem(String diskName, String diskSize, boolean diskStatus) {
-        listViewDiskItemList.add(new ListDiskItem(diskName, diskSize, diskStatus));
+    public void addItem(String diskName, String diskSize, String diskZone, boolean diskStatus, String connServer) {
+        listViewDiskItemList.add(new ListDiskItem(diskName, diskSize, diskZone, diskStatus, connServer));
+    }
+
+    public void addItemArray(ArrayList<ListDiskItem> itemArray) {
+        for (ListDiskItem item : itemArray) {
+            listViewDiskItemList.add(item);
+        }
     }
 
     public void setMyEventListener(MyEventListener listener) {

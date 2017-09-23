@@ -52,12 +52,12 @@ public class GraphActivity extends Activity {
 
         GraphView graph = (GraphView) findViewById(R.id.graph_metric1);
 
-        Button button30 = (Button) findViewById(R.id.btn_grpah_30);
+        Button button30 = (Button) findViewById(R.id.btn_graph_30);
         Button button120 = (Button) findViewById(R.id.btn_grpah_120);
         Button button600 = (Button) findViewById(R.id.btn_grpah_600);
 
-        int[] test_data = {2, 3, 2, 2, 2, 3, 5, 10, 12, 3, 2, 4, 5, 2, 6, 1, 2, 7, 2, 5};
-        setdata(15, test_data);
+        int[] test_data = {4, 13, 8};
+        setdata(3, test_data);
 
         button30.setOnClickListener(new View.OnClickListener() {
             @Override

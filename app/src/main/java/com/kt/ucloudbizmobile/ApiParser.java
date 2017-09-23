@@ -61,13 +61,16 @@ public class ApiParser {
                 for (int i = 0; i < numIndex; i++) {
                     Disk temp = new Disk();
                     for (Node node = descNodes.item(i).getFirstChild(); node != null; node = node.getNextSibling()) {
-                        if (node.getNodeName().equals("displayname")) {
-                            Log.d("displayname", node.getTextContent());
+                        if (node.getNodeName().equals("name")) {
+                            Log.d("name", node.getTextContent());
                             temp.displayname = node.getTextContent();
                         } else if (node.getNodeName().equals("size")) {
+                            Log.d("size", node.getTextContent());
+                            temp.size = node.getTextContent();
+                        } else if (node.getNodeName().equals("state")) {
                             Log.d("state", node.getTextContent());
                             temp.state = node.getTextContent();
-                        } else if (node.getNodeName().equals("id")) {
+                        }else if (node.getNodeName().equals("id")) {
                             temp.volumeid = node.getTextContent();
                         } else if (node.getNodeName().equals("virtualmachineid")) {
                             temp.vmid = node.getTextContent();
