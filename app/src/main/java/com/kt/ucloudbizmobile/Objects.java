@@ -132,9 +132,43 @@ class Alarm {
 
 }
 
-class Metric {
+class Metric extends Objects implements Parcelable {
+    public String metricname;
+    public String namespace;
+    public String unit;
+    public String dimensions;
 
+    public Metric()
+    {
+
+    }
+    public Metric(Parcel in) {
+        this.metricname = in.readString();
+        this.namespace = in.readString();
+        this.unit = in.readString();
+        this.dimensions = in.readString();
+    }
+    public static final Parcelable.Creator<Metric> CREATOR = new Parcelable.Creator<Metric>() {
+        public Metric createFromParcel(Parcel in) {
+            return new Metric(in);
+        }
+
+        public Metric[] newArray(int size) {
+            return new Metric[size];
+        }
+    };
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(metricname);
+        dest.writeString(namespace);
+        dest.writeString(unit);
+        dest.writeString(dimensions);
+    }
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 }
+
 
 class metricStat extends Objects implements Parcelable {
     String timestamp;

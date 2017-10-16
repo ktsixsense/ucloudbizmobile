@@ -88,7 +88,7 @@ ${API_URL}command=getMetricStatistics
         //String fullcmd = MakeCommand_Statics("","","","","","","","","");
        // String watch_url_tmp = ApiGenerator.apiGeneratorWatch_command(apiKey, secretKey, fullcmd , false);
        // setgap(req_gap);
-        String watch_url_tmp = ApiGenerator.apiGeneratorWatch(apiKey, secretKey, "getMetricStatistics" , false, req_calendar,req_gap);
+        String watch_url_tmp = ApiGenerator.apiGeneratorWatch(apiKey, secretKey, "getMetricStatistics" , false, req_calendar,req_gap,1);
 
         aq.ajax(watch_url_tmp, String.class, new AjaxCallback<String>() {
             metricStat[] mStat =null;

@@ -97,7 +97,7 @@ public class ApiGenerator {
         return temp;
     }
 
-    public static String apiGenerator(String _apiKey, String _secretKey, String _command, boolean isM2, String zoneid) {
+    public static String apiGenerator(String _apiKey, String _secretKey, String _command, boolean isM2, String id) {
         HashMap<String, String> requests = new HashMap<String, String>();
         String basicURL = "";
         // 2. URL
@@ -122,8 +122,8 @@ public class ApiGenerator {
         //requests.put("name", "myapitestdisk2");
 
         // Zone ID 입력할 경우에는 parameter로 던져주고 all을 입력하면 모든 zone 보여주도록
-        if(!zoneid.equals("all")) {
-            requests.put("zoneid", zoneid);
+        if(!id.equals("all")) {
+            requests.put("id", id);
         }
 
         // 5. Signature
@@ -146,7 +146,7 @@ public class ApiGenerator {
         return finalURL;
     }
 
-    public static String apiGeneratorWatch(String _apiKey, String _secretKey, String _command, boolean isM2, Calendar calendar, int gaptype) {
+    public static String apiGeneratorWatch(String _apiKey, String _secretKey, String _command, boolean isM2, Calendar calendar, int gaptype, int period) {
         HashMap<String, String> requests = new HashMap<String, String>();
         String basicURL = "";
         // 2. URL
@@ -173,14 +173,14 @@ public class ApiGenerator {
         Calendar c = calendar;
         c.add(Calendar.MINUTE, (-1)*gaptype);
         String strstart = getStringfromDate(c.getTime());
-
+        String strperiod = String.format("%d",period);
         requests.put("endtime", strend);
         requests.put("starttime", strstart);
         requests.put("metricname", "CPUUtilization");
         requests.put("namespace", "ucloud/server");
         requests.put("statistics.member.1", "Average");
         requests.put("unit", "Percent");
-        requests.put("period", "1");
+        requests.put("period", strperiod);
         //requests.put("name", "myapitestdisk2");
 
         // Zone ID 입력할 경우에는 parameter로 던져주고 all을 입력하면 모든 zone 보여주도록
@@ -318,6 +318,39 @@ public class ApiGenerator {
         newformat2.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
         str2 = newformat2.format(d);
         return str1+"T"+str2+"00.000";
+    }
+
+    public static String apiGeneratorMetrics(String _apiKey, String _secretKey, String _command, boolean isM2) {
+
+        HashMap<String, String> requests = new HashMap<String, String>();
+        String basicURL = "";
+        // 2. URL
+        if (isM2)
+            basicURL = "https://api.ucloudbiz.olleh.com/watch/v2/client/api?";
+        else
+            basicURL = "https://api.ucloudbiz.olleh.com/watch/v1/client/api?";
+
+
+        // 3. Key - dayer4 key
+        //String apiKey = "kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg";
+        //String secretKey = "NmczQzPOE-CoYLbKpvo3UHJSaZ_6e9SC3tJIYsMIoiTJYMWMn8x-DpzBRTzzSkk0xegYz7g2yrvt_8jRrScxHQ";
+
+        String apiKey = _apiKey;
+        String secretKey = _secretKey;
+        String command = "listMetrics";
+
+        requests.put("apikey", apiKey);
+        requests.put("command", command);
+
+        Map<String, String> sigMap = new TreeMap<String, String>(requests);
+        String signature = getSignature(sigMap, secretKey);
+        String commandString = getCommandString(requests);
+
+        String finalURL = basicURL + commandString + "signature=" + signature;
+        finalURL = finalURL.substring(0, finalURL.length()-3);
+
+        Log.d("URL:", finalURL);
+        return finalURL;
     }
 }
 
