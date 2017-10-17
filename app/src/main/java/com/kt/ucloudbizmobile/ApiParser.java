@@ -165,6 +165,43 @@ public class ApiParser {
         return metricStat;
     }
 
+    public Metric[] parseMetric(Document doc) {
+        Metric Metric_Array[] = null;
+        try {
+            NodeList forwardNode = doc.getElementsByTagName("listmetricsresponse");
+       //     String label = forwardNode.item(0).getFirstChild().getTextContent();
+          //  Node node_temp = forwardNode.item(0).getFirstChild();
+            int count = Integer.parseInt(forwardNode.item(0).getFirstChild().getTextContent());
+
+            NodeList descNodes = doc.getElementsByTagName("metric");
+            Metric_Array= new Metric[count];
+            if(descNodes != null) {
+                for(int i=0; i<count;i++){
+                    Metric temp = new Metric();
+                    for(Node node = descNodes.item(i).getFirstChild(); node!=null; node=node.getNextSibling()){
+                        if(node.getNodeName().equals("metricname")){
+                            Log.d("metricname", node.getTextContent());
+                            temp.metricname = node.getTextContent();
+                        }else if(node.getNodeName().equals("namespace")) {
+                            Log.d("namespace", node.getTextContent());
+                            temp.namespace = node.getTextContent();
+                        }else if(node.getNodeName().equals("unit")) {
+                            Log.d("unit", node.getTextContent());
+                            temp.unit = node.getTextContent();
+                        }else if(node.getNodeName().equals("dimensions")) {
+                            Log.d("dimensions", node.getTextContent());
+                            temp.dimensions = node.getTextContent();
+                        }
+                    }
+                    Metric_Array[i] = temp;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Metric_Array;
+    }
+
 
     public int getNumberOfResponse(String objects, Document doc) {
         NodeList descNodes = null;
@@ -186,6 +223,9 @@ public class ApiParser {
                 break;
             case "getmetricstatisticsresponse":
                 descNodes = doc.getElementsByTagName("getmetricstatisticsresponse");
+                break;
+            case "listmetricsresponse":
+                descNodes = doc.getElementsByTagName("listmetricsresponse");
                 break;
             default:
                 descNodes = doc.getElementsByTagName("virtualmachine");
