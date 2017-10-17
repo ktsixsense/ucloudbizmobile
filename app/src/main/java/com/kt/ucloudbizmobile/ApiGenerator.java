@@ -146,7 +146,7 @@ public class ApiGenerator {
         return finalURL;
     }
 
-    public static String apiGeneratorWatch(String _apiKey, String _secretKey, String _command, boolean isM2, Calendar calendar, int gaptype, int period) {
+    public static String apiGeneratorWatch(String _apiKey, String _secretKey, String _command, boolean isM2, Calendar calendar, int gaptype, int period, String paramMetric, String paramnamespace, String paramunit) {
         HashMap<String, String> requests = new HashMap<String, String>();
         String basicURL = "";
         // 2. URL
@@ -176,10 +176,10 @@ public class ApiGenerator {
         String strperiod = String.format("%d",period);
         requests.put("endtime", strend);
         requests.put("starttime", strstart);
-        requests.put("metricname", "CPUUtilization");
-        requests.put("namespace", "ucloud/server");
+        requests.put("metricname", paramMetric);
+        requests.put("namespace", paramnamespace);
         requests.put("statistics.member.1", "Average");
-        requests.put("unit", "Percent");
+        requests.put("unit", paramunit);
         requests.put("period", strperiod);
         //requests.put("name", "myapitestdisk2");
 

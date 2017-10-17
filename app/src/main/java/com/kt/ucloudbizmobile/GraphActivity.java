@@ -34,11 +34,16 @@ public class GraphActivity extends Activity {
     private double m_data[];
     private int m_count;
     private int m_gap;
-
+    private Metric m_metric;
     public GraphActivity() {
         m_count = 0;
         m_gap = 30;
         m_data = null;
+        m_metric = new Metric();
+        m_metric.dimensions = "";
+        m_metric.namespace = "ucloud/server";
+        m_metric.metricname = "CPUUtilization";
+        m_metric.metricname = "Percent";
     }
 
     private String MakeCommand_Statics(String mainCommand, String metricName, String namespace, String dimensions, String unit, String period, String statistics, String starttime, String endtime)
@@ -56,63 +61,6 @@ public class GraphActivity extends Activity {
         fullcommand = mainCommand + metricName + namespace +dimensions + unit + period + statistics + starttime + endtime;
         return fullcommand;
     }
-    public void refresh_data(Calendar req_calendar, final int req_gap)
-    {
-        /*
-${API_URL}command=getMetricStatistics
-&metricname=NetworkIn
-&namespace=ucloud/server
-&dimensions.member.1.name=name
-&dimensions.member.1.value=i-2901-32012-VM
-&unit=Bytes
-&period=10
-&statistics.member.1=Maximum
-&statistics.member.2=Minimum
-&statistics.member.3=Average
-&statistics.member.4=Sum
-&statistics.member.5=SampleCount
-&starttime=2012-08-01T12:00:00.000
-&endtime=2012-08-01T18:13:00.000
-&response=xml&apiKey=${APIKey}&signature=${Signature}
-         */
-        // API로 값 얻어오기
-        String apiKey = "kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg";
-        String secretKey = "NmczQzPOE-CoYLbKpvo3UHJSaZ_6e9SC3tJIYsMIoiTJYMWMn8x-DpzBRTzzSkk0xegYz7g2yrvt_8jRrScxHQ";
-
-        AQuery aq = new AQuery(this);
-        final ApiParser parser = new ApiParser();
-
-        TimeZone seoul = TimeZone.getTimeZone("Asia/Seoul");
-        calendar = Calendar.getInstance();
-        datenow = calendar.getTime();
-        //String fullcmd = MakeCommand_Statics("","","","","","","","","");
-       // String watch_url_tmp = ApiGenerator.apiGeneratorWatch_command(apiKey, secretKey, fullcmd , false);
-       // setgap(req_gap);
-        String watch_url_tmp = ApiGenerator.apiGeneratorWatch(apiKey, secretKey, "getMetricStatistics" , false, req_calendar,req_gap,1);
-
-        aq.ajax(watch_url_tmp, String.class, new AjaxCallback<String>() {
-            metricStat[] mStat =null;
-            ArrayList<ListServerItem> dataSet = new ArrayList<>();
-            int dataCount = 0;
-        //@Override
-           public void callback(String url, String json, AjaxStatus status) {
-                if (json != null) {
-                    //successful ajax call, show status code and json content
-                    Document doc = parser.getDocument(json);
-                    int index = parser.getNumberOfResponse("getmetricstatisticsresponse", doc);
-                    mStat = new metricStat[index];
-                    mStat = parser.parseMetricStatistics(doc);
-
-                    setdata(mStat);
-                    setgap(req_gap);
-                    DrawGraph();
-                } else {
-                    //ajax error, show error code
-                    Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -129,6 +77,14 @@ ${API_URL}command=getMetricStatistics
         Button button120 = (Button) findViewById(R.id.btn_grpah_120);
         Button button600 = (Button) findViewById(R.id.btn_grpah_600);
 
+        Bundle b = getIntent().getExtras();
+        if(b!= null)
+        {
+            m_metric.dimensions = b.getString("dimensions");
+            m_metric.metricname = b.getString("metricname");
+            m_metric.namespace = b.getString("namespace");
+            m_metric.unit = b.getString("unit");
+        }
         refresh_data(calendar,30);
        // int[] test_data = {2, 3, 2, 2, 2, 3, 5, 10, 12, 3, 2, 4, 5, 2, 6, 1, 2, 7, 2, 5};
      //   setdata(15, test_data);
@@ -161,6 +117,66 @@ ${API_URL}command=getMetricStatistics
         });
 
     }
+
+    public void refresh_data(Calendar req_calendar, final int req_gap)
+    {
+        /*
+${API_URL}command=getMetricStatistics
+&metricname=NetworkIn
+&namespace=ucloud/server
+&dimensions.member.1.name=name
+&dimensions.member.1.value=i-2901-32012-VM
+&unit=Bytes
+&period=10
+&statistics.member.1=Maximum
+&statistics.member.2=Minimum
+&statistics.member.3=Average
+&statistics.member.4=Sum
+&statistics.member.5=SampleCount
+&starttime=2012-08-01T12:00:00.000
+&endtime=2012-08-01T18:13:00.000
+&response=xml&apiKey=${APIKey}&signature=${Signature}
+         */
+        // API로 값 얻어오기
+        String apiKey = "kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg";
+        String secretKey = "NmczQzPOE-CoYLbKpvo3UHJSaZ_6e9SC3tJIYsMIoiTJYMWMn8x-DpzBRTzzSkk0xegYz7g2yrvt_8jRrScxHQ";
+
+        AQuery aq = new AQuery(this);
+        final ApiParser parser = new ApiParser();
+
+        TimeZone seoul = TimeZone.getTimeZone("Asia/Seoul");
+        calendar = Calendar.getInstance();
+        datenow = calendar.getTime();
+        //String fullcmd = MakeCommand_Statics("","","","","","","","","");
+        // String watch_url_tmp = ApiGenerator.apiGeneratorWatch_command(apiKey, secretKey, fullcmd , false);
+        // setgap(req_gap);
+        String watch_url_tmp = ApiGenerator.apiGeneratorWatch(apiKey, secretKey, "getMetricStatistics" , false, req_calendar,req_gap,1,m_metric.metricname,m_metric.namespace,m_metric.unit);
+
+
+        aq.ajax(watch_url_tmp, String.class, new AjaxCallback<String>() {
+            metricStat[] mStat =null;
+            ArrayList<ListServerItem> dataSet = new ArrayList<>();
+            int dataCount = 0;
+            //@Override
+            public void callback(String url, String json, AjaxStatus status) {
+                if (json != null) {
+                    //successful ajax call, show status code and json content
+                    Document doc = parser.getDocument(json);
+                    int index = parser.getNumberOfResponse("getmetricstatisticsresponse", doc);
+                    mStat = new metricStat[index];
+                    mStat = parser.parseMetricStatistics(doc);
+
+                    setdata(mStat);
+                    setgap(req_gap);
+                    DrawGraph();
+                } else {
+                    //ajax error, show error code
+                    Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
 
     public void setdata(int nCount, int ndata[]) {
         int i;

@@ -85,8 +85,17 @@ public class MetricActivity extends Activity implements MyEventListener {
     @Override
     public void onMyEvent(ActionType act, int test) {
         if (act == ActionType.Action_GraphButton_Click) {
+            Log.d("sangil", "onMyEvent:  " + test);
+            if(test >= m_count)
+                return;
             Intent intent = new Intent(MetricActivity.this, GraphActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            Bundle b = new Bundle();
+            b.putString("metricname",m_metricArray[test].metricname);
+            b.putString("namespace",m_metricArray[test].namespace);
+            b.putString("unit",m_metricArray[test].unit);
+            b.putString("dimensions",m_metricArray[test].dimensions);
+            intent.putExtras(b);
             startActivity(intent);
         }
     }
