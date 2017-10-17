@@ -13,10 +13,10 @@ public class DetailServerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
-        Slide slide = new Slide();
-        slide.setSlideEdge(Gravity.RIGHT);
-        getWindow().setEnterTransition(slide);
+//        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+//        Slide slide = new Slide();
+//        slide.setSlideEdge(Gravity.RIGHT);
+//        getWindow().setEnterTransition(slide);
         setContentView(R.layout.activity_detail_server);
 
         Server data = getIntent().getParcelableExtra("data");

@@ -91,20 +91,21 @@ public class ApiParser {
         return disks;
     }
 
-    public metricStatistic[] parseMetricStatistics(Document doc) {
-        metricStatistic metricstatistics[] = null;
+    public metricStat[] parseMetricStatistics(Document doc) {
+        metricStat metricStat[] = null;
         try {
             NodeList forwardNode = doc.getElementsByTagName("getmetricstatisticsresponse");
             String label = forwardNode.item(0).getFirstChild().getTextContent();
-            int count = Integer.parseInt(forwardNode.item(0).getFirstChild().getTextContent());
+            Node node_temp = forwardNode.item(0).getFirstChild();
+            int count = Integer.parseInt(node_temp.getNextSibling().getTextContent());
 
             NodeList descNodes = doc.getElementsByTagName("metricstatistics");
-            metricstatistics = new metricStatistic[count];
+            metricStat = new metricStat[count];
             if(descNodes != null) {
                 for(int i=0; i<count;i++){
-                    metricStatistic temp = new metricStatistic();
+                    metricStat temp = new metricStat();
                     for(Node node = descNodes.item(i).getFirstChild(); node!=null; node=node.getNextSibling()){
-                        if(node.getNodeName().equals("timestmap")){
+                        if(node.getNodeName().equals("timestamp")){
                             Log.d("timestamp", node.getTextContent());
                             temp.timestamp = node.getTextContent();
                         }else if(node.getNodeName().equals("unit")) {
@@ -117,14 +118,18 @@ public class ApiParser {
                             Log.d("minimum", node.getTextContent());
                             temp.Minimum = Double.parseDouble(node.getTextContent());
                         }
+                        else if(node.getNodeName().equals("average")) {
+                            Log.d("average", node.getTextContent());
+                            temp.Average = Double.parseDouble(node.getTextContent());
+                        }
                     }
-                    metricstatistics[i] = temp;
+                    metricStat[i] = temp;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return metricstatistics;
+        return metricStat;
     }
 
 
@@ -145,6 +150,9 @@ public class ApiParser {
                 break;
             case "metric":
                 descNodes = doc.getElementsByTagName("metric");
+                break;
+            case "getmetricstatisticsresponse":
+                descNodes = doc.getElementsByTagName("getmetricstatisticsresponse");
                 break;
             default:
                 descNodes = doc.getElementsByTagName("virtualmachine");

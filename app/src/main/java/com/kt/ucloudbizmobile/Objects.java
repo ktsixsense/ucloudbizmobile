@@ -136,6 +136,52 @@ class Metric {
 
 }
 
+class metricStat extends Objects implements Parcelable {
+    String timestamp;
+    String unit;
+    double Maximum = -1;
+    double Minimum = -1;
+    double Sum = -1;
+   // int SampleCount = -1;
+    double Average = -1;
+
+    public metricStat()
+    {
+
+    }
+public metricStat(Parcel in) {
+        this.timestamp = in.readString();
+        this.unit = in.readString();
+        this.Maximum = in.readDouble();
+        this.Minimum = in.readDouble();
+        this.Sum = in.readDouble();
+        this.Average = in.readDouble();
+     }
+
+    public static final Parcelable.Creator<metricStat> CREATOR = new Parcelable.Creator<metricStat>() {
+        public metricStat createFromParcel(Parcel in) {
+            return new metricStat(in);
+        }
+
+        public metricStat[] newArray(int size) {
+            return new metricStat[size];
+        }
+    };
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(timestamp);
+        dest.writeString(unit);
+        dest.writeDouble(Maximum);
+        dest.writeDouble(Minimum);
+        dest.writeDouble(Sum);
+        dest.writeDouble(Average);
+
+    }
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+}
+
 class metricStatistic {
     String timestamp;
     String unit;
@@ -144,5 +190,9 @@ class metricStatistic {
     double Sum = -1;
     int SampleCount = -1;
     double Average = -1;
+
+    public int describeContents() {
+        return 0;
+    }
 
 }
