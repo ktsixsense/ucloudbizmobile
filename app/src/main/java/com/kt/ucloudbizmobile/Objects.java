@@ -69,7 +69,7 @@ class Server extends Objects implements Parcelable {
 class Disk extends Objects implements Parcelable {
     String volumeid;
 
-    String state; // Ready(연결이 안되어 있음 vm에), Running
+    String state; // vmstate라는 값이 있으면 연결 중이므로 true, vmstate값이 없으면 분리상태이므로 false 되도록
     String zoneid;
     String zonename;
     String vmid;
@@ -124,7 +124,56 @@ class Disk extends Objects implements Parcelable {
     }
 }
 
-class Network {
+class Network extends Objects implements Parcelable {
+    String addressid; // Network uuid
+    String ipaddress;
+    // displayname
+    String zoneid;
+    String zonename;
+    String type; // Isolated or shared
+    String usageplan;
+
+    public Network() {
+
+    }
+    private Network(Parcel in) {
+        this.addressid = in.readString();
+        this.ipaddress = in.readString();
+       // this.state = in.readString();
+        this.zoneid = in.readString();
+        this.zonename = in.readString();
+       // this.vmid = in.readString();
+       // this.vmname = in.readString();
+        this.type = in.readString();
+       // this.size = in.readString();
+        this.usageplan = in.readString();
+    }
+
+    public static final Parcelable.Creator<Network> CREATOR = new Parcelable.Creator<Network>() {
+        public Network createFromParcel(Parcel in) {
+            return new Network(in);
+        }
+
+        public Network[] newArray(int size) {
+            return new Network[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(addressid);
+        dest.writeString(ipaddress);
+        dest.writeString(zoneid);
+        dest.writeString(zonename);
+        dest.writeString(type);
+        dest.writeString(usageplan);
+    }
+
 
 }
 

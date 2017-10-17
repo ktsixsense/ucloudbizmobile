@@ -32,6 +32,10 @@ public class ListDiskAdapter extends BaseAdapter {
     public ListDiskAdapter() {
     }
 
+    public void removeAll() {
+        listViewDiskItemList = new ArrayList<>();
+    }
+
     @Override
     public int getCount() {
         return listViewDiskItemList.size();

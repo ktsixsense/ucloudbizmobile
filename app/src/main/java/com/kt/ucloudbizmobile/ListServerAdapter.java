@@ -32,6 +32,10 @@ public class ListServerAdapter extends BaseAdapter {
     public ListServerAdapter() {
     }
 
+    public void removeAll() {
+        listViewServerItemList = new ArrayList<>();
+    }
+
     @Override
     public int getCount() {
         return listViewServerItemList.size();

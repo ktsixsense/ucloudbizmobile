@@ -15,7 +15,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.Toast;
 
@@ -35,6 +37,11 @@ public class MainActivity extends AppCompatActivity
 
     ArrayList<Server> serverData;
     ArrayList<Disk> diskData;
+    ArrayList<Network> networkData;
+
+    private int totalServer;
+    private int totalDisk;
+    private int totalNetwork;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +49,11 @@ public class MainActivity extends AppCompatActivity
         getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
         setContentView(R.layout.activity_main);
 
+        Spinner spinner = (Spinner) findViewById(R.id.barSpinner);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         serverData = new ArrayList<>();
         diskData = new ArrayList<>();
+        networkData = new ArrayList<>();
 
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -83,7 +92,7 @@ public class MainActivity extends AppCompatActivity
         ts1.setIndicator("Server");
         tabHost.addTab(ts1);
 
-        ListView listView = (ListView) findViewById(R.id.listServer);
+        final ListView listView = (ListView) findViewById(R.id.listServer);
         final ListServerAdapter adapter = new ListServerAdapter();
         listView.setAdapter(adapter);
         adapter.setMyEventListener(this);
@@ -140,6 +149,7 @@ public class MainActivity extends AppCompatActivity
                                 //successful ajax call, show status code and json content
                                 Document doc = parser.getDocument(json);
                                 int index = parser.getNumberOfResponse("server", doc);
+                                totalServer = dataCount + index;
                                 servers = new Server[index];
                                 servers = parser.parseServerList(doc, index);
 
@@ -187,7 +197,7 @@ public class MainActivity extends AppCompatActivity
         ts2.setIndicator("Disk");
         tabHost.addTab(ts2);
 
-        ListView listView2 = (ListView) findViewById(R.id.listDisk);
+        final ListView listView2 = (ListView) findViewById(R.id.listDisk);
         final ListDiskAdapter adapter2 = new ListDiskAdapter();
         listView2.setAdapter(adapter2);
         adapter2.setMyEventListener(this);
@@ -218,7 +228,7 @@ public class MainActivity extends AppCompatActivity
                     disks = parser.parseDiskList(doc, index);
 
                     for (int i = 0; i < index; i++) {
-                        dataSet.add(i, new ListDiskItem(disks[i].displayname, disks[i].size, disks[i].zonename, disks[i].state.equals("Running"), disks[i].vmname));
+                        dataSet.add(i, new ListDiskItem(disks[i].displayname, disks[i].size, disks[i].zonename, disks[i].state != null ? true : false, disks[i].vmname));
                         diskData.add(i, disks[i]);
                         dataCount++;
                     }
@@ -233,11 +243,12 @@ public class MainActivity extends AppCompatActivity
                                 //successful ajax call, show status code and json content
                                 Document doc = parser.getDocument(json);
                                 int index = parser.getNumberOfResponse("disk", doc);
+                                totalDisk = dataCount + index;
                                 disks = new Disk[index];
                                 disks = parser.parseDiskList(doc, index);
 
                                 for (int i = 0; i < index; i++) {
-                                    dataSet.add(i, new ListDiskItem(disks[i].displayname, disks[i].size, disks[i].zonename, disks[i].state.equals("Running"), disks[i].vmname));
+                                    dataSet.add(i, new ListDiskItem(disks[i].displayname, disks[i].size, disks[i].zonename, disks[i].state != null ? true : false, disks[i].vmname));
                                     diskData.add(i, disks[i]);
                                     dataCount++;
                                 }
@@ -281,20 +292,80 @@ public class MainActivity extends AppCompatActivity
         ts3.setIndicator("Network");
         tabHost.addTab(ts3);
 
-        ListView listView3 = (ListView) findViewById(R.id.listNetwork);
-        ListNetworkAdapter adapter3 = new ListNetworkAdapter();
+        final ListView listView3 = (ListView) findViewById(R.id.listNetwork);
+        final ListNetworkAdapter adapter3 = new ListNetworkAdapter();
         listView3.setAdapter(adapter3);
         adapter3.setMyEventListener(this);
 
+
+        final String nwStack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listPublicIpAddresses", false, "all");
+        final String nwStack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listPublicIpAddresses", true, "all");
         // Sample data
-        adapter3.addItem("211.252.84.108", "ID 1");
+        /*adapter3.addItem("211.252.84.108", "ID 1");
         adapter3.addItem("14.63.222.251", "ID 2");
-        adapter3.addItem("14.63.163.15", "ID 3");
+        adapter3.addItem("14.63.163.15", "ID 3");*/
+
+        // cloudstack2
+        aq.ajax(nwStack2, String.class, new AjaxCallback<String>() {
+            Network[] networks = null;
+            ArrayList<ListNetworkItem> dataSet = new ArrayList<>();
+            int dataCount = 0;
+
+            @Override
+            public void callback(String url, String json, AjaxStatus status) {
+                if (json != null) {
+                    //successful ajax call, show status code and json content
+                    Document doc = parser.getDocument(json);
+                    int index = parser.getNumberOfResponse("network", doc);
+                    networks = new Network[index];
+                    networks = parser.parseNetworkList(doc, index);
+
+                    for (int i = 0; i < index; i++) {
+                        dataSet.add(i, new ListNetworkItem(networks[i].ipaddress, networks[i].addressid, networks[i].zonename, networks[i].usageplan.equals("") ? false : true));
+                        networkData.add(i, networks[i]);
+                        dataCount++;
+                    }
+//                    adapter.addItemArray(dataSet);
+//                    adapter.notifyDataSetChanged();
+
+                    aq.ajax(nwStack1, String.class, new AjaxCallback<String>() {
+
+                        @Override
+                        public void callback(String url, String json, AjaxStatus status) {
+                            if (json != null) {
+                                //successful ajax call, show status code and json content
+                                Document doc = parser.getDocument(json);
+                                int index = parser.getNumberOfResponse("network", doc);
+                                totalNetwork = dataCount + index;
+                                networks = new Network[index];
+                                networks = parser.parseNetworkList(doc, index);
+
+                                for (int i = 0; i < index; i++) {
+                                    dataSet.add(i, new ListNetworkItem(networks[i].ipaddress, networks[i].addressid, networks[i].zonename, networks[i].usageplan != null ? true : false));
+                                    networkData.add(i, networks[i]);
+                                    dataCount++;
+                                }
+                                adapter3.addItemArray(dataSet);
+                                adapter3.notifyDataSetChanged();
+
+                            } else {
+                                //ajax error, show error code
+                                Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+
+                } else {
+                    //ajax error, show error code
+                    Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
         listView3.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String test = ((ListNetworkItem) adapterView.getItemAtPosition(i)).getNetworkName();
+                String test = ((ListNetworkItem) adapterView.getItemAtPosition(i)).getNetworkIP();
                 //
                 Intent intent = new Intent(MainActivity.this, DetailNetworkActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -306,7 +377,104 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
+
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                ArrayList<Server> temp = new ArrayList<Server>();
+                ArrayList<Disk> temp2 = new ArrayList<Disk>();
+                ArrayList<Network> temp3 = new ArrayList<Network>();
+                ArrayList<ListServerItem> tempSet = new ArrayList<>();
+                ArrayList<ListDiskItem> tempSet2 = new ArrayList<>();
+                ArrayList<ListNetworkItem> tempSet3 = new ArrayList<>();
+
+                String zonename = "";
+                switch ("" + adapterView.getSelectedItem()) {
+                    case "KOR-Seoul M2":
+                        zonename = "kr-md2-1";
+                        break;
+                    case "KOR-Central A":
+                        zonename = "kr-1";
+                        break;
+                    case "KOR-Central B":
+                        zonename = "kr-2";
+                        break;
+                    case "KOR-Seoul M":
+                        zonename = "kr-0";
+                        break;
+                    case "전체":
+                        zonename = "all";
+                }
+
+                int count = 0;
+                int count2 = 0;
+                int count3 = 0;
+
+                if (zonename.equalsIgnoreCase("all")) {
+                    temp = serverData;
+                    temp2 = diskData;
+                    temp3 = networkData;
+                    count = totalServer;
+                    count2 = totalDisk;
+                    count3 = totalNetwork;
+                } else {
+                    for (Server server : serverData) {
+                        if (server.zonename.equalsIgnoreCase(zonename)) {
+                            temp.add(count, server);
+                            count++;
+                        }
+                    }
+                    for (Disk disk : diskData) {
+                        if (disk.zonename.equalsIgnoreCase(zonename)) {
+                            temp2.add(count2, disk);
+                            count2++;
+                        }
+                    }
+                    for (Network network : networkData) {
+                        if (network.zonename.equalsIgnoreCase(zonename)) {
+                            temp3.add(count3, network);
+                            count3++;
+                        }
+                    }
+                }
+
+                for (int k = 0; k < count; k++) {
+                    tempSet.add(k, new ListServerItem(temp.get(k).displayname, temp.get(k).os, temp.get(k).zonename, temp.get(k).state.equals("Running")));
+                }
+                for (int k = 0; k < count2; k++) {
+                    tempSet2.add(k, new ListDiskItem(temp2.get(k).displayname, temp2.get(k).size, temp2.get(k).zonename, temp2.get(k).state != null ? true : false, temp2.get(k).vmname));
+                }
+                for (int k = 0; k < count3; k++) {
+                    tempSet3.add(k, new ListNetworkItem(temp3.get(k).ipaddress, temp3.get(k).addressid, temp3.get(k).zonename, temp3.get(k).usageplan.equals("") ? false : true));
+                }
+
+                adapter.removeAll();
+                adapter2.removeAll();
+                adapter3.removeAll();
+
+                adapter.addItemArray(tempSet);
+                adapter2.addItemArray(tempSet2);
+                adapter3.addItemArray(tempSet3);
+
+                adapter.notifyDataSetChanged();
+                adapter2.notifyDataSetChanged();
+                adapter3.notifyDataSetChanged();
+
+                listView.invalidate();
+                listView2.invalidate();
+                listView3.invalidate();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
+
+
 
     @Override
     public void onBackPressed() {

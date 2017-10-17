@@ -19,6 +19,7 @@
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <Spinner
+                android:id="@+id/barSpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:entries="@array/location" />
