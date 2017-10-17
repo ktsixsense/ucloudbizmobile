@@ -10,13 +10,14 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.Toast;
@@ -24,20 +25,25 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 
-
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MyEventListener {
 
     private BackPressCloseHandler backPressCloseHandler;
+    private ProgressBar progressBar;
 
     ArrayList<Server> serverData;
     ArrayList<Disk> diskData;
     ArrayList<Network> networkData;
+
+    ArrayList<Server> serverTempData;
+    ArrayList<Disk> diskTempData;
+    ArrayList<Network> networkTempData;
 
     private int totalServer;
     private int totalDisk;
@@ -49,11 +55,21 @@ public class MainActivity extends AppCompatActivity
         getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
         setContentView(R.layout.activity_main);
 
-        Spinner spinner = (Spinner) findViewById(R.id.barSpinner);
+        Spinner spinner = (Spinner) findViewById(R.id.spinner);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        progressBar = (ProgressBar) findViewById(R.id.progressList);
+
         serverData = new ArrayList<>();
         diskData = new ArrayList<>();
         networkData = new ArrayList<>();
+
+        serverTempData = new ArrayList<>();
+        diskTempData = new ArrayList<>();
+        networkTempData = new ArrayList<>();
+
+        // Firebase
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        Log.d("push", refreshedToken);
 
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -97,7 +113,6 @@ public class MainActivity extends AppCompatActivity
         listView.setAdapter(adapter);
         adapter.setMyEventListener(this);
 
-
         /** Data Set
          * 1. adapter.addItem(ListServerItem)
          * 2. adapter.addItemArray(ArrayList<ListServerItem>)
@@ -113,6 +128,7 @@ public class MainActivity extends AppCompatActivity
         final AQuery aq = new AQuery(this);
         final ApiParser parser = new ApiParser();
 
+        //
         //String url = "https://api.ucloudbiz.olleh.com/server/v1/client/api?command=listVirtualMachines&apikey=kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg&signature=WgLcczEWC3Jf%2F4%2F7NJTqPuj1FrU%3D";
         final String cloudstack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", false, "all");
         final String cloudstack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", true, "all");
@@ -138,8 +154,6 @@ public class MainActivity extends AppCompatActivity
                         serverData.add(i, servers[i]);
                         dataCount++;
                     }
-//                    adapter.addItemArray(dataSet);
-//                    adapter.notifyDataSetChanged();
 
                     aq.ajax(cloudstack1, String.class, new AjaxCallback<String>() {
 
@@ -157,19 +171,21 @@ public class MainActivity extends AppCompatActivity
                                     dataSet.add(i + dataCount, new ListServerItem(servers[i].displayname, servers[i].os, servers[i].zonename, servers[i].state.equals("Running")));
                                     serverData.add(i + dataCount, servers[i]);
                                 }
+                                serverTempData = serverData;
                                 adapter.addItemArray(dataSet);
                                 adapter.notifyDataSetChanged();
 
+                                progressBar.setVisibility(View.INVISIBLE);
                             } else {
                                 //ajax error, show error code
-                                Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                                AppUtility.showMsg(getApplicationContext(), "Error : " + status.getError());
                             }
                         }
                     });
 
                 } else {
                     //ajax error, show error code
-                    Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                    AppUtility.showMsg(getApplicationContext(), "Error : " + status.getError());
                 }
             }
         });
@@ -177,16 +193,12 @@ public class MainActivity extends AppCompatActivity
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Server data = serverData.get(i);
-
+                Server data = serverTempData.get(i);
                 //
                 Intent intent = new Intent(MainActivity.this, DetailServerActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra("data", data);
 
-//                Slide slide = new Slide();
-//                slide.setSlideEdge(Gravity.LEFT);
-//                getWindow().setExitTransition(slide);
                 startActivity(intent);
             }
         });
@@ -204,7 +216,6 @@ public class MainActivity extends AppCompatActivity
 
         final String diskStack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVolumes", false, "all");
         final String diskStack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVolumes", true, "all");
-
 
         // Sample data
         /*adapter2.addItem("Test A", "500GB", true);
@@ -232,8 +243,6 @@ public class MainActivity extends AppCompatActivity
                         diskData.add(i, disks[i]);
                         dataCount++;
                     }
-//                    adapter.addItemArray(dataSet);
-//                    adapter.notifyDataSetChanged();
 
                     aq.ajax(diskStack1, String.class, new AjaxCallback<String>() {
 
@@ -252,6 +261,7 @@ public class MainActivity extends AppCompatActivity
                                     diskData.add(i, disks[i]);
                                     dataCount++;
                                 }
+                                diskTempData = diskData;
                                 adapter2.addItemArray(dataSet);
                                 adapter2.notifyDataSetChanged();
 
@@ -273,15 +283,12 @@ public class MainActivity extends AppCompatActivity
         listView2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String test = ((ListDiskItem) adapterView.getItemAtPosition(i)).getDiskName();
+                Disk data = diskTempData.get(i);
                 //
                 Intent intent = new Intent(MainActivity.this, DetailDiskActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra("data", test);
+                intent.putExtra("data", data);
 
-//                Slide slide = new Slide();
-//                slide.setSlideEdge(Gravity.LEFT);
-//                getWindow().setExitTransition(slide);
                 startActivity(intent);
             }
         });
@@ -325,8 +332,6 @@ public class MainActivity extends AppCompatActivity
                         networkData.add(i, networks[i]);
                         dataCount++;
                     }
-//                    adapter.addItemArray(dataSet);
-//                    adapter.notifyDataSetChanged();
 
                     aq.ajax(nwStack1, String.class, new AjaxCallback<String>() {
 
@@ -345,6 +350,7 @@ public class MainActivity extends AppCompatActivity
                                     networkData.add(i, networks[i]);
                                     dataCount++;
                                 }
+                                networkTempData = networkData;
                                 adapter3.addItemArray(dataSet);
                                 adapter3.notifyDataSetChanged();
 
@@ -365,30 +371,28 @@ public class MainActivity extends AppCompatActivity
         listView3.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String test = ((ListNetworkItem) adapterView.getItemAtPosition(i)).getNetworkIP();
+                Network data = networkTempData.get(i);
                 //
                 Intent intent = new Intent(MainActivity.this, DetailNetworkActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra("data", test);
+                intent.putExtra("data", data);
 
-//                Slide slide = new Slide();
-//                slide.setSlideEdge(Gravity.LEFT);
-//                getWindow().setExitTransition(slide);
                 startActivity(intent);
             }
         });
 
-
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                ArrayList<Server> temp = new ArrayList<Server>();
-                ArrayList<Disk> temp2 = new ArrayList<Disk>();
-                ArrayList<Network> temp3 = new ArrayList<Network>();
+                ArrayList<Server> temp = new ArrayList<>();
+                ArrayList<Disk> temp2 = new ArrayList<>();
+                ArrayList<Network> temp3 = new ArrayList<>();
                 ArrayList<ListServerItem> tempSet = new ArrayList<>();
                 ArrayList<ListDiskItem> tempSet2 = new ArrayList<>();
                 ArrayList<ListNetworkItem> tempSet3 = new ArrayList<>();
+                serverTempData = new ArrayList<>();
+                diskTempData = new ArrayList<>();
+                networkTempData = new ArrayList<>();
 
                 String zonename = "";
                 switch ("" + adapterView.getSelectedItem()) {
@@ -442,12 +446,15 @@ public class MainActivity extends AppCompatActivity
 
                 for (int k = 0; k < count; k++) {
                     tempSet.add(k, new ListServerItem(temp.get(k).displayname, temp.get(k).os, temp.get(k).zonename, temp.get(k).state.equals("Running")));
+                    serverTempData.add(k, temp.get(k));
                 }
                 for (int k = 0; k < count2; k++) {
                     tempSet2.add(k, new ListDiskItem(temp2.get(k).displayname, temp2.get(k).size, temp2.get(k).zonename, temp2.get(k).state != null ? true : false, temp2.get(k).vmname));
+                    diskTempData.add(k, temp2.get(k));
                 }
                 for (int k = 0; k < count3; k++) {
                     tempSet3.add(k, new ListNetworkItem(temp3.get(k).ipaddress, temp3.get(k).addressid, temp3.get(k).zonename, temp3.get(k).usageplan.equals("") ? false : true));
+                    networkTempData.add(k, temp3.get(k));
                 }
 
                 adapter.removeAll();
@@ -473,8 +480,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
-
-
 
     @Override
     public void onBackPressed() {

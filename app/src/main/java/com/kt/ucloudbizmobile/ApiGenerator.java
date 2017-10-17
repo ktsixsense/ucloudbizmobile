@@ -1,17 +1,9 @@
 package com.kt.ucloudbizmobile;
 
-import android.app.Activity;
-import android.os.AsyncTask;
 import android.util.Base64;
 import android.util.Log;
 
-import org.w3c.dom.Document;
-
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -27,8 +19,6 @@ import java.util.TreeMap;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
  * Created by LTR on 2017-08-17.
@@ -230,12 +220,12 @@ public class ApiGenerator {
         requests.put("apikey", apiKey);
         //requests.put("productcode", "SSD 100G");
         requests.put("command", command);
-        requests.put("endtime", "2017-09-09T12:00:00.000");
-        requests.put("starttime", "2017-09-09T12:30:00.000");
-        requests.put("metricname", "CPUUtilization");
+        requests.put("endtime", "2017-10-16T19:00:00.000");
+        requests.put("starttime", "2017-10-16T18:00:00.000");
+        requests.put("metricname", "DiskWriteBytes");
         requests.put("namespace", "ucloud/server");
         requests.put("statistics.member.1", "Average");
-        requests.put("unit", "Percent");
+        requests.put("unit", "Bytes");
         requests.put("period", "1");
         //requests.put("name", "myapitestdisk2");
 

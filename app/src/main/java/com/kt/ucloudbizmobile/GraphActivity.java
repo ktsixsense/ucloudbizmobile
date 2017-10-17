@@ -73,7 +73,7 @@ public class GraphActivity extends Activity {
 
         GraphView graph = (GraphView) findViewById(R.id.graph_metric1);
 
-        Button button30 = (Button) findViewById(R.id.btn_grpah_30);
+        Button button30 = (Button) findViewById(R.id.btn_graph_30);
         Button button120 = (Button) findViewById(R.id.btn_grpah_120);
         Button button600 = (Button) findViewById(R.id.btn_grpah_600);
 

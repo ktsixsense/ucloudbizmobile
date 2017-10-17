@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "888522238715",
+    "firebase_url": "https://sixsense-6e9b9.firebaseio.com",
+    "project_id": "sixsense-6e9b9",
+    "storage_bucket": "sixsense-6e9b9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888522238715:android:26428122e2ba5449",
+        "android_client_info": {
+          "package_name": "com.kt.ucloudbizmobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "888522238715-gnjomfkq52bob7aefbfpo6pv3lpekk38.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kt.ucloudbizmobile",
+            "certificate_hash": "eae5c882e03cab747aa30d654fb9430624b801f1"
+          }
+        },
+        {
+          "client_id": "888522238715-3n5qrbu3njp7e3e90gncehc7kbilbem0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfxFYriDc0MOjnomu2sTVmZ5hmv55GZ4U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "888522238715-3n5qrbu3njp7e3e90gncehc7kbilbem0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

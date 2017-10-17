@@ -2,11 +2,7 @@ package com.kt.ucloudbizmobile;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.transition.Slide;
-import android.view.Gravity;
-import android.view.Window;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class DetailServerActivity extends AppCompatActivity {
 
@@ -22,16 +18,19 @@ public class DetailServerActivity extends AppCompatActivity {
         Server data = getIntent().getParcelableExtra("data");
 
         ListView listDetail = (ListView) findViewById(R.id.list_detail);
-        TextView txtData = (TextView) findViewById(R.id.txt_detail_server_info);
-        txtData.setText("TEST 중");
 
         ListDetailAdapter adapter = new ListDetailAdapter();
         listDetail.setAdapter(adapter);
 
         // Sample Data
-        adapter.addItem("AAA", data.os);
-        adapter.addItem("BBB", data.starttime);
-        adapter.addItem("CCC", data.state);
-        adapter.addItem("DDD", data.zonename);
+        adapter.addItem("서버명", data.displayname);
+        adapter.addItem("내부주소", data.ipaddress);
+        adapter.addItem("서버 ID", data.serverid);
+        adapter.addItem("운영체제", data.os);
+        String str = data.cpunumber + " vCore /" + (Integer.parseInt(data.memory) / 1024) + " GB";
+        adapter.addItem("CPU/메모리", str);
+        adapter.addItem("호스트명", data.name);
+        adapter.addItem("생성일시", data.created);
+        adapter.addItem("상태", data.state);
     }
 }

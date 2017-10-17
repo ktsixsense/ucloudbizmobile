@@ -34,7 +34,6 @@ public class ListServerItem {
             case "kr-2": zonename = "Central B zone"; break;
             case "kr-0": zonename = "Seoul M zone"; break;
             default: zonename = serverZone;
-
         }
         return zonename;
     }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.kt.ucloudbiz.MainActivity"
+    tools:context="com.kt.ucloudbizmobile.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
     <TabHost
@@ -68,5 +68,11 @@
                 android:background="@drawable/tab_color_selector"
                 android:elevation="5dp" />
         </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressList"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center" />
     </TabHost>
 </RelativeLayout>

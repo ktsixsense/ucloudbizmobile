@@ -9,6 +9,7 @@
         android:id="@+id/txt_detail_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:text="title"
         android:textSize="18dp" />
 
@@ -17,6 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:text="content"
         android:textColor="#b1b1b1"
         android:textSize="18dp" />

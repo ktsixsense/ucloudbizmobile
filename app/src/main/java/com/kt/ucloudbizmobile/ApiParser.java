@@ -27,20 +27,49 @@ public class ApiParser {
                     Server temp = new Server();
                     for (Node node = descNodes.item(i).getFirstChild(); node != null; node = node.getNextSibling()) {
                         if (node.getNodeName().equals("displayname")) {
+                            // 서버명
                             Log.d("displayname", node.getTextContent());
                             temp.displayname = node.getTextContent();
-                        } else if (node.getNodeName().equals("state")) {
-                            Log.d("state", node.getTextContent());
-                            temp.state = node.getTextContent();
-                        } else if (node.getNodeName().equals("zoneid")) {
+                        } else if (node.getNodeName().equals("nic")) {
+                            // 내부주소
+                            Log.d("ipaddress", node.getTextContent());
+                            temp.ipaddress = node.getChildNodes().item(11).getTextContent();
+                        } else if (node.getNodeName().equals("id")) {
+                            // 서버 ID
                             System.out.println(node.getTextContent());
-                            temp.zoneid = node.getTextContent();
+                            temp.serverid = node.getTextContent();
                         } else if (node.getNodeName().equals("templatedisplaytext")) {
+                            // 운영체제
                             Log.d("os", node.getTextContent());
                             temp.os = node.getTextContent();
+                        } else if (node.getNodeName().equals("cpunumber")) {
+                            // CPU
+                            Log.d("cpunumber", node.getTextContent());
+                            temp.cpunumber = node.getTextContent();
+                        } else if (node.getNodeName().equals("memory")) {
+                            // 메모리
+                            Log.d("memory", node.getTextContent());
+                            temp.memory = node.getTextContent();
+                        } else if (node.getNodeName().equals("name")) {
+                            // 호스트명
+                            Log.d("name", node.getTextContent());
+                            temp.name = node.getTextContent();
+                        } else if (node.getNodeName().equals("created")) {
+                            // 생성일시
+                            Log.d("created", node.getTextContent());
+                            temp.created = node.getTextContent();
                         } else if (node.getNodeName().equals("zonename")) {
+                            // Disk
                             Log.d("zonename", node.getTextContent());
                             temp.zonename = node.getTextContent();
+                        } else if (node.getNodeName().equals("zonename")) {
+                            // 종류
+                            Log.d("zonename", node.getTextContent());
+                            temp.zonename = node.getTextContent();
+                        } else if (node.getNodeName().equals("state")) {
+                            // 상태
+                            Log.d("state", node.getTextContent());
+                            temp.state = node.getTextContent();
                         }
                     }
                     servers[i] = temp;
@@ -74,7 +103,7 @@ public class ApiParser {
                             temp.volumeid = node.getTextContent();
                         } else if (node.getNodeName().equals("virtualmachineid")) {
                             temp.vmid = node.getTextContent();
-                        }else if (node.getNodeName().equals("vmdisplayname")) {
+                        } else if (node.getNodeName().equals("vmdisplayname")) {
                             Log.d("vmdisplayname", node.getTextContent());
                             temp.vmname = node.getTextContent();
                         } else if (node.getNodeName().equals("zonename")) {
@@ -134,24 +163,23 @@ public class ApiParser {
 
             NodeList descNodes = doc.getElementsByTagName("metricstatistics");
             metricStat = new metricStat[count];
-            if(descNodes != null) {
-                for(int i=0; i<count;i++){
+            if (descNodes != null) {
+                for (int i = 0; i < count; i++) {
                     metricStat temp = new metricStat();
-                    for(Node node = descNodes.item(i).getFirstChild(); node!=null; node=node.getNextSibling()){
-                        if(node.getNodeName().equals("timestamp")){
+                    for (Node node = descNodes.item(i).getFirstChild(); node != null; node = node.getNextSibling()) {
+                        if (node.getNodeName().equals("timestamp")) {
                             Log.d("timestamp", node.getTextContent());
                             temp.timestamp = node.getTextContent();
-                        }else if(node.getNodeName().equals("unit")) {
+                        } else if (node.getNodeName().equals("unit")) {
                             Log.d("unit", node.getTextContent());
                             temp.unit = node.getTextContent();
-                        }else if(node.getNodeName().equals("maximum")) {
+                        } else if (node.getNodeName().equals("maximum")) {
                             Log.d("maximum", node.getTextContent());
                             temp.Maximum = Double.parseDouble(node.getTextContent());
-                        }else if(node.getNodeName().equals("minimum")) {
+                        } else if (node.getNodeName().equals("minimum")) {
                             Log.d("minimum", node.getTextContent());
                             temp.Minimum = Double.parseDouble(node.getTextContent());
-                        }
-                        else if(node.getNodeName().equals("average")) {
+                        } else if (node.getNodeName().equals("average")) {
                             Log.d("average", node.getTextContent());
                             temp.Average = Double.parseDouble(node.getTextContent());
                         }

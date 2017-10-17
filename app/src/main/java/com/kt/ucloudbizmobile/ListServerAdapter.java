@@ -32,10 +32,6 @@ public class ListServerAdapter extends BaseAdapter {
     public ListServerAdapter() {
     }
 
-    public void removeAll() {
-        listViewServerItemList = new ArrayList<>();
-    }
-
     @Override
     public int getCount() {
         return listViewServerItemList.size();
@@ -111,6 +107,10 @@ public class ListServerAdapter extends BaseAdapter {
         for (ListServerItem item : itemArray) {
             listViewServerItemList.add(item);
         }
+    }
+
+    public void removeAll() {
+        listViewServerItemList = new ArrayList<>();
     }
 
     public void setMyEventListener(MyEventListener listener) {

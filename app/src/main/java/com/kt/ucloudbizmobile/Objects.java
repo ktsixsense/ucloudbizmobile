@@ -13,28 +13,32 @@ public class Objects {
 }
 
 class Server extends Objects implements Parcelable {
-    String state;
-    String zoneid;
+
+    String name;
     String zonename;
+    String state;
+    String serverid;
+    String ipaddress;
     String os;
-    String spec;
-    String externalip;
-    String internalip;
-    String starttime;
+    String created;
+    String cpunumber;
+    String memory;
 
     public Server() {
 
     }
 
     private Server(Parcel in) {
-        this.state = in.readString();
-        this.zoneid = in.readString();
+        this.displayname = in.readString();
+        this.name = in.readString();
         this.zonename = in.readString();
+        this.state = in.readString();
+        this.serverid = in.readString();
+        this.ipaddress = in.readString();
         this.os = in.readString();
-        this.spec = in.readString();
-        this.externalip = in.readString();
-        this.internalip = in.readString();
-        this.starttime = in.readString();
+        this.created = in.readString();
+        this.cpunumber = in.readString();
+        this.memory = in.readString();
     }
 
     public static final Parcelable.Creator<Server> CREATOR = new Parcelable.Creator<Server>() {
@@ -54,16 +58,17 @@ class Server extends Objects implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(state);
-        dest.writeString(zoneid);
+        dest.writeString(displayname);
+        dest.writeString(name);
         dest.writeString(zonename);
+        dest.writeString(state);
+        dest.writeString(serverid);
+        dest.writeString(ipaddress);
         dest.writeString(os);
-        dest.writeString(spec);
-        dest.writeString(externalip);
-        dest.writeString(internalip);
-        dest.writeString(starttime);
+        dest.writeString(created);
+        dest.writeString(cpunumber);
+        dest.writeString(memory);
     }
-
 }
 
 class Disk extends Objects implements Parcelable {
@@ -136,16 +141,17 @@ class Network extends Objects implements Parcelable {
     public Network() {
 
     }
+
     private Network(Parcel in) {
         this.addressid = in.readString();
         this.ipaddress = in.readString();
-       // this.state = in.readString();
+        // this.state = in.readString();
         this.zoneid = in.readString();
         this.zonename = in.readString();
-       // this.vmid = in.readString();
-       // this.vmname = in.readString();
+        // this.vmid = in.readString();
+        // this.vmname = in.readString();
         this.type = in.readString();
-       // this.size = in.readString();
+        // this.size = in.readString();
         this.usageplan = in.readString();
     }
 
@@ -173,8 +179,6 @@ class Network extends Objects implements Parcelable {
         dest.writeString(type);
         dest.writeString(usageplan);
     }
-
-
 }
 
 class Alarm {
@@ -187,16 +191,17 @@ class Metric extends Objects implements Parcelable {
     public String unit;
     public String dimensions;
 
-    public Metric()
-    {
+    public Metric() {
 
     }
+
     public Metric(Parcel in) {
         this.metricname = in.readString();
         this.namespace = in.readString();
         this.unit = in.readString();
         this.dimensions = in.readString();
     }
+
     public static final Parcelable.Creator<Metric> CREATOR = new Parcelable.Creator<Metric>() {
         public Metric createFromParcel(Parcel in) {
             return new Metric(in);
@@ -206,12 +211,14 @@ class Metric extends Objects implements Parcelable {
             return new Metric[size];
         }
     };
+
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(metricname);
         dest.writeString(namespace);
         dest.writeString(unit);
         dest.writeString(dimensions);
     }
+
     @Override
     public int describeContents() {
         return 0;
@@ -225,21 +232,21 @@ class metricStat extends Objects implements Parcelable {
     double Maximum = -1;
     double Minimum = -1;
     double Sum = -1;
-   // int SampleCount = -1;
+    // int SampleCount = -1;
     double Average = -1;
 
-    public metricStat()
-    {
+    public metricStat() {
 
     }
-public metricStat(Parcel in) {
+
+    public metricStat(Parcel in) {
         this.timestamp = in.readString();
         this.unit = in.readString();
         this.Maximum = in.readDouble();
         this.Minimum = in.readDouble();
         this.Sum = in.readDouble();
         this.Average = in.readDouble();
-     }
+    }
 
     public static final Parcelable.Creator<metricStat> CREATOR = new Parcelable.Creator<metricStat>() {
         public metricStat createFromParcel(Parcel in) {
@@ -250,6 +257,7 @@ public metricStat(Parcel in) {
             return new metricStat[size];
         }
     };
+
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(timestamp);
         dest.writeString(unit);
@@ -259,6 +267,7 @@ public metricStat(Parcel in) {
         dest.writeDouble(Average);
 
     }
+
     @Override
     public int describeContents() {
         return 0;
