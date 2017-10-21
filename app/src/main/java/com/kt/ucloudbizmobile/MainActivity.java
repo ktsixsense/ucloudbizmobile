@@ -34,6 +34,8 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import static com.kt.ucloudbizmobile.R.id.spinner;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MyEventListener {
 
@@ -44,8 +46,10 @@ public class MainActivity extends AppCompatActivity
 
     SetSocket setSocket;
 
+    private TabHost tabHost;
     private BackPressCloseHandler backPressCloseHandler;
     private ProgressBar progressBar;
+    private Spinner zoneSpinner;
 
     ArrayList<Server> serverData;
     ArrayList<Disk> diskData;
@@ -67,14 +71,9 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        zoneSpinner = (Spinner) findViewById(spinner);
         progressBar = (ProgressBar) findViewById(R.id.progressList);
-
-        serverData = new ArrayList<>();
-        diskData = new ArrayList<>();
-        networkData = new ArrayList<>();
-        networkData2 = new ArrayList<>();
 
         serverTempData = new ArrayList<>();
         diskTempData = new ArrayList<>();
@@ -119,7 +118,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // Creating bottom tab menu
-        TabHost tabHost = (TabHost) findViewById(R.id.tabHost);
+        tabHost = (TabHost) findViewById(R.id.tabHost);
         tabHost.setup();
 
         // #1
@@ -193,20 +192,6 @@ public class MainActivity extends AppCompatActivity
         adapter3.setMyEventListener(this);
         adapter4.setMyEventListener(this);
 
-        // Get data from API when tab changed.
-        tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-            @Override
-            public void onTabChanged(String s) {
-                if (s.equalsIgnoreCase("server")) {
-                    getServerData(apiKey, secretKey, adapter, aq, parser);
-                } else if (s.equalsIgnoreCase("disk")) {
-                    getDiskData(apiKey, secretKey, adapter2, aq, parser);
-                } else if (s.equalsIgnoreCase("network")) {
-                    getNetworkData(apiKey, secretKey, adapter3, adapter4, aq, parser);
-                }
-            }
-        });
-
         listView3.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -233,21 +218,26 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        // APII ====================================================================================
+        // Get data from API when tab changed.
+        tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            @Override
+            public void onTabChanged(String s) {
+                setTabHostEnabled(false);
+
+                if (s.equalsIgnoreCase("server")) {
+                    getServerData(apiKey, secretKey, adapter, aq, parser);
+                } else if (s.equalsIgnoreCase("disk")) {
+                    getDiskData(apiKey, secretKey, adapter2, aq, parser);
+                } else if (s.equalsIgnoreCase("network")) {
+                    getNetworkData(apiKey, secretKey, adapter3, adapter4, aq, parser);
+                }
+            }
+        });
+
+        zoneSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                ArrayList<Server> temp = new ArrayList<>();
-                ArrayList<Disk> temp2 = new ArrayList<>();
-                ArrayList<Network> temp3 = new ArrayList<>();
-                ArrayList<Network> temp4 = new ArrayList<>();
-                ArrayList<ListServerItem> tempSet = new ArrayList<>();
-                ArrayList<ListDiskItem> tempSet2 = new ArrayList<>();
-                ArrayList<ListNetworkItem> tempSet3 = new ArrayList<>();
-                ArrayList<ListNetworkItem> tempSet4 = new ArrayList<>();
-                serverTempData = new ArrayList<>();
-                diskTempData = new ArrayList<>();
-                networkTempData = new ArrayList<>();
-                networkTempData2 = new ArrayList<>();
 
                 String zonename = "";
                 switch ("" + adapterView.getSelectedItem()) {
@@ -267,83 +257,116 @@ public class MainActivity extends AppCompatActivity
                         zonename = "all";
                 }
 
-                int count = 0;
-                int count2 = 0;
-                int count3 = 0;
-                int count4 = 0;
+                String curTab = tabHost.getCurrentTabTag();
 
-                if (zonename.equalsIgnoreCase("all")) {
-                    temp = serverData;
-                    temp2 = diskData;
-                    temp3 = networkData;
-                    temp4 = networkData2;
-                    count = totalServer;
-                    count2 = totalDisk;
-                    count3 = totalNetwork;
-                    count4 = totalNetwork2;
-                } else {
-                    for (Server server : serverData) {
-                        if (server.zonename.equalsIgnoreCase(zonename)) {
-                            temp.add(count, server);
-                            count++;
+                if (curTab.equalsIgnoreCase("server")) {
+                    ArrayList<Server> temp = new ArrayList<>();
+                    ArrayList<ListServerItem> tempSet = new ArrayList<>();
+                    serverTempData = new ArrayList<>();
+
+                    int count = 0;
+
+                    if (zonename.equalsIgnoreCase("all")) {
+                        temp = serverData;
+                        count = totalServer;
+                    } else {
+                        for (Server server : serverData) {
+                            if (server.zonename.equalsIgnoreCase(zonename)) {
+                                temp.add(count, server);
+                                count++;
+                            }
                         }
                     }
-                    for (Disk disk : diskData) {
-                        if (disk.zonename.equalsIgnoreCase(zonename)) {
-                            temp2.add(count2, disk);
-                            count2++;
+
+                    for (int k = 0; k < count; k++) {
+                        tempSet.add(k, new ListServerItem(temp.get(k).displayname, temp.get(k).os, temp.get(k).zonename, temp.get(k).state.equals("Running")));
+                        serverTempData.add(k, temp.get(k));
+                    }
+
+                    adapter.removeAll();
+                    adapter.addItemArray(tempSet);
+                    adapter.notifyDataSetChanged();
+                    listView.invalidate();
+                } else if (curTab.equalsIgnoreCase("disk")) {
+                    ArrayList<Disk> temp2 = new ArrayList<>();
+                    ArrayList<ListDiskItem> tempSet2 = new ArrayList<>();
+                    diskTempData = new ArrayList<>();
+
+                    int count2 = 0;
+
+                    if (zonename.equalsIgnoreCase("all")) {
+                        temp2 = diskData;
+                        count2 = totalDisk;
+                    } else {
+                        for (Disk disk : diskData) {
+                            if (disk.zonename.equalsIgnoreCase(zonename)) {
+                                temp2.add(count2, disk);
+                                count2++;
+                            }
                         }
                     }
-                    for (Network network : networkData) {
-                        if (network.zonename.equalsIgnoreCase(zonename)) {
-                            temp3.add(count3, network);
-                            count3++;
+
+                    for (int k = 0; k < count2; k++) {
+                        tempSet2.add(k, new ListDiskItem(temp2.get(k).displayname, temp2.get(k).size, temp2.get(k).zonename, temp2.get(k).state != null ? true : false, temp2.get(k).vmname));
+                        diskTempData.add(k, temp2.get(k));
+                    }
+
+                    adapter2.removeAll();
+                    adapter2.addItemArray(tempSet2);
+                    adapter2.notifyDataSetChanged();
+                    listView2.invalidate();
+                } else if (curTab.equalsIgnoreCase("network")) {
+
+                    ArrayList<Network> temp3 = new ArrayList<>();
+                    ArrayList<Network> temp4 = new ArrayList<>();
+
+                    ArrayList<ListNetworkItem> tempSet3 = new ArrayList<>();
+                    ArrayList<ListNetworkItem> tempSet4 = new ArrayList<>();
+
+                    networkTempData = new ArrayList<>();
+                    networkTempData2 = new ArrayList<>();
+
+                    int count3 = 0;
+                    int count4 = 0;
+
+                    if (zonename.equalsIgnoreCase("all")) {
+                        temp3 = networkData;
+                        temp4 = networkData2;
+                        count3 = totalNetwork;
+                        count4 = totalNetwork2;
+                    } else {
+                        for (Network network : networkData) {
+                            if (network.zonename.equalsIgnoreCase(zonename)) {
+                                temp3.add(count3, network);
+                                count3++;
+                            }
+                        }
+                        for (Network network : networkData2) {
+                            if (network.n_zonename.equalsIgnoreCase(zonename)) {
+                                temp4.add(count4, network);
+                                count4++;
+                            }
                         }
                     }
-                    for (Network network : networkData2) {
-                        if (network.n_zonename.equalsIgnoreCase(zonename)) {
-                            temp4.add(count4, network);
-                            count4++;
-                        }
+
+                    for (int k = 0; k < count3; k++) {
+                        tempSet3.add(k, new ListNetworkItem(temp3.get(k).ipaddress, temp3.get(k).addressid, temp3.get(k).zonename, temp3.get(k).usageplan.equals("") ? false : true));
+                        networkTempData.add(k, temp3.get(k));
                     }
-                }
+                    for (int k = 0; k < count4; k++) {
+                        tempSet4.add(k, new ListNetworkItem(temp4.get(k).n_displayname, temp4.get(k).n_zonename, temp4.get(k).n_type, temp4.get(k).n_cidr));
+                        networkTempData2.add(k, temp4.get(k));
+                    }
 
-                for (int k = 0; k < count; k++) {
-                    tempSet.add(k, new ListServerItem(temp.get(k).displayname, temp.get(k).os, temp.get(k).zonename, temp.get(k).state.equals("Running")));
-                    serverTempData.add(k, temp.get(k));
+                    adapter3.removeAll();
+                    adapter4.removeAll();
+                    adapter3.addItemArray(tempSet3);
+                    adapter4.addItemArray(tempSet4);
+                    adapter3.notifyDataSetChanged();
+                    adapter4.notifyDataSetChanged();
+                    listView3.invalidate();
+                    listView4.invalidate();
                 }
-                for (int k = 0; k < count2; k++) {
-                    tempSet2.add(k, new ListDiskItem(temp2.get(k).displayname, temp2.get(k).size, temp2.get(k).zonename, temp2.get(k).state != null ? true : false, temp2.get(k).vmname));
-                    diskTempData.add(k, temp2.get(k));
-                }
-                for (int k = 0; k < count3; k++) {
-                    tempSet3.add(k, new ListNetworkItem(temp3.get(k).ipaddress, temp3.get(k).addressid, temp3.get(k).zonename, temp3.get(k).usageplan.equals("") ? false : true));
-                    networkTempData.add(k, temp3.get(k));
-                }
-                for (int k = 0; k < count4; k++) {
-                    tempSet4.add(k, new ListNetworkItem(temp4.get(k).n_displayname, temp4.get(k).n_zonename, temp4.get(k).n_type, temp4.get(k).n_cidr));
-                    networkTempData2.add(k, temp4.get(k));
-                }
-
-                adapter.removeAll();
-                adapter2.removeAll();
-                adapter3.removeAll();
-                adapter4.removeAll();
-
-                adapter.addItemArray(tempSet);
-                adapter2.addItemArray(tempSet2);
-                adapter3.addItemArray(tempSet3);
-                adapter4.addItemArray(tempSet4);
-
-                adapter.notifyDataSetChanged();
-                adapter2.notifyDataSetChanged();
-                adapter3.notifyDataSetChanged();
-                adapter4.notifyDataSetChanged();
-
-                listView.invalidate();
-                listView2.invalidate();
-                listView3.invalidate();
-                listView4.invalidate();
             }
 
             @Override
@@ -459,8 +482,11 @@ public class MainActivity extends AppCompatActivity
 
     public void getServerData(String apiKey, String secretKey, final ListServerAdapter adapter, final AQuery aq, final ApiParser parser) {
 
+        serverData = new ArrayList<>();
+
         adapter.removeAll();
         adapter.notifyDataSetChanged();
+        progressBar.setVisibility(View.VISIBLE);
 
         //String url = "https://api.ucloudbiz.olleh.com/server/v1/client/api?command=listVirtualMachines&apikey=kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg&signature=WgLcczEWC3Jf%2F4%2F7NJTqPuj1FrU%3D";
         final String cloudstack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", false, "all");
@@ -509,6 +535,9 @@ public class MainActivity extends AppCompatActivity
                                 adapter.notifyDataSetChanged();
 
                                 progressBar.setVisibility(View.INVISIBLE);
+                                zoneSpinner.setSelection(0);
+
+                                setTabHostEnabled(true);
                             } else {
                                 //ajax error, show error code
                                 AppUtility.showMsg(getApplicationContext(), "Error : " + status.getError());
@@ -526,8 +555,11 @@ public class MainActivity extends AppCompatActivity
 
     public void getDiskData(String apiKey, String secretKey, final ListDiskAdapter adapter2, final AQuery aq, final ApiParser parser) {
 
+        diskData = new ArrayList<>();
+
         adapter2.removeAll();
         adapter2.notifyDataSetChanged();
+        progressBar.setVisibility(View.VISIBLE);
 
         final String diskStack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVolumes", false, "all");
         final String diskStack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVolumes", true, "all");
@@ -568,12 +600,15 @@ public class MainActivity extends AppCompatActivity
                                 for (int i = 0; i < index; i++) {
                                     dataSet.add(i, new ListDiskItem(disks[i].displayname, disks[i].size, disks[i].zonename, disks[i].state != null ? true : false, disks[i].vmname));
                                     diskData.add(i, disks[i]);
-                                    dataCount++;
                                 }
                                 diskTempData = diskData;
                                 adapter2.addItemArray(dataSet);
                                 adapter2.notifyDataSetChanged();
 
+                                progressBar.setVisibility(View.INVISIBLE);
+                                zoneSpinner.setSelection(0);
+
+                                setTabHostEnabled(true);
                             } else {
                                 //ajax error, show error code
                                 Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
@@ -587,16 +622,18 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-
-
     }
 
     public void getNetworkData(String apiKey, String secretKey, final ListNetworkAdapter adapter3, final ListNetworkAdapter2 adapter4, final AQuery aq, final ApiParser parser) {
+
+        networkData = new ArrayList<>();
+        networkData2 = new ArrayList<>();
 
         adapter3.removeAll();
         adapter4.removeAll();
         adapter3.notifyDataSetChanged();
         adapter4.notifyDataSetChanged();
+        progressBar.setVisibility(View.VISIBLE);
 
         final String nwStack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listPublicIpAddresses", false, "all");
         final String nwStack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listPublicIpAddresses", true, "all");
@@ -645,7 +682,6 @@ public class MainActivity extends AppCompatActivity
                                 networkTempData = networkData;
                                 adapter3.addItemArray(dataSet);
                                 adapter3.notifyDataSetChanged();
-
                             } else {
                                 //ajax error, show error code
                                 Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
@@ -696,25 +732,33 @@ public class MainActivity extends AppCompatActivity
                                 for (int i = 0; i < index; i++) {
                                     dataSet.add(i, new ListNetworkItem(networks[i].n_displayname, networks[i].n_zonename, networks[i].n_type, networks[i].n_cidr));
                                     networkData2.add(i, networks[i]);
-                                    dataCount++;
                                 }
                                 networkTempData2 = networkData2;
                                 adapter4.addItemArray(dataSet);
                                 adapter4.notifyDataSetChanged();
 
+                                progressBar.setVisibility(View.INVISIBLE);
+                                zoneSpinner.setSelection(0);
+
+                                setTabHostEnabled(true);
                             } else {
                                 //ajax error, show error code
                                 Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
                             }
                         }
                     });
-
                 } else {
                     //ajax error, show error code
                     Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
                 }
             }
         });
+    }
+
+    public void setTabHostEnabled(boolean enabled) {
+        for (int i = 0; i < tabHost.getChildCount(); i++) {
+            tabHost.getTabWidget().getChildTabViewAt(i).setEnabled(enabled);
+        }
     }
 }
 
