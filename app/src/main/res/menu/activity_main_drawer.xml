@@ -3,17 +3,9 @@
 
     <group android:checkableBehavior="none">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_ucloud_server"
-            android:title="클라우드 리스트" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_monitoring_service"
-            android:title="모니터링 서비스" />
-        <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_alarm"
-            android:title="알람" />
+            android:title="알람 서비스" />
     </group>
 
     <item android:title="설정">

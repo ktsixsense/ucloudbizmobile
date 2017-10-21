@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class MetricViewAdapter extends BaseAdapter {
         TextView Metricname;
         TextView Metricgroup;
         TextView Metricvalue;
-        Button ButtonGraph;
+        ImageButton ButtonGraph;
 
         int position;
     }
@@ -55,7 +55,7 @@ public class MetricViewAdapter extends BaseAdapter {
         holder.Metricname = (TextView) convertView.findViewById(R.id.textmetricname);
         holder.Metricgroup = (TextView) convertView.findViewById(R.id.textgroup);
         holder.Metricvalue = (TextView) convertView.findViewById(R.id.textvalue);
-        holder.ButtonGraph = (Button) convertView.findViewById(R.id.btn_grpah);
+        holder.ButtonGraph = (ImageButton) convertView.findViewById(R.id.btn_grpah);
 
         holder.Metrictype.setText(item.getMetricType());
         holder.Metricname.setText(item.getMetricName());

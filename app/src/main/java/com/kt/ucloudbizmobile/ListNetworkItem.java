@@ -50,12 +50,21 @@ public class ListNetworkItem {
 
     public String getNetworkZone() {
         String zonename = "";
-        switch(networkZone) {
-            case "kr-md2-1": zonename = "Seoul M2 zone"; break;
-            case "kr-1": zonename = "Central A zone"; break;
-            case "kr-2": zonename = "Central B zone"; break;
-            case "kr-0": zonename = "Seoul M zone"; break;
-            default: zonename = networkZone;
+        switch (networkZone) {
+            case "kr-md2-1":
+                zonename = "Seoul M2 zone";
+                break;
+            case "kr-1":
+                zonename = "Central A zone";
+                break;
+            case "kr-2":
+                zonename = "Central B zone";
+                break;
+            case "kr-0":
+                zonename = "Seoul M zone";
+                break;
+            default:
+                zonename = networkZone;
         }
         return zonename;
     }

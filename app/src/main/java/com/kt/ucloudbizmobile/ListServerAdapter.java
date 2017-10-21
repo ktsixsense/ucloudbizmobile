@@ -1,6 +1,7 @@
 package com.kt.ucloudbizmobile;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 public class ListServerAdapter extends BaseAdapter {
 
     private MyEventListener mListener;
+    private Context context;
 
     static class ViewHolder_Server {
         TextView txtServerName;
@@ -29,7 +31,8 @@ public class ListServerAdapter extends BaseAdapter {
 
     private ArrayList<ListServerItem> listViewServerItemList = new ArrayList<>();
 
-    public ListServerAdapter() {
+    public ListServerAdapter(Context context) {
+        this.context = context;
     }
 
     @Override
@@ -59,7 +62,7 @@ public class ListServerAdapter extends BaseAdapter {
         }
 
         // Get item
-        ListServerItem item = listViewServerItemList.get(position);
+        final ListServerItem item = listViewServerItemList.get(position);
 
         if (item != null) {
             final String test = item.getServerName();
@@ -77,8 +80,18 @@ public class ListServerAdapter extends BaseAdapter {
             holder.btnMonitor.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Snackbar.make(view, test + "의 모니터링 화면", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+
+                    if (!item.getStatus()) {
+                        Snackbar.make(view, "해당 서버가 꺼져있어 메트릭을 조회할 수 없습니다. 서버를 재가동 하시기 바랍니다.", Snackbar.LENGTH_LONG).show();
+                        return;
+                    }
+                    String data = item.getServerName();
+                    //
+                    Intent intent = new Intent(context, MetricActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra("data", data);
+
+                    context.startActivity(intent);
                 }
             });
 

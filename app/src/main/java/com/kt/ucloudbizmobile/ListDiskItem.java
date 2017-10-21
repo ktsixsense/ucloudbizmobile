@@ -46,15 +46,25 @@ public class ListDiskItem {
 
     public String getDiskZone() {
         String zonename = "";
-        switch(diskZone) {
-            case "kr-md2-1": zonename = "Seoul M2 zone"; break;
-            case "kr-1": zonename = "Central A zone"; break;
-            case "kr-2": zonename = "Central B zone"; break;
-            case "kr-0": zonename = "Seoul M zone"; break;
-            default: zonename = diskZone;
+        switch (diskZone) {
+            case "kr-md2-1":
+                zonename = "Seoul M2 zone";
+                break;
+            case "kr-1":
+                zonename = "Central A zone";
+                break;
+            case "kr-2":
+                zonename = "Central B zone";
+                break;
+            case "kr-0":
+                zonename = "Seoul M zone";
+                break;
+            default:
+                zonename = diskZone;
         }
         return zonename;
     }
+
     public String getDiskConnServer() {
         return connServer;
     }

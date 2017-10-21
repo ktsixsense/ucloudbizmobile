@@ -1,7 +1,6 @@
 package com.kt.ucloudbizmobile;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,6 +79,7 @@ public class ListNetworkAdapter2 extends BaseAdapter {
     public void addItem(String networkIP, String networkID, String networkZone, boolean networkBasicIP) {
         listViewNetworkItemList.add(new ListNetworkItem(networkIP, networkID, networkZone, networkBasicIP));
     }
+
     public void addItem(String n_displayname, String n_zonename, String n_type, String n_cidr) {
         listViewNetworkItemList.add(new ListNetworkItem(n_displayname, n_zonename, n_type, n_cidr));
     }
