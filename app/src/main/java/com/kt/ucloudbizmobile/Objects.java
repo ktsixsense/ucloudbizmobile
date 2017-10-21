@@ -84,11 +84,14 @@ class Disk extends Objects implements Parcelable {
     String size; // 2^30인 1073741824로 나누어서 GB로 바꿔야함
     String usageplan; // hourly, monthly - API 응답값이 없으면 hourly
 
+    String created; // 생성일시
+
     public Disk() {
 
     }
 
     private Disk(Parcel in) {
+        this.displayname = in.readString();
         this.volumeid = in.readString();
         this.state = in.readString();
         this.zoneid = in.readString();
@@ -98,6 +101,8 @@ class Disk extends Objects implements Parcelable {
         this.type = in.readString();
         this.size = in.readString();
         this.usageplan = in.readString();
+        this.created = in.readString();
+
     }
 
     public static final Parcelable.Creator<Disk> CREATOR = new Parcelable.Creator<Disk>() {
@@ -117,6 +122,7 @@ class Disk extends Objects implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(displayname);
         dest.writeString(volumeid);
         dest.writeString(state);
         dest.writeString(zoneid);
@@ -126,17 +132,30 @@ class Disk extends Objects implements Parcelable {
         dest.writeString(type);
         dest.writeString(size);
         dest.writeString(usageplan);
+        dest.writeString(created);
+
     }
 }
 
 class Network extends Objects implements Parcelable {
-    String addressid; // Network uuid
+    // Public IP Address 변수
+
+    String addressid;
     String ipaddress;
-    // displayname
     String zoneid;
     String zonename;
-    String type; // Isolated or shared
     String usageplan;
+    String state;
+
+    // Network 변수
+    String n_displayname;
+    String n_networkid;
+    String n_cidr;
+    String n_subnet;
+    String n_gateway;
+    String n_zonename;
+    String n_state;
+    String n_type; // Isolated or shared
 
     public Network() {
 
@@ -145,14 +164,19 @@ class Network extends Objects implements Parcelable {
     private Network(Parcel in) {
         this.addressid = in.readString();
         this.ipaddress = in.readString();
-        // this.state = in.readString();
         this.zoneid = in.readString();
         this.zonename = in.readString();
-        // this.vmid = in.readString();
-        // this.vmname = in.readString();
-        this.type = in.readString();
-        // this.size = in.readString();
         this.usageplan = in.readString();
+        this.state = in.readString();
+
+        this.n_displayname = in.readString();
+        this.n_networkid = in.readString();
+        this.n_cidr = in.readString();
+        this.n_subnet = in.readString();
+        this.n_gateway = in.readString();
+        this.n_zonename = in.readString();
+        this.n_state = in.readString();
+        this.n_type = in.readString();
     }
 
     public static final Parcelable.Creator<Network> CREATOR = new Parcelable.Creator<Network>() {
@@ -176,13 +200,81 @@ class Network extends Objects implements Parcelable {
         dest.writeString(ipaddress);
         dest.writeString(zoneid);
         dest.writeString(zonename);
-        dest.writeString(type);
         dest.writeString(usageplan);
+        dest.writeString(state);
+
+        dest.writeString(n_displayname);
+        dest.writeString(n_networkid);
+        dest.writeString(n_cidr);
+        dest.writeString(n_subnet);
+        dest.writeString(n_gateway);
+        dest.writeString(n_zonename);
+        dest.writeString(n_state);
+        dest.writeString(n_type);
+
+        dest.writeString(n_type);
+
     }
 }
 
-class Alarm {
+class Alarm extends Objects implements Parcelable {
+    public String alarmname;
+    public String statevalue; // OK - 안정, INSUFFICIENT_DATA - 데이터 부족, ALARM - 알람
+    public String metricname; // CPUUtilization 등등
+    public String compOperator; // GreaterThanOrEqualToThreshold(이상), GreaterThanThreshold(초과), LessThanThreshold(미만), LessThanOrEqualToThreshold(이하)
+    // 출력할 주기는 period * evalPeriod
+    public String period;
+    public String evalPeriod;
+    public String threshold;
+    public String statistics; // SampleCount, Average, Sum, Minimum, Maximum
+    public String unit; // Percent, Bytes 등등
+    public String alarmSenabled;
 
+
+    public Alarm() {
+
+    }
+
+    public Alarm(Parcel in) {
+        this.alarmname = in.readString();
+        this.statevalue = in.readString();
+        this.metricname = in.readString();
+        this.compOperator = in.readString();
+        this.period = in.readString();
+        this.evalPeriod = in.readString();
+        this.threshold = in.readString();
+        this.statistics = in.readString();
+        this.unit = in.readString();
+        this.alarmSenabled = in.readString();
+    }
+
+    public static final Parcelable.Creator<Alarm> CREATOR = new Parcelable.Creator<Alarm>() {
+        public Alarm createFromParcel(Parcel in) {
+            return new Alarm(in);
+        }
+
+        public Alarm[] newArray(int size) {
+            return new Alarm[size];
+        }
+    };
+
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(metricname);
+        dest.writeString(statevalue);
+        dest.writeString(metricname);
+        dest.writeString(compOperator);
+        dest.writeString(period);
+        dest.writeString(evalPeriod);
+        dest.writeString(threshold);
+        dest.writeString(statistics);
+        dest.writeString(unit);
+        dest.writeString(alarmSenabled);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 }
 
 class Metric extends Objects implements Parcelable {

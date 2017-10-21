@@ -24,11 +24,11 @@ public class DetailServerActivity extends AppCompatActivity {
 
         // Sample Data
         adapter.addItem("서버명", data.displayname);
-        adapter.addItem("내부주소", data.ipaddress);
-        adapter.addItem("서버 ID", data.serverid);
-        adapter.addItem("운영체제", data.os);
-        String str = data.cpunumber + " vCore /" + (Integer.parseInt(data.memory) / 1024) + " GB";
-        adapter.addItem("CPU/메모리", str);
+        adapter.addItem("UUID", data.serverid);
+        adapter.addItem("IP", data.ipaddress);
+        adapter.addItem("OS", data.os);
+        String str = data.cpunumber + " vCore / " + (Integer.parseInt(data.memory) / 1024) + " GB";
+        adapter.addItem("사양", str);
         adapter.addItem("호스트명", data.name);
         adapter.addItem("생성일시", data.created);
         adapter.addItem("상태", data.state);

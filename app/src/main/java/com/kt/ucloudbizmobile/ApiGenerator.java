@@ -91,11 +91,15 @@ public class ApiGenerator {
         HashMap<String, String> requests = new HashMap<String, String>();
         String basicURL = "";
         // 2. URL
-        if (isM2)
-            basicURL = "https://api.ucloudbiz.olleh.com/server/v2/client/api?";
-        else
-            basicURL = "https://api.ucloudbiz.olleh.com/server/v1/client/api?";
-
+        if(_command.equals("listAlarms")) {
+            basicURL = "https://api.ucloudbiz.olleh.com/watch/v1/client/api?";
+        }
+        else {
+            if (isM2)
+                basicURL = "https://api.ucloudbiz.olleh.com/server/v2/client/api?";
+            else
+                basicURL = "https://api.ucloudbiz.olleh.com/server/v1/client/api?";
+        }
 
         // 3. Key - dayer4 key
         //String apiKey = "kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg";

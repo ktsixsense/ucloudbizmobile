@@ -62,10 +62,6 @@ public class ApiParser {
                             // Disk
                             Log.d("zonename", node.getTextContent());
                             temp.zonename = node.getTextContent();
-                        } else if (node.getNodeName().equals("zonename")) {
-                            // 종류
-                            Log.d("zonename", node.getTextContent());
-                            temp.zonename = node.getTextContent();
                         } else if (node.getNodeName().equals("state")) {
                             // 상태
                             Log.d("state", node.getTextContent());
@@ -91,24 +87,23 @@ public class ApiParser {
                     Disk temp = new Disk();
                     for (Node node = descNodes.item(i).getFirstChild(); node != null; node = node.getNextSibling()) {
                         if (node.getNodeName().equals("name")) {
-                            Log.d("displayname", node.getTextContent());
                             temp.displayname = node.getTextContent();
                         } else if (node.getNodeName().equals("size")) {
-                            Log.d("size", node.getTextContent());
                             temp.size = node.getTextContent();
-                        } else if (node.getNodeName().equals("vmstate")) {
-                            Log.d("state", node.getTextContent());
-                            temp.state = node.getTextContent();
-                        }else if (node.getNodeName().equals("id")) {
+                        } else if (node.getNodeName().equals("id")) {
                             temp.volumeid = node.getTextContent();
+                        } else if (node.getNodeName().equals("type")) {
+                            temp.type = node.getTextContent();
+                        } else if (node.getNodeName().equals("vmstate")) {
+                            temp.state = node.getTextContent();
                         } else if (node.getNodeName().equals("virtualmachineid")) {
                             temp.vmid = node.getTextContent();
                         } else if (node.getNodeName().equals("vmdisplayname")) {
-                            Log.d("vmdisplayname", node.getTextContent());
                             temp.vmname = node.getTextContent();
                         } else if (node.getNodeName().equals("zonename")) {
-                            Log.d("zonename", node.getTextContent());
                             temp.zonename = node.getTextContent();
+                        } else if (node.getNodeName().equals("created")) {
+                            temp.created = node.getTextContent();
                         }
                     }
                     disks[i] = temp;
@@ -120,37 +115,115 @@ public class ApiParser {
         return disks;
     }
 
-    public Network[] parseNetworkList(Document doc, int numIndex) {
+    public Network[] parseNetworkList(Document doc, int numIndex, boolean isN) {
         Network networks[] = null;
+        if(isN){
+            try {
+                NodeList descNodes = doc.getElementsByTagName("network");
+                networks = new Network[numIndex];
+                if (descNodes != null) {
+                    for (int i = 0; i < numIndex; i++) {
+                        Network temp = new Network();
+                        for (Node node = descNodes.item(i).getFirstChild(); node != null; node = node.getNextSibling()) {
+                            if (node.getNodeName().equals("name")) {
+                                temp.n_displayname = node.getTextContent();
+                            } else if (node.getNodeName().equals("id")) {
+                                temp.n_networkid = node.getTextContent();
+                            } else if (node.getNodeName().equals("cidr")) {
+                                Log.d("cidr", node.getTextContent());
+                                temp.n_cidr = node.getTextContent();
+                            } else if (node.getNodeName().equals("netmask")) {
+                                temp.n_subnet = node.getTextContent();
+                            } else if (node.getNodeName().equals("gateway")) {
+                                temp.n_gateway = node.getTextContent();
+                            } else if (node.getNodeName().equals("zonename")) {
+                                Log.d("zonename", node.getTextContent());
+                                temp.n_zonename = node.getTextContent();
+                            } else if (node.getNodeName().equals("type")) {
+                                temp.n_type = node.getTextContent();
+                            } else if (node.getNodeName().equals("state")) {
+                                temp.n_state = node.getTextContent();
+                            }
+                        }
+                        networks[i] = temp;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                NodeList descNodes = doc.getElementsByTagName("publicipaddress");
+                networks = new Network[numIndex];
+                if (descNodes != null) {
+                    for (int i = 0; i < numIndex; i++) {
+                        Network temp = new Network();
+                        for (Node node = descNodes.item(i).getFirstChild(); node != null; node = node.getNextSibling()) {
+                            if (node.getNodeName().equals("ipaddress")) {
+                                Log.d("ipaddress33", node.getTextContent());
+                                temp.ipaddress = node.getTextContent();
+                            } else if (node.getNodeName().equals("id")) {
+                                Log.d("id", node.getTextContent());
+                                temp.addressid = node.getTextContent();
+                            } else if (node.getNodeName().equals("zoneid")) {
+                                Log.d("zoneid", node.getTextContent());
+                                temp.zoneid = node.getTextContent();
+                            }else if (node.getNodeName().equals("zonename")) {
+                                temp.zonename = node.getTextContent();
+                            } else if (node.getNodeName().equals("usageplantype")) {
+                                temp.usageplan = node.getTextContent();
+                            } else if (node.getNodeName().equals("state")) {
+                                temp.state = node.getTextContent();
+                            }
+                        }
+                        networks[i] = temp;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return networks;
+    }
+
+    public Alarm[] parseAlarmList(Document doc, int numIndex) {
+        Alarm alarms[] = null;
         try {
-            NodeList descNodes = doc.getElementsByTagName("publicipaddress");
-            networks = new Network[numIndex];
+            NodeList descNodes = doc.getElementsByTagName("alarm");
+            alarms = new Alarm[numIndex];
             if (descNodes != null) {
                 for (int i = 0; i < numIndex; i++) {
-                    Network temp = new Network();
+                    Alarm temp = new Alarm();
                     for (Node node = descNodes.item(i).getFirstChild(); node != null; node = node.getNextSibling()) {
-                        if (node.getNodeName().equals("ipaddress")) {
-                            Log.d("ipaddress", node.getTextContent());
-                            temp.ipaddress = node.getTextContent();
-                        } else if (node.getNodeName().equals("id")) {
-                            Log.d("id", node.getTextContent());
-                            temp.addressid = node.getTextContent();
-                        } else if (node.getNodeName().equals("zoneid")) {
-                            Log.d("zoneid", node.getTextContent());
-                            temp.zoneid = node.getTextContent();
-                        }else if (node.getNodeName().equals("zonename")) {
-                            temp.zonename = node.getTextContent();
-                        } else if (node.getNodeName().equals("usageplantype")) {
-                            temp.usageplan = node.getTextContent();
+                        if (node.getNodeName().equals("alarmname")) {
+                            temp.alarmname = node.getTextContent();
+                        } else if (node.getNodeName().equals("statevalue")) {
+                            temp.statevalue = node.getTextContent();
+                        } else if (node.getNodeName().equals("metricname")) {
+                            temp.metricname = node.getTextContent();
+                        } else if (node.getNodeName().equals("comparisonoperator")) {
+                            temp.compOperator = node.getTextContent();
+                        } else if (node.getNodeName().equals("statistic")) {
+                            temp.statistics = node.getTextContent();
+                        } else if (node.getNodeName().equals("period")) {
+                            temp.period = node.getTextContent();
+                        } else if (node.getNodeName().equals("evaluationperiods")) {
+                            temp.evalPeriod = node.getTextContent();
+                        } else if (node.getNodeName().equals("threshold")) {
+                            temp.threshold = node.getTextContent();
+                        } else if (node.getNodeName().equals("unit")) {
+                            temp.unit = node.getTextContent();
+                        } else if (node.getNodeName().equals("actionsenabled")) {
+                            temp.alarmSenabled = node.getTextContent();
                         }
                     }
-                    networks[i] = temp;
+                    alarms[i] = temp;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return networks;
+        return alarms;
     }
 
     public metricStat[] parseMetricStatistics(Document doc) {
@@ -233,6 +306,10 @@ public class ApiParser {
 
     public int getNumberOfResponse(String objects, Document doc) {
         NodeList descNodes = null;
+        if(doc.getElementsByTagName("errorcode").getLength() > 0) {
+            Log.d("API 에러: ", "권한 없음");
+            return 0;
+        }
         switch (objects) {
             case "server":
                 descNodes = doc.getElementsByTagName("virtualmachine");
@@ -242,6 +319,9 @@ public class ApiParser {
                 break;
             case "network":
                 descNodes = doc.getElementsByTagName("publicipaddress");
+                break;
+            case "n_network":
+                descNodes = doc.getElementsByTagName("network");
                 break;
             case "alarm":
                 descNodes = doc.getElementsByTagName("alarm");
@@ -256,9 +336,8 @@ public class ApiParser {
                 descNodes = doc.getElementsByTagName("listmetricsresponse");
                 break;
             default:
-                descNodes = doc.getElementsByTagName("virtualmachine");
+                descNodes = doc.getElementsByTagName("count");
         }
-
         return descNodes.getLength();
     }
 

@@ -1,36 +1,32 @@
 package com.kt.ucloudbizmobile;
 
 import android.content.Context;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 /**
- * Created by Kpresent on 2017. 8. 18..
+ * Created by aicel on 2017-10-19.
  */
 
-public class ListNetworkAdapter extends BaseAdapter {
-
+public class ListNetworkAdapter2 extends BaseAdapter {
     private MyEventListener mListener;
 
-    static class ViewHolder_Network {
-        TextView txtNetworkIP;
-        TextView txtNetworkID;
-        ImageView imgStatus;
-        ImageButton btnMonitor;
+    static class ViewHolder_Network2 {
+        TextView txtNname;
+        TextView txtNzoneNtype;
+        TextView txtNcidr;
     }
 
     private ArrayList<ListNetworkItem> listViewNetworkItemList = new ArrayList<>();
 
-    public ListNetworkAdapter() {
+    public ListNetworkAdapter2() {
+
     }
 
     public void removeAll() {
@@ -50,33 +46,22 @@ public class ListNetworkAdapter extends BaseAdapter {
         // ViewHolder makes the usage of system resources reducing.
         if (v == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            v = inflater.inflate(R.layout.list_item_network, null);
-            ViewHolder_Network holder = new ViewHolder_Network();
+            v = inflater.inflate(R.layout.list_item_network2, null);
+            ViewHolder_Network2 holder = new ViewHolder_Network2();
 
-            holder.txtNetworkIP = v.findViewById(R.id.txt_network_ip);
-            holder.txtNetworkID = v.findViewById(R.id.txt_network_id);
-            holder.imgStatus = v.findViewById(R.id.img_network_status);
-            holder.btnMonitor = v.findViewById(R.id.btn_network_monitor);
+            holder.txtNname = v.findViewById(R.id.txt_network_nname);
+            holder.txtNzoneNtype = v.findViewById(R.id.txt_network_nzone_ntype);
+            holder.txtNcidr = v.findViewById(R.id.txt_network_ncidr);
 
             v.setTag(holder);
         }
-
-
-        // Get item
         ListNetworkItem item = listViewNetworkItemList.get(position);
-        ViewHolder_Network holder = (ViewHolder_Network) v.getTag();
+        ViewHolder_Network2 holder = (ViewHolder_Network2) v.getTag();
         if (item != null) {
-            final String test = item.getNetworkIP();
+            holder.txtNname.setText(item.getN_displayname());
+            holder.txtNzoneNtype.setText(item.getN_zonename() + " / " + item.getN_type());
+            holder.txtNcidr.setText(item.getN_cidr());
 
-
-            holder.txtNetworkIP.setText(item.getNetworkIP());
-            holder.txtNetworkID.setText(/*item.getNetworkID() + "\n" + */item.getNetworkZone());
-
-            if (item.getNetworkBasicIP()) {
-                holder.imgStatus.setImageResource(R.drawable.ic_power_on);
-            } else {
-                holder.imgStatus.setImageResource(R.drawable.ic_power_off);
-            }
         }
 
         return v;
@@ -109,4 +94,5 @@ public class ListNetworkAdapter extends BaseAdapter {
     public void setMyEventListener(MyEventListener listener) {
         mListener = listener;
     }
+
 }

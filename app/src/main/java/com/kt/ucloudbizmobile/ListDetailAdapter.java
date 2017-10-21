@@ -60,8 +60,10 @@ public class ListDetailAdapter extends BaseAdapter {
             holder.txtTitle.setText(item.getTitle());
             holder.txtContent.setText(item.getContent());
 
-            if (holder.txtTitle.getText().toString().equalsIgnoreCase("서버 ID")) {
+            if (holder.txtTitle.getText().toString().equalsIgnoreCase("UUID")) {
                 holder.txtContent.setTextSize(13);
+            } else {
+                holder.txtContent.setTextSize(16);
             }
         }
 

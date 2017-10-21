@@ -40,14 +40,17 @@ public class MainActivity extends AppCompatActivity
     ArrayList<Server> serverData;
     ArrayList<Disk> diskData;
     ArrayList<Network> networkData;
+    ArrayList<Network> networkData2;
 
     ArrayList<Server> serverTempData;
     ArrayList<Disk> diskTempData;
     ArrayList<Network> networkTempData;
+    ArrayList<Network> networkTempData2;
 
     private int totalServer;
     private int totalDisk;
     private int totalNetwork;
+    private int totalNetwork2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +65,12 @@ public class MainActivity extends AppCompatActivity
         serverData = new ArrayList<>();
         diskData = new ArrayList<>();
         networkData = new ArrayList<>();
+        networkData2 = new ArrayList<>();
 
         serverTempData = new ArrayList<>();
         diskTempData = new ArrayList<>();
         networkTempData = new ArrayList<>();
+        networkTempData2 = new ArrayList<>();
 
         // Firebase
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
@@ -300,17 +305,19 @@ public class MainActivity extends AppCompatActivity
         tabHost.addTab(ts3);
 
         final ListView listView3 = (ListView) findViewById(R.id.listNetwork);
+        final ListView listView4 = (ListView) findViewById(R.id.listNetwork2);
         final ListNetworkAdapter adapter3 = new ListNetworkAdapter();
+        final ListNetworkAdapter2 adapter4 = new ListNetworkAdapter2();
         listView3.setAdapter(adapter3);
+        listView4.setAdapter(adapter4);
         adapter3.setMyEventListener(this);
-
+        adapter4.setMyEventListener(this);
 
         final String nwStack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listPublicIpAddresses", false, "all");
         final String nwStack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listPublicIpAddresses", true, "all");
-        // Sample data
-        /*adapter3.addItem("211.252.84.108", "ID 1");
-        adapter3.addItem("14.63.222.251", "ID 2");
-        adapter3.addItem("14.63.163.15", "ID 3");*/
+
+        final String n_nwStack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listNetworks", false, "all");
+        final String n_nwStack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listNetworks", true, "all");
 
         // cloudstack2
         aq.ajax(nwStack2, String.class, new AjaxCallback<String>() {
@@ -325,7 +332,7 @@ public class MainActivity extends AppCompatActivity
                     Document doc = parser.getDocument(json);
                     int index = parser.getNumberOfResponse("network", doc);
                     networks = new Network[index];
-                    networks = parser.parseNetworkList(doc, index);
+                    networks = parser.parseNetworkList(doc, index, false);
 
                     for (int i = 0; i < index; i++) {
                         dataSet.add(i, new ListNetworkItem(networks[i].ipaddress, networks[i].addressid, networks[i].zonename, networks[i].usageplan.equals("") ? false : true));
@@ -343,7 +350,7 @@ public class MainActivity extends AppCompatActivity
                                 int index = parser.getNumberOfResponse("network", doc);
                                 totalNetwork = dataCount + index;
                                 networks = new Network[index];
-                                networks = parser.parseNetworkList(doc, index);
+                                networks = parser.parseNetworkList(doc, index, false);
 
                                 for (int i = 0; i < index; i++) {
                                     dataSet.add(i, new ListNetworkItem(networks[i].ipaddress, networks[i].addressid, networks[i].zonename, networks[i].usageplan != null ? true : false));
@@ -353,6 +360,62 @@ public class MainActivity extends AppCompatActivity
                                 networkTempData = networkData;
                                 adapter3.addItemArray(dataSet);
                                 adapter3.notifyDataSetChanged();
+
+                            } else {
+                                //ajax error, show error code
+                                Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+
+                } else {
+                    //ajax error, show error code
+                    Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        aq.ajax(n_nwStack2, String.class, new AjaxCallback<String>() {
+            Network[] networks = null;
+            ArrayList<ListNetworkItem> dataSet = new ArrayList<>();
+            int dataCount = 0;
+
+            @Override
+            public void callback(String url, String json, AjaxStatus status) {
+                if (json != null) {
+                    //successful ajax call, show status code and json content
+                    Document doc = parser.getDocument(json);
+                    int index = parser.getNumberOfResponse("n_network", doc);
+                    networks = new Network[index];
+                    networks = parser.parseNetworkList(doc, index, true);
+
+                    for (int i = 0; i < index; i++) {
+                        Log.d("11", networks[i].n_cidr);
+                        dataSet.add(i, new ListNetworkItem(networks[i].n_displayname, networks[i].n_zonename, networks[i].n_type, networks[i].n_cidr));
+                        networkData2.add(i, networks[i]);
+                        dataCount++;
+                    }
+
+                    aq.ajax(n_nwStack1, String.class, new AjaxCallback<String>() {
+
+                        @Override
+                        public void callback(String url, String json, AjaxStatus status) {
+                            if (json != null) {
+                                //successful ajax call, show status code and json content
+                                Document doc = parser.getDocument(json);
+                                int index = parser.getNumberOfResponse("n_network", doc);
+                                totalNetwork2 = dataCount + index;
+                                networks = new Network[index];
+                                networks = parser.parseNetworkList(doc, index, true);
+
+                                for (int i = 0; i < index; i++) {
+                                    dataSet.add(i, new ListNetworkItem(networks[i].n_displayname, networks[i].n_zonename, networks[i].n_type, networks[i].n_cidr));
+                                    networkData2.add(i, networks[i]);
+                                    dataCount++;
+                                }
+                                networkTempData2 = networkData2;
+                                adapter4.addItemArray(dataSet);
+                                adapter4.notifyDataSetChanged();
 
                             } else {
                                 //ajax error, show error code
@@ -381,18 +444,34 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+       listView4.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Network data2 = networkTempData2.get(i);
+                //
+                Intent intent = new Intent(MainActivity.this, DetailNetworkActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra("data", data2);
+
+                startActivity(intent);
+            }
+        });
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 ArrayList<Server> temp = new ArrayList<>();
                 ArrayList<Disk> temp2 = new ArrayList<>();
                 ArrayList<Network> temp3 = new ArrayList<>();
+                ArrayList<Network> temp4 = new ArrayList<>();
                 ArrayList<ListServerItem> tempSet = new ArrayList<>();
                 ArrayList<ListDiskItem> tempSet2 = new ArrayList<>();
                 ArrayList<ListNetworkItem> tempSet3 = new ArrayList<>();
+                ArrayList<ListNetworkItem> tempSet4 = new ArrayList<>();
                 serverTempData = new ArrayList<>();
                 diskTempData = new ArrayList<>();
                 networkTempData = new ArrayList<>();
+                networkTempData2 = new ArrayList<>();
 
                 String zonename = "";
                 switch ("" + adapterView.getSelectedItem()) {
@@ -415,14 +494,17 @@ public class MainActivity extends AppCompatActivity
                 int count = 0;
                 int count2 = 0;
                 int count3 = 0;
+                int count4 = 0;
 
                 if (zonename.equalsIgnoreCase("all")) {
                     temp = serverData;
                     temp2 = diskData;
                     temp3 = networkData;
+                    temp4 = networkData2;
                     count = totalServer;
                     count2 = totalDisk;
                     count3 = totalNetwork;
+                    count4 = totalNetwork2;
                 } else {
                     for (Server server : serverData) {
                         if (server.zonename.equalsIgnoreCase(zonename)) {
@@ -442,6 +524,12 @@ public class MainActivity extends AppCompatActivity
                             count3++;
                         }
                     }
+                    for (Network network : networkData2) {
+                        if (network.n_zonename.equalsIgnoreCase(zonename)) {
+                            temp4.add(count4, network);
+                            count4++;
+                        }
+                    }
                 }
 
                 for (int k = 0; k < count; k++) {
@@ -456,22 +544,30 @@ public class MainActivity extends AppCompatActivity
                     tempSet3.add(k, new ListNetworkItem(temp3.get(k).ipaddress, temp3.get(k).addressid, temp3.get(k).zonename, temp3.get(k).usageplan.equals("") ? false : true));
                     networkTempData.add(k, temp3.get(k));
                 }
+                for (int k = 0; k < count4; k++) {
+                    tempSet4.add(k, new ListNetworkItem(temp4.get(k).n_displayname, temp4.get(k).n_zonename, temp4.get(k).n_type, temp4.get(k).n_cidr));
+                    networkTempData2.add(k, temp4.get(k));
+                }
 
                 adapter.removeAll();
                 adapter2.removeAll();
                 adapter3.removeAll();
+                adapter4.removeAll();
 
                 adapter.addItemArray(tempSet);
                 adapter2.addItemArray(tempSet2);
                 adapter3.addItemArray(tempSet3);
+                adapter4.addItemArray(tempSet4);
 
                 adapter.notifyDataSetChanged();
                 adapter2.notifyDataSetChanged();
                 adapter3.notifyDataSetChanged();
+                adapter4.notifyDataSetChanged();
 
                 listView.invalidate();
                 listView2.invalidate();
                 listView3.invalidate();
+                listView4.invalidate();
             }
 
             @Override

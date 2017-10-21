@@ -6,11 +6,9 @@
     android:orientation="vertical"
     tools:context="com.kt.ucloudbiz.DetailDiskActivity">
 
-    <TextView
-        android:id="@+id/txt_detail_disk_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="DATA" />
+    <ListView
+        android:id="@+id/list_detail_disk"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
