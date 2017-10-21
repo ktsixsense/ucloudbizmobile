@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/textView2"
@@ -15,10 +16,44 @@
         android:text="sixsense / CPU Utilization"
         android:textColor="@android:color/black" />
 
-    <com.jjoe64.graphview.GraphView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="200dip"
-        android:id="@+id/graph_metric1" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/editTextdate_graph"
+            android:layout_width="102dp"
+            android:layout_height="match_parent"
+            android:autoText="false"
+            android:editable="false"
+            android:focusable="false"
+            android:inputType="date"
+            android:textAllCaps="false"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/editTexttime_graph"
+            android:layout_width="82dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="time"
+            android:focusable="false"
+            android:textAllCaps="false"
+            android:textSize="14sp"/>
+
+        <TextClock
+            android:id="@+id/textClock_graph"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="right|center_vertical|center_horizontal" />
+
+    </LinearLayout>
+
+    <com.jjoe64.graphview.GraphView
+        android:id="@+id/graph_metric1"
+        android:layout_width="match_parent"
+        android:layout_height="224dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,41 +61,26 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btn_grpah_5"
-            android:layout_width="56dp"
-            android:layout_height="wrap_content"
-            android:onClick="OnClickGraph_5"
-            android:text="5"></Button>
-
-        <Button
             android:id="@+id/btn_graph_30"
-            android:layout_width="56dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
             android:onClick="OnClickGraph_30"
-            android:text="30"></Button>
-
-        <Button
-            android:id="@+id/btn_graph_60"
-            android:layout_width="56dp"
-            android:layout_height="wrap_content"
-
-            android:onClick="OnClickGraph_60"
-            android:text="60"></Button>
+            android:text="30분 보기"></Button>
 
         <Button
             android:id="@+id/btn_grpah_120"
-            android:layout_width="56dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="OnClickGraph_120"
-            android:text="120"></Button>
+            android:text="120분 보기"></Button>
 
         <Button
             android:id="@+id/btn_grpah_600"
-            android:layout_width="56dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="OnClickGraph_600"
-            android:text="600"></Button>
+            android:text="600분 보기"></Button>
 
     </LinearLayout>
 

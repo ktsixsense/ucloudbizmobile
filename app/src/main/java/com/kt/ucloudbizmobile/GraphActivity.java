@@ -1,10 +1,18 @@
 package com.kt.ucloudbizmobile;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.TextClock;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.androidquery.AQuery;
@@ -16,6 +24,7 @@ import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,6 +44,10 @@ public class GraphActivity extends Activity {
     private int m_count;
     private int m_gap;
     private Metric m_metric;
+    public TextClock clk;
+    public EditText m_EditText_date ,m_EditText_time;
+    public static int m_year,m_month,m_day,m_hour,m_min;
+
     public GraphActivity() {
         m_count = 0;
         m_gap = 30;
@@ -46,19 +59,18 @@ public class GraphActivity extends Activity {
         m_metric.metricname = "Percent";
     }
 
-    private String MakeCommand_Statics(String mainCommand, String metricName, String namespace, String dimensions, String unit, String period, String statistics, String starttime, String endtime)
-    {
+    private String MakeCommand_Statics(String mainCommand, String metricName, String namespace, String dimensions, String unit, String period, String statistics, String starttime, String endtime) {
         String fullcommand;
-        mainCommand = mainCommand.length() != 0?mainCommand : "command=getMetricStatistics";
-        metricName = metricName.length() != 0?metricName : "&metricname=CPUUtilization";
-        namespace = namespace.length() != 0?namespace : "&namespace=ucloud/server";
+        mainCommand = mainCommand.length() != 0 ? mainCommand : "command=getMetricStatistics";
+        metricName = metricName.length() != 0 ? metricName : "&metricname=CPUUtilization";
+        namespace = namespace.length() != 0 ? namespace : "&namespace=ucloud/server";
         //dimensions = dimensions.length() != 0?dimensions : "&dimensions.member.1.name=name";
-        unit = unit.length() != 0?unit : "&unit=Percent";
-        period = period.length() != 0?period : "&period=10";
-        statistics = statistics.length() != 0?statistics : "&statistics.member.1=Average";
-        starttime = starttime.length() != 0?starttime : "&starttime=2017-09-09T12:00:00.000";
-        endtime = endtime.length() != 0?endtime : "&endtime=2017-09-09T18:13:00.000";
-        fullcommand = mainCommand + metricName + namespace +dimensions + unit + period + statistics + starttime + endtime;
+        unit = unit.length() != 0 ? unit : "&unit=Percent";
+        period = period.length() != 0 ? period : "&period=10";
+        statistics = statistics.length() != 0 ? statistics : "&statistics.member.1=Average";
+        starttime = starttime.length() != 0 ? starttime : "&starttime=2017-09-09T12:00:00.000";
+        endtime = endtime.length() != 0 ? endtime : "&endtime=2017-09-09T18:13:00.000";
+        fullcommand = mainCommand + metricName + namespace + dimensions + unit + period + statistics + starttime + endtime;
         return fullcommand;
     }
 
@@ -77,24 +89,34 @@ public class GraphActivity extends Activity {
         Button button120 = (Button) findViewById(R.id.btn_grpah_120);
         Button button600 = (Button) findViewById(R.id.btn_grpah_600);
 
+        clk = (TextClock) findViewById(R.id.textClock_graph);
+        m_EditText_date = (EditText) findViewById(R.id.editTextdate_graph);
+        m_EditText_time = (EditText) findViewById(R.id.editTexttime_graph);
+
+        int year = calendar.get(Calendar.YEAR),month = calendar.get(Calendar.MONTH)+1,day = calendar.get(Calendar.DAY_OF_MONTH);
+        m_EditText_date.setText(year+"/"+month+"/"+day);
+        clk.setTimeZone("Asia/Seoul");
+        m_year = year; m_month = month-1; m_day = day;
+        m_hour = calendar.get(Calendar.HOUR); m_min = calendar.get(Calendar.MINUTE);
+        m_EditText_time.setText(m_hour+"시 : "+m_min +"분");
+
         Bundle b = getIntent().getExtras();
-        if(b!= null)
-        {
+        if (b != null) {
             m_metric.dimensions = b.getString("dimensions");
             m_metric.metricname = b.getString("metricname");
             m_metric.namespace = b.getString("namespace");
             m_metric.unit = b.getString("unit");
         }
-        refresh_data(calendar,30);
-       // int[] test_data = {2, 3, 2, 2, 2, 3, 5, 10, 12, 3, 2, 4, 5, 2, 6, 1, 2, 7, 2, 5};
-     //   setdata(15, test_data);
+        refresh_data(calendar, 30);
+        // int[] test_data = {2, 3, 2, 2, 2, 3, 5, 10, 12, 3, 2, 4, 5, 2, 6, 1, 2, 7, 2, 5};
+        //   setdata(15, test_data);
 
         button30.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setgap(30);
-                refresh_data(calendar,30);
-              //  DrawGraph();
+                refresh_data(calendar, 30);
+                //  DrawGraph();
             }
         });
 
@@ -102,8 +124,8 @@ public class GraphActivity extends Activity {
             @Override
             public void onClick(View v) {
                 setgap(120);
-                refresh_data(calendar,120);
-             //   DrawGraph();
+                refresh_data(calendar, 120);
+                //   DrawGraph();
             }
         });
 
@@ -111,15 +133,27 @@ public class GraphActivity extends Activity {
             @Override
             public void onClick(View v) {
                 setgap(600);
-                refresh_data(calendar,600);
-              //  DrawGraph();
+                refresh_data(calendar, 600);
+                //  DrawGraph();
+            }
+        });
+        m_EditText_time.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectTime();
+            }
+        });
+
+        m_EditText_date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectDate();
             }
         });
 
     }
 
-    public void refresh_data(Calendar req_calendar, final int req_gap)
-    {
+    public void refresh_data(Calendar req_calendar, final int req_gap) {
         /*
 ${API_URL}command=getMetricStatistics
 &metricname=NetworkIn
@@ -144,19 +178,14 @@ ${API_URL}command=getMetricStatistics
         AQuery aq = new AQuery(this);
         final ApiParser parser = new ApiParser();
 
-        TimeZone seoul = TimeZone.getTimeZone("Asia/Seoul");
-        calendar = Calendar.getInstance();
-        datenow = calendar.getTime();
-        //String fullcmd = MakeCommand_Statics("","","","","","","","","");
-        // String watch_url_tmp = ApiGenerator.apiGeneratorWatch_command(apiKey, secretKey, fullcmd , false);
-        // setgap(req_gap);
-        String watch_url_tmp = ApiGenerator.apiGeneratorWatch(apiKey, secretKey, "getMetricStatistics" , false, req_calendar,req_gap,1,m_metric.metricname,m_metric.namespace,m_metric.unit);
+        String watch_url_tmp = ApiGenerator.apiGeneratorWatch(apiKey, secretKey, "getMetricStatistics", false, req_calendar, req_gap, 1, m_metric.metricname, m_metric.namespace, m_metric.unit);
 
 
         aq.ajax(watch_url_tmp, String.class, new AjaxCallback<String>() {
-            metricStat[] mStat =null;
+            metricStat[] mStat = null;
             ArrayList<ListServerItem> dataSet = new ArrayList<>();
             int dataCount = 0;
+
             //@Override
             public void callback(String url, String json, AjaxStatus status) {
                 if (json != null) {
@@ -221,8 +250,7 @@ ${API_URL}command=getMetricStatistics
             c.add(Calendar.MINUTE, -30);
             int realxgap = 30 / m_count;
             realxgap = 1;
-            for(int i = 0;i<m_gap - m_count;i++)
-            {
+            for (int i = 0; i < m_gap - m_count; i++) {
                 //데이타 부족시 빈데이타 삽입
                 Date d = c.getTime();
                 dp[i] = new DataPoint(i, 0);
@@ -230,9 +258,9 @@ ${API_URL}command=getMetricStatistics
             }
             for (int i = m_gap - m_count; i < m_gap; i++) {
                 Date d = c.getTime();
-                if(m_data.length <= i-m_gap+m_count )
+                if (m_data.length <= i - m_gap + m_count)
                     break;
-                dp[i] = new DataPoint(i, m_data[i-m_gap+m_count]);
+                dp[i] = new DataPoint(i, m_data[i - m_gap + m_count]);
                 c.add(Calendar.MINUTE, realxgap);
             }
         }
@@ -241,8 +269,7 @@ ${API_URL}command=getMetricStatistics
             c.add(Calendar.MINUTE, -120);
             int realxgap = 120 / m_count;
             realxgap = 1;
-            for(int i = 0;i<m_gap - m_count;i++)
-            {
+            for (int i = 0; i < m_gap - m_count; i++) {
                 //데이타 부족시 빈데이타 삽입
                 Date d = c.getTime();
                 dp[i] = new DataPoint(i, 0);
@@ -250,9 +277,9 @@ ${API_URL}command=getMetricStatistics
             }
             for (int i = m_gap - m_count; i < m_gap; i++) {
                 Date d = c.getTime();
-                if(m_data.length <= i-m_gap+m_count )
+                if (m_data.length <= i - m_gap + m_count)
                     break;
-                dp[i] = new DataPoint(i, m_data[i-m_gap+m_count]);
+                dp[i] = new DataPoint(i, m_data[i - m_gap + m_count]);
                 c.add(Calendar.MINUTE, realxgap);
             }
         }
@@ -263,8 +290,7 @@ ${API_URL}command=getMetricStatistics
             gap = 1;
             int realxgap = 600 / m_count;
             realxgap = 1;
-            for(int i = 0;i<m_gap - m_count;i++)
-            {
+            for (int i = 0; i < m_gap - m_count; i++) {
                 //데이타 부족시 빈데이타 삽입
                 Date d = c.getTime();
                 dp[i] = new DataPoint(i, 0);
@@ -272,9 +298,9 @@ ${API_URL}command=getMetricStatistics
             }
             for (int i = m_gap - m_count; i < m_gap; i++) {
                 Date d = c.getTime();
-                if(m_data.length <= i-m_gap+m_count )
+                if (m_data.length <= i - m_gap + m_count)
                     break;
-                dp[i] = new DataPoint(i, m_data[i-m_gap+m_count]);
+                dp[i] = new DataPoint(i, m_data[i - m_gap + m_count]);
                 c.add(Calendar.MINUTE, realxgap);
             }
         }
@@ -295,13 +321,13 @@ ${API_URL}command=getMetricStatistics
 
         StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
         graph.getGridLabelRenderer().setNumHorizontalLabels(4);
-        if(m_gap == 30)
-        staticLabelsFormatter.setHorizontalLabels(new String[] {"30분전","20분전", "10분전", "현재"});
-        if(m_gap == 120)
-            staticLabelsFormatter.setHorizontalLabels(new String[] {"120분전","80분전", "40분전", "현재"});
-        if(m_gap == 600)
-            staticLabelsFormatter.setHorizontalLabels(new String[] {"10시간전","6시간40분전", "3시간20분전", "현재"});
-      //  staticLabelsFormatter.setVerticalLabels(new String[] {"low", "middle", "high"});
+        if (m_gap == 30)
+            staticLabelsFormatter.setHorizontalLabels(new String[]{"30분전", "20분전", "10분전", "현재"});
+        if (m_gap == 120)
+            staticLabelsFormatter.setHorizontalLabels(new String[]{"120분전", "80분전", "40분전", "현재"});
+        if (m_gap == 600)
+            staticLabelsFormatter.setHorizontalLabels(new String[]{"10시간전", "6시간40분전", "3시간20분전", "현재"});
+        //  staticLabelsFormatter.setVerticalLabels(new String[] {"low", "middle", "high"});
         graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
 
 // set manual x bounds to have nice steps
@@ -314,4 +340,83 @@ ${API_URL}command=getMetricStatistics
 
         return true;
     }
+
+    public Calendar MakenewCalendar()
+    {
+        TimeZone seoul = TimeZone.getTimeZone("Asia/Seoul");
+        Calendar c = Calendar.getInstance(seoul);
+        c .set(m_year,m_month,m_day,m_hour,m_min);
+        return c;
+    }
+
+    public static class SelectTimeFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
+
+        // Thanks to -> http://javapapers.com/android/android-datepicker/
+        EditText mtime;
+        GraphActivity mgraph;
+
+        public SelectTimeFragment(EditText time,GraphActivity graph) {
+            this.mtime = time;
+            this.mgraph = graph;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            final Calendar calendar = Calendar.getInstance();
+            int hh = calendar.get(Calendar.HOUR);
+            int mm = calendar.get(Calendar.MINUTE);
+            return new TimePickerDialog(getActivity(), this, hh, mm,false);
+        }
+        @Override
+        public void onTimeSet(TimePicker timePickerw, int hh,int mm) {
+            populateSetTime(mtime, hh,mm);
+            m_hour = hh; m_min = mm;
+            mgraph.refresh_data(mgraph.MakenewCalendar(),mgraph.m_gap);
+        }
+    }
+
+    public void selectTime() {
+        DialogFragment newFragment = new SelectTimeFragment(m_EditText_time,this);
+        newFragment.show(getFragmentManager(), "DatePicker");
+    }
+
+    public static void populateSetTime(EditText time_, int hour,int minute) {
+        time_.setText(hour + "시 : " + minute + "분");
+    }
+
+    public static class SelectDateFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+
+        // Thanks to -> http://javapapers.com/android/android-datepicker/
+        EditText mEditText;
+        GraphActivity mgraph;
+        public SelectDateFragment(EditText mEditText,GraphActivity graph){
+            this.mEditText = mEditText;
+            mgraph = graph;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Calendar calendar = Calendar.getInstance();
+            int yy = calendar.get(Calendar.YEAR);
+            int mm = calendar.get(Calendar.MONTH);
+            int dd = calendar.get(Calendar.DAY_OF_MONTH);
+            return new DatePickerDialog(getActivity(), this, yy, mm, dd);
+        }
+
+        public void onDateSet(DatePicker view, int yy, int mm, int dd) {
+            populateSetDate(mEditText, yy, mm+1, dd);
+            m_year = yy; m_month = mm; m_day = dd;
+            mgraph.refresh_data(mgraph.MakenewCalendar(),mgraph.m_gap);
+        }
+    }
+
+    public void selectDate() {
+        DialogFragment newFragment = new SelectDateFragment(m_EditText_date,this);
+        newFragment.show(getFragmentManager(), "DatePicker");
+    }
+    public static void populateSetDate(EditText mEditText, int year, int month, int day) {
+        mEditText.setText(year+"/"+month+"/"+day);
+    }
+
 }
