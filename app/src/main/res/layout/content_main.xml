@@ -54,70 +54,25 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"
-                        android:gravity="center_vertical"
-                        android:orientation="vertical"
-                        android:background="#000000"/>
-
-                    <TextView
-                        android:id="@+id/network_category"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="15dp"
-                        android:text="공인 IP 목록"
-                        android:textSize="14dp"
-                        android:textStyle="bold"/>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"
-                        android:gravity="center_vertical"
-                        android:orientation="vertical"
-                        android:background="#000000"/>
 
                     <ListView
                         android:id="@+id/listNetwork"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"
-                        android:gravity="center_vertical"
-                        android:orientation="vertical"
-                        android:background="#000000"/>
 
-                    <TextView
-                        android:id="@+id/network_category2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="15dp"
-                        android:text="네트워크 목록"
-                        android:textSize="14dp"
-                        android:textStyle="bold"/>
+                </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"
-                        android:gravity="center_vertical"
-                        android:orientation="vertical"
-                        android:background="#000000"/>
+                <LinearLayout
+                    android:id="@+id/content4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <ListView
                         android:id="@+id/listNetwork2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
-
                 </LinearLayout>
 
             </FrameLayout>

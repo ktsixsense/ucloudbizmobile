@@ -7,8 +7,8 @@ package com.kt.ucloudbizmobile;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -21,7 +21,7 @@ import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 
-public class MetricActivity extends AppCompatActivity implements MyEventListener {
+public class MetricActivity extends AppCompatActivity {
 
     private Metric[] m_metricArray;
     private int m_count;
@@ -42,7 +42,20 @@ public class MetricActivity extends AppCompatActivity implements MyEventListener
         ListView listView = (ListView) findViewById(R.id.listMetric);
         MetricViewAdapter adapter = new MetricViewAdapter();
         listView.setAdapter(adapter);
-        adapter.setMyEventListener(this);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(MetricActivity.this, GraphActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Bundle b = new Bundle();
+                b.putString("metricname", m_metricArray[i].metricname);
+                b.putString("namespace", m_metricArray[i].namespace);
+                b.putString("unit", m_metricArray[i].unit);
+                b.putString("dimensions", m_metricArray[i].dimensions);
+                intent.putExtras(b);
+                startActivity(intent);
+            }
+        });
 
         refreshData();
 
@@ -80,24 +93,6 @@ public class MetricActivity extends AppCompatActivity implements MyEventListener
                 }
             }
         });
-    }
-
-    @Override
-    public void onMyEvent(ActionType act, int test) {
-        if (act == ActionType.Action_GraphButton_Click) {
-            Log.d("sangil", "onMyEvent:  " + test);
-            if (test >= m_count)
-                return;
-            Intent intent = new Intent(MetricActivity.this, GraphActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            Bundle b = new Bundle();
-            b.putString("metricname", m_metricArray[test].metricname);
-            b.putString("namespace", m_metricArray[test].namespace);
-            b.putString("unit", m_metricArray[test].unit);
-            b.putString("dimensions", m_metricArray[test].dimensions);
-            intent.putExtras(b);
-            startActivity(intent);
-        }
     }
 
     public void MakeupFinalmetrics(Metric[] metric_array, int ncnt) {

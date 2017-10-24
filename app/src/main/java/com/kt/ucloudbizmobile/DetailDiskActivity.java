@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class DetailDiskActivity extends AppCompatActivity {
 
@@ -29,18 +28,27 @@ public class DetailDiskActivity extends AppCompatActivity {
         adapter.addItem("볼륨명", data.displayname);
         adapter.addItem("UUID", data.volumeid);
         String zonename = "";
-        switch(data.zonename) {
-            case "kr-md2-1": zonename = "Seoul M2 zone"; break;
-            case "kr-1": zonename = "Central A zone"; break;
-            case "kr-2": zonename = "Central B zone"; break;
-            case "kr-0": zonename = "Seoul M zone"; break;
-            default: zonename = data.zonename;
+        switch (data.zonename) {
+            case "kr-md2-1":
+                zonename = "Seoul M2 zone";
+                break;
+            case "kr-1":
+                zonename = "Central A zone";
+                break;
+            case "kr-2":
+                zonename = "Central B zone";
+                break;
+            case "kr-0":
+                zonename = "Seoul M zone";
+                break;
+            default:
+                zonename = data.zonename;
         }
         adapter.addItem("Zone", zonename);
-        if(data.vmname != null) adapter.addItem("연결 VM", data.vmname);
+        if (data.vmname != null) adapter.addItem("연결 VM", data.vmname);
         else adapter.addItem("연결 VM", "분리");
         adapter.addItem("타입", data.type);
-        String str = ""+(Long.parseLong(data.size) / 107374182);
+        String str = "" + (Long.parseLong(data.size) / 107374182);
         adapter.addItem("용량", str + " GB");
         adapter.addItem("생성일시", data.created);
     }

@@ -15,13 +15,6 @@ import java.util.ArrayList;
 
 public class ListNetworkAdapter2 extends BaseAdapter {
     private MyEventListener mListener;
-
-    static class ViewHolder_Network2 {
-        TextView txtNname;
-        TextView txtNzoneNtype;
-        TextView txtNcidr;
-    }
-
     private ArrayList<ListNetworkItem> listViewNetworkItemList = new ArrayList<>();
 
     public ListNetworkAdapter2() {
@@ -84,7 +77,6 @@ public class ListNetworkAdapter2 extends BaseAdapter {
         listViewNetworkItemList.add(new ListNetworkItem(n_displayname, n_zonename, n_type, n_cidr));
     }
 
-
     public void addItemArray(ArrayList<ListNetworkItem> itemArray) {
         for (ListNetworkItem item : itemArray) {
             listViewNetworkItemList.add(item);
@@ -93,6 +85,12 @@ public class ListNetworkAdapter2 extends BaseAdapter {
 
     public void setMyEventListener(MyEventListener listener) {
         mListener = listener;
+    }
+
+    static class ViewHolder_Network2 {
+        TextView txtNname;
+        TextView txtNzoneNtype;
+        TextView txtNcidr;
     }
 
 }

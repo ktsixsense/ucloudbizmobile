@@ -17,13 +17,6 @@ import java.util.ArrayList;
 public class ListDiskAdapter extends BaseAdapter {
 
     private MyEventListener mListener;
-
-    static class ViewHolder_Disk {
-        TextView txtDiskName;
-        TextView txtDiskSize;
-        ImageView imgStatus;
-    }
-
     private ArrayList<ListDiskItem> listViewDiskItemList = new ArrayList<>();
 
     public ListDiskAdapter() {
@@ -100,5 +93,11 @@ public class ListDiskAdapter extends BaseAdapter {
 
     public void setMyEventListener(MyEventListener listener) {
         mListener = listener;
+    }
+
+    static class ViewHolder_Disk {
+        TextView txtDiskName;
+        TextView txtDiskSize;
+        ImageView imgStatus;
     }
 }

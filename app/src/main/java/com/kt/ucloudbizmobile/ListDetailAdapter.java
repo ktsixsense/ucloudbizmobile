@@ -16,12 +16,6 @@ import java.util.ArrayList;
 public class ListDetailAdapter extends BaseAdapter {
 
     private MyEventListener mListener;
-
-    static class ViewHolder_Detail {
-        TextView txtTitle;
-        TextView txtContent;
-    }
-
     private ArrayList<ListDetailItem> listViewDetailItemList = new ArrayList<>();
 
     public ListDetailAdapter() {
@@ -86,5 +80,10 @@ public class ListDetailAdapter extends BaseAdapter {
 
     public void setMyEventListener(MyEventListener listener) {
         mListener = listener;
+    }
+
+    static class ViewHolder_Detail {
+        TextView txtTitle;
+        TextView txtContent;
     }
 }

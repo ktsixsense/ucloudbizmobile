@@ -14,6 +14,15 @@ public class Objects {
 
 class Server extends Objects implements Parcelable {
 
+    public static final Parcelable.Creator<Server> CREATOR = new Parcelable.Creator<Server>() {
+        public Server createFromParcel(Parcel in) {
+            return new Server(in);
+        }
+
+        public Server[] newArray(int size) {
+            return new Server[size];
+        }
+    };
     String name;
     String zonename;
     String state;
@@ -41,16 +50,6 @@ class Server extends Objects implements Parcelable {
         this.memory = in.readString();
     }
 
-    public static final Parcelable.Creator<Server> CREATOR = new Parcelable.Creator<Server>() {
-        public Server createFromParcel(Parcel in) {
-            return new Server(in);
-        }
-
-        public Server[] newArray(int size) {
-            return new Server[size];
-        }
-    };
-
     @Override
     public int describeContents() {
         return 0;
@@ -72,18 +71,24 @@ class Server extends Objects implements Parcelable {
 }
 
 class Disk extends Objects implements Parcelable {
-    String volumeid;
+    public static final Parcelable.Creator<Disk> CREATOR = new Parcelable.Creator<Disk>() {
+        public Disk createFromParcel(Parcel in) {
+            return new Disk(in);
+        }
 
+        public Disk[] newArray(int size) {
+            return new Disk[size];
+        }
+    };
+    String volumeid;
     String state; // vmstate라는 값이 있으면 연결 중이므로 true, vmstate값이 없으면 분리상태이므로 false 되도록
     String zoneid;
     String zonename;
     String vmid;
     String vmname; // attach되어 있는 vm 관련 정보
     String type; // Root disk인지 Data disk인지
-
     String size; // 2^30인 1073741824로 나누어서 GB로 바꿔야함
     String usageplan; // hourly, monthly - API 응답값이 없으면 hourly
-
     String created; // 생성일시
 
     public Disk() {
@@ -104,16 +109,6 @@ class Disk extends Objects implements Parcelable {
         this.created = in.readString();
 
     }
-
-    public static final Parcelable.Creator<Disk> CREATOR = new Parcelable.Creator<Disk>() {
-        public Disk createFromParcel(Parcel in) {
-            return new Disk(in);
-        }
-
-        public Disk[] newArray(int size) {
-            return new Disk[size];
-        }
-    };
 
     @Override
     public int describeContents() {
@@ -140,13 +135,21 @@ class Disk extends Objects implements Parcelable {
 class Network extends Objects implements Parcelable {
     // Public IP Address 변수
 
+    public static final Parcelable.Creator<Network> CREATOR = new Parcelable.Creator<Network>() {
+        public Network createFromParcel(Parcel in) {
+            return new Network(in);
+        }
+
+        public Network[] newArray(int size) {
+            return new Network[size];
+        }
+    };
     String addressid;
     String ipaddress;
     String zoneid;
     String zonename;
     String usageplan;
     String state;
-
     // Network 변수
     String n_displayname;
     String n_networkid;
@@ -179,16 +182,6 @@ class Network extends Objects implements Parcelable {
         this.n_type = in.readString();
     }
 
-    public static final Parcelable.Creator<Network> CREATOR = new Parcelable.Creator<Network>() {
-        public Network createFromParcel(Parcel in) {
-            return new Network(in);
-        }
-
-        public Network[] newArray(int size) {
-            return new Network[size];
-        }
-    };
-
     @Override
     public int describeContents() {
         return 0;
@@ -218,6 +211,15 @@ class Network extends Objects implements Parcelable {
 }
 
 class Alarm extends Objects implements Parcelable {
+    public static final Parcelable.Creator<Alarm> CREATOR = new Parcelable.Creator<Alarm>() {
+        public Alarm createFromParcel(Parcel in) {
+            return new Alarm(in);
+        }
+
+        public Alarm[] newArray(int size) {
+            return new Alarm[size];
+        }
+    };
     public String alarmname;
     public String statevalue; // OK - 안정, INSUFFICIENT_DATA - 데이터 부족, ALARM - 알람
     public String metricname; // CPUUtilization 등등
@@ -229,7 +231,6 @@ class Alarm extends Objects implements Parcelable {
     public String statistics; // SampleCount, Average, Sum, Minimum, Maximum
     public String unit; // Percent, Bytes 등등
     public String alarmSenabled;
-
 
     public Alarm() {
 
@@ -247,16 +248,6 @@ class Alarm extends Objects implements Parcelable {
         this.unit = in.readString();
         this.alarmSenabled = in.readString();
     }
-
-    public static final Parcelable.Creator<Alarm> CREATOR = new Parcelable.Creator<Alarm>() {
-        public Alarm createFromParcel(Parcel in) {
-            return new Alarm(in);
-        }
-
-        public Alarm[] newArray(int size) {
-            return new Alarm[size];
-        }
-    };
 
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(metricname);
@@ -278,6 +269,15 @@ class Alarm extends Objects implements Parcelable {
 }
 
 class Metric extends Objects implements Parcelable {
+    public static final Parcelable.Creator<Metric> CREATOR = new Parcelable.Creator<Metric>() {
+        public Metric createFromParcel(Parcel in) {
+            return new Metric(in);
+        }
+
+        public Metric[] newArray(int size) {
+            return new Metric[size];
+        }
+    };
     public String metricname;
     public String namespace;
     public String unit;
@@ -294,16 +294,6 @@ class Metric extends Objects implements Parcelable {
         this.dimensions = in.readString();
     }
 
-    public static final Parcelable.Creator<Metric> CREATOR = new Parcelable.Creator<Metric>() {
-        public Metric createFromParcel(Parcel in) {
-            return new Metric(in);
-        }
-
-        public Metric[] newArray(int size) {
-            return new Metric[size];
-        }
-    };
-
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(metricname);
         dest.writeString(namespace);
@@ -319,6 +309,15 @@ class Metric extends Objects implements Parcelable {
 
 
 class metricStat extends Objects implements Parcelable {
+    public static final Parcelable.Creator<metricStat> CREATOR = new Parcelable.Creator<metricStat>() {
+        public metricStat createFromParcel(Parcel in) {
+            return new metricStat(in);
+        }
+
+        public metricStat[] newArray(int size) {
+            return new metricStat[size];
+        }
+    };
     String timestamp;
     String unit;
     double Maximum = -1;
@@ -339,16 +338,6 @@ class metricStat extends Objects implements Parcelable {
         this.Sum = in.readDouble();
         this.Average = in.readDouble();
     }
-
-    public static final Parcelable.Creator<metricStat> CREATOR = new Parcelable.Creator<metricStat>() {
-        public metricStat createFromParcel(Parcel in) {
-            return new metricStat(in);
-        }
-
-        public metricStat[] newArray(int size) {
-            return new metricStat[size];
-        }
-    };
 
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(timestamp);

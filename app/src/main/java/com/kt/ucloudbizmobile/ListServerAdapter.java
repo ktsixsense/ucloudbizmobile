@@ -21,14 +21,6 @@ public class ListServerAdapter extends BaseAdapter {
 
     private MyEventListener mListener;
     private Context context;
-
-    static class ViewHolder_Server {
-        TextView txtServerName;
-        TextView txtServerOS;
-        ImageView imgStatus;
-        ImageButton btnMonitor;
-    }
-
     private ArrayList<ListServerItem> listViewServerItemList = new ArrayList<>();
 
     public ListServerAdapter(Context context) {
@@ -128,5 +120,12 @@ public class ListServerAdapter extends BaseAdapter {
 
     public void setMyEventListener(MyEventListener listener) {
         mListener = listener;
+    }
+
+    static class ViewHolder_Server {
+        TextView txtServerName;
+        TextView txtServerOS;
+        ImageView imgStatus;
+        ImageButton btnMonitor;
     }
 }

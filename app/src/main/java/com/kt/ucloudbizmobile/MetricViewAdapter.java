@@ -5,12 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-
-import static com.kt.ucloudbizmobile.ActionType.Action_GraphButton_Click;
 
 /**
  * Created by Kpresent on 2017. 8. 1..
@@ -18,20 +15,8 @@ import static com.kt.ucloudbizmobile.ActionType.Action_GraphButton_Click;
 
 public class MetricViewAdapter extends BaseAdapter {
 
-    private MyEventListener mListener;
-
-    static class ViewHolder_Metric {
-        TextView Metrictype;
-        TextView Metricname;
-        TextView Metricgroup;
-        TextView Metricvalue;
-        ImageButton ButtonGraph;
-
-        int position;
-    }
-
-    private ArrayList<MetricViewItem> listViewMetricItemList = new ArrayList<MetricViewItem>();
     public ViewHolder_Metric holder = new ViewHolder_Metric();
+    private ArrayList<MetricViewItem> listViewMetricItemList = new ArrayList<MetricViewItem>();
 
     public MetricViewAdapter() {
     }
@@ -43,33 +28,33 @@ public class MetricViewAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final int pos = position;
         final Context context = parent.getContext();
-        if (convertView == null) {
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.list_item_metric, parent, false);
+        View v = convertView;
+
+        if (v == null) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            v = inflater.inflate(R.layout.list_item_metric, null);
+            ViewHolder_Metric holder = new ViewHolder_Metric();
+
+            holder.Metrictype = v.findViewById(R.id.textmetric);
+            holder.Metricname = v.findViewById(R.id.textmetricname);
+            holder.Metricgroup = v.findViewById(R.id.textgroup);
+            holder.Metricvalue = v.findViewById(R.id.textvalue);
+
+            v.setTag(holder);
         }
+
+        // Get Item
         MetricViewItem item = listViewMetricItemList.get(position);
+        ViewHolder_Metric holder = (ViewHolder_Metric) v.getTag();
+        if (item != null) {
+            holder.Metrictype.setText(item.getMetricType());
+            holder.Metricname.setText(item.getMetricName());
+            holder.Metricgroup.setText(item.getMetricGroup());
+            holder.Metricvalue.setText(item.getMetricValue());
+        }
 
-        holder.Metrictype = (TextView) convertView.findViewById(R.id.textmetric);
-        holder.Metricname = (TextView) convertView.findViewById(R.id.textmetricname);
-        holder.Metricgroup = (TextView) convertView.findViewById(R.id.textgroup);
-        holder.Metricvalue = (TextView) convertView.findViewById(R.id.textvalue);
-        holder.ButtonGraph = (ImageButton) convertView.findViewById(R.id.btn_grpah);
-
-        holder.Metrictype.setText(item.getMetricType());
-        holder.Metricname.setText(item.getMetricName());
-        holder.Metricgroup.setText(item.getMetricGroup());
-        holder.Metricvalue.setText(item.getMetricValue());
-
-        holder.ButtonGraph.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onMyEvent(Action_GraphButton_Click, (int) pos);
-            }
-        });
-
-        return convertView;
+        return v;
     }
 
     @Override
@@ -93,8 +78,11 @@ public class MetricViewAdapter extends BaseAdapter {
         listViewMetricItemList.add(item);
     }
 
-    public void setMyEventListener(MyEventListener listener) {
-        mListener = listener;
+    static class ViewHolder_Metric {
+        TextView Metrictype;
+        TextView Metricname;
+        TextView Metricgroup;
+        TextView Metricvalue;
     }
 
 }

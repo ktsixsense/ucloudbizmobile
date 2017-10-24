@@ -1,7 +1,6 @@
 package com.kt.ucloudbizmobile;
 
 import android.util.Base64;
-import android.util.Log;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -26,13 +25,13 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class ApiGenerator {
 
-    public static String getSignature(Map<String,String> map, String secretKey) {
+    public static String getSignature(Map<String, String> map, String secretKey) {
         Set s = map.entrySet();
         Iterator it = s.iterator();
         String temp = "";
 
 
-        while ( it.hasNext() ) {
+        while (it.hasNext()) {
             Map.Entry entry = (Map.Entry) it.next();
 
             String key = null;
@@ -41,11 +40,12 @@ public class ApiGenerator {
             try {
                 key = URLEncoder.encode((String) entry.getKey(), "UTF-8").replace("+", "%20");
                 value = URLEncoder.encode((String) entry.getValue(), "UTF-8").replace("+", "%20");
-            } catch (UnsupportedEncodingException e) { }
+            } catch (UnsupportedEncodingException e) {
+            }
 
             temp += (key + "=" + value + "&");
         }
-        temp = temp.substring(0, temp.length()-1);
+        temp = temp.substring(0, temp.length() - 1);
         temp = temp.toLowerCase();
 
         Mac mac;
@@ -54,7 +54,7 @@ public class ApiGenerator {
             mac = Mac.getInstance("HmacSHA1");
             SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "HmacSHA1");
             mac.init(keySpec);
-            mac.update (temp.getBytes());
+            mac.update(temp.getBytes());
             encryptedBytes = mac.doFinal();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -78,10 +78,10 @@ public class ApiGenerator {
         Iterator it = s.iterator();
         String temp = "";
 
-        while ( it.hasNext() ) {
+        while (it.hasNext()) {
             Map.Entry entry = (Map.Entry) it.next();
             String key = (String) entry.getKey();
-            String value =(String) entry.getValue();
+            String value = (String) entry.getValue();
             temp += (key + "=" + value + "&");
         }
         return temp;
@@ -108,9 +108,9 @@ public class ApiGenerator {
         String commandString = getCommandString(requests);
 
         String finalURL = basicURL + commandString + "signature=" + signature;
-        finalURL = finalURL.substring(0, finalURL.length()-3);
+        finalURL = finalURL.substring(0, finalURL.length() - 3);
 
-        Log.d("URL:", finalURL);
+        // Log.d("URL:", finalURL);
 
         /*try {
             new getHttpResponse().execute(new URL(finalURL));
@@ -124,10 +124,9 @@ public class ApiGenerator {
         HashMap<String, String> requests = new HashMap<String, String>();
         String basicURL = "";
         // 2. URL
-        if(_command.equals("listAlarms")) {
+        if (_command.equals("listAlarms")) {
             basicURL = "https://api.ucloudbiz.olleh.com/watch/v1/client/api?";
-        }
-        else {
+        } else {
             if (isM2)
                 basicURL = "https://api.ucloudbiz.olleh.com/server/v2/client/api?";
             else
@@ -149,7 +148,7 @@ public class ApiGenerator {
         //requests.put("name", "myapitestdisk2");
 
         // Zone ID 입력할 경우에는 parameter로 던져주고 all을 입력하면 모든 zone 보여주도록
-        if(!id.equals("all")) {
+        if (!id.equals("all")) {
             requests.put("id", id);
         }
 
@@ -161,9 +160,9 @@ public class ApiGenerator {
         String commandString = getCommandString(requests);
 
         String finalURL = basicURL + commandString + "signature=" + signature;
-        finalURL = finalURL.substring(0, finalURL.length()-3);
+        finalURL = finalURL.substring(0, finalURL.length() - 3);
 
-        Log.d("URL:", finalURL);
+        // Log.d("URL:", finalURL);
 
         /*try {
             new getHttpResponse().execute(new URL(finalURL));
@@ -182,7 +181,6 @@ public class ApiGenerator {
         else
             basicURL = "https://api.ucloudbiz.olleh.com/watch/v1/client/api?";
 
-
         // 3. Key - dayer4 key
         //String apiKey = "kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg";
         //String secretKey = "NmczQzPOE-CoYLbKpvo3UHJSaZ_6e9SC3tJIYsMIoiTJYMWMn8x-DpzBRTzzSkk0xegYz7g2yrvt_8jRrScxHQ";
@@ -198,9 +196,9 @@ public class ApiGenerator {
 
         String strend = getStringfromDate(calendar.getTime());
         Calendar c = calendar;
-        c.add(Calendar.MINUTE, (-1)*gaptype);
+        c.add(Calendar.MINUTE, (-1) * gaptype);
         String strstart = getStringfromDate(c.getTime());
-        String strperiod = String.format("%d",period);
+        String strperiod = String.format("%d", period);
         requests.put("endtime", strend);
         requests.put("starttime", strstart);
         requests.put("metricname", paramMetric);
@@ -223,9 +221,9 @@ public class ApiGenerator {
         String commandString = getCommandString(requests);
 
         String finalURL = basicURL + commandString + "signature=" + signature;
-        finalURL = finalURL.substring(0, finalURL.length()-3);
+        finalURL = finalURL.substring(0, finalURL.length() - 3);
 
-        Log.d("URL:", finalURL);
+        // Log.d("URL:", finalURL);
 
         /*try {
             new getHttpResponse().execute(new URL(finalURL));
@@ -279,9 +277,9 @@ public class ApiGenerator {
         String commandString = getCommandString(requests);
 
         String finalURL = basicURL + commandString + "signature=" + signature;
-        finalURL = finalURL.substring(0, finalURL.length()-3);
+        finalURL = finalURL.substring(0, finalURL.length() - 3);
 
-        Log.d("URL:", finalURL);
+        // Log.d("URL:", finalURL);
 
         /*try {
             new getHttpResponse().execute(new URL(finalURL));
@@ -324,7 +322,7 @@ public class ApiGenerator {
         String finalURL = basicURL + commandString + "signature=" + signature;
         finalURL = finalURL.substring(0, finalURL.length() - 3);
 
-        Log.d("URL:", finalURL);
+        // Log.d("URL:", finalURL);
 
         /*try {
             new getHttpResponse().execute(new URL(finalURL));
@@ -334,17 +332,16 @@ public class ApiGenerator {
         return finalURL;
     }
 
-    public static String getStringfromDate(Date d)
-    {
+    public static String getStringfromDate(Date d) {
         //2017-09-09T12:30:00.000 양식에 맞춰 응답
-        String str1,str2;
+        String str1, str2;
         SimpleDateFormat newformat = new SimpleDateFormat("yyyy-MM-dd");
         newformat.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
         str1 = newformat.format(d);
         SimpleDateFormat newformat2 = new SimpleDateFormat("HH:mm:");
         newformat2.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
         str2 = newformat2.format(d);
-        return str1+"T"+str2+"00.000";
+        return str1 + "T" + str2 + "00.000";
     }
 
     public static String apiGeneratorMetrics(String _apiKey, String _secretKey, String _command, boolean isM2) {
@@ -374,9 +371,9 @@ public class ApiGenerator {
         String commandString = getCommandString(requests);
 
         String finalURL = basicURL + commandString + "signature=" + signature;
-        finalURL = finalURL.substring(0, finalURL.length()-3);
+        finalURL = finalURL.substring(0, finalURL.length() - 3);
 
-        Log.d("URL:", finalURL);
+        // Log.d("URL:", finalURL);
         return finalURL;
     }
 }

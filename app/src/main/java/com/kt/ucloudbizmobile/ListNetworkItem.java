@@ -17,7 +17,6 @@ public class ListNetworkItem {
     String n_cidr;
 
 
-
     public ListNetworkItem(String networkIP, String networkID, String networkZone, boolean networkBasicIP) {
         this.networkIP = networkIP;
         this.networkID = networkID;
@@ -91,12 +90,21 @@ public class ListNetworkItem {
 
     public String getN_zonename() {
         String zonename = "";
-        switch(n_zonename) {
-            case "kr-md2-1": zonename = "Seoul M2 zone"; break;
-            case "kr-1": zonename = "Central A zone"; break;
-            case "kr-2": zonename = "Central B zone"; break;
-            case "kr-0": zonename = "Seoul M zone"; break;
-            default: zonename = n_zonename;
+        switch (n_zonename) {
+            case "kr-md2-1":
+                zonename = "Seoul M2 zone";
+                break;
+            case "kr-1":
+                zonename = "Central A zone";
+                break;
+            case "kr-2":
+                zonename = "Central B zone";
+                break;
+            case "kr-0":
+                zonename = "Seoul M zone";
+                break;
+            default:
+                zonename = n_zonename;
         }
         return zonename;
     }

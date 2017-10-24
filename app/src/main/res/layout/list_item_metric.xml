@@ -13,6 +13,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:layout_weight="3"
             android:orientation="vertical">
 
@@ -56,13 +57,5 @@
             </LinearLayout>
         </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/btn_grpah"
-            android:layout_width="56dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@android:color/transparent"
-            android:onClick="OnClickGraph"
-            android:src="@drawable/ic_monitoring_service" />
     </LinearLayout>
 </LinearLayout>

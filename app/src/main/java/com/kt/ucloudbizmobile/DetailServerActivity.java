@@ -47,7 +47,7 @@ public class DetailServerActivity extends AppCompatActivity {
         adapter.addItem("생성일시", data.created);
         adapter.addItem("상태", data.state);
 
-        if(data.state.equals("Stopped")) {
+        if (data.state.equals("Stopped")) {
             startBtn.setVisibility(View.VISIBLE);
         }
 
@@ -65,11 +65,10 @@ public class DetailServerActivity extends AppCompatActivity {
                             //successful ajax call, show status code and json content
                             Document doc = parser.getDocument(json);
                             int index = parser.getNumberOfResponse("jobid", doc);
-                            if(index > 0) {
+                            if (index > 0) {
                                 Toast.makeText(getApplicationContext(), "서버시작 요청이 완료되었습니다. \n5분 이상의 시간이 소요될 수 있습니다. \n서버리스트에서 화면 새로고침을 하시기 바랍니다.", Toast.LENGTH_LONG).show();
                                 startBtn.setVisibility(View.GONE);
-                            }
-                            else {
+                            } else {
                                 Toast.makeText(getApplicationContext(), "서버 시작을 실패하였습니다. 관리자에게 문의해주세요.", Toast.LENGTH_LONG).show();
                             }
                         } else {

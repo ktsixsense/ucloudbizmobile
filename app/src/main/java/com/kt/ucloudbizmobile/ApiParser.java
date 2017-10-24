@@ -28,43 +28,43 @@ public class ApiParser {
                     for (Node node = descNodes.item(i).getFirstChild(); node != null; node = node.getNextSibling()) {
                         if (node.getNodeName().equals("displayname")) {
                             // 서버명
-                            Log.d("displayname", node.getTextContent());
+                            // Log.d("displayname", node.getTextContent());
                             temp.displayname = node.getTextContent();
                         } else if (node.getNodeName().equals("nic")) {
                             // 내부주소
-                            Log.d("ipaddress", node.getTextContent());
+                            // Log.d("ipaddress", node.getTextContent());
                             temp.ipaddress = node.getChildNodes().item(11).getTextContent();
                         } else if (node.getNodeName().equals("id")) {
                             // 서버 ID
-                            System.out.println(node.getTextContent());
+                            // System.out.println(node.getTextContent());
                             temp.serverid = node.getTextContent();
                         } else if (node.getNodeName().equals("templatedisplaytext")) {
                             // 운영체제
-                            Log.d("os", node.getTextContent());
+                            // Log.d("os", node.getTextContent());
                             temp.os = node.getTextContent();
                         } else if (node.getNodeName().equals("cpunumber")) {
                             // CPU
-                            Log.d("cpunumber", node.getTextContent());
+                            // Log.d("cpunumber", node.getTextContent());
                             temp.cpunumber = node.getTextContent();
                         } else if (node.getNodeName().equals("memory")) {
                             // 메모리
-                            Log.d("memory", node.getTextContent());
+                            // Log.d("memory", node.getTextContent());
                             temp.memory = node.getTextContent();
                         } else if (node.getNodeName().equals("name")) {
                             // 호스트명
-                            Log.d("name", node.getTextContent());
+                            // Log.d("name", node.getTextContent());
                             temp.name = node.getTextContent();
                         } else if (node.getNodeName().equals("created")) {
                             // 생성일시
-                            Log.d("created", node.getTextContent());
+                            // Log.d("created", node.getTextContent());
                             temp.created = node.getTextContent();
                         } else if (node.getNodeName().equals("zonename")) {
                             // Disk
-                            Log.d("zonename", node.getTextContent());
+                            // Log.d("zonename", node.getTextContent());
                             temp.zonename = node.getTextContent();
                         } else if (node.getNodeName().equals("state")) {
                             // 상태
-                            Log.d("state", node.getTextContent());
+                            // Log.d("state", node.getTextContent());
                             temp.state = node.getTextContent();
                         }
                     }
@@ -117,7 +117,7 @@ public class ApiParser {
 
     public Network[] parseNetworkList(Document doc, int numIndex, boolean isN) {
         Network networks[] = null;
-        if(isN){
+        if (isN) {
             try {
                 NodeList descNodes = doc.getElementsByTagName("network");
                 networks = new Network[numIndex];
@@ -160,15 +160,15 @@ public class ApiParser {
                         Network temp = new Network();
                         for (Node node = descNodes.item(i).getFirstChild(); node != null; node = node.getNextSibling()) {
                             if (node.getNodeName().equals("ipaddress")) {
-                                Log.d("ipaddress33", node.getTextContent());
+                                // Log.d("ipaddress33", node.getTextContent());
                                 temp.ipaddress = node.getTextContent();
                             } else if (node.getNodeName().equals("id")) {
-                                Log.d("id", node.getTextContent());
+                                // Log.d("id", node.getTextContent());
                                 temp.addressid = node.getTextContent();
                             } else if (node.getNodeName().equals("zoneid")) {
-                                Log.d("zoneid", node.getTextContent());
+                                // Log.d("zoneid", node.getTextContent());
                                 temp.zoneid = node.getTextContent();
-                            }else if (node.getNodeName().equals("zonename")) {
+                            } else if (node.getNodeName().equals("zonename")) {
                                 temp.zonename = node.getTextContent();
                             } else if (node.getNodeName().equals("usageplantype")) {
                                 temp.usageplan = node.getTextContent();
@@ -241,19 +241,19 @@ public class ApiParser {
                     metricStat temp = new metricStat();
                     for (Node node = descNodes.item(i).getFirstChild(); node != null; node = node.getNextSibling()) {
                         if (node.getNodeName().equals("timestamp")) {
-                            Log.d("timestamp", node.getTextContent());
+                            // Log.d("timestamp", node.getTextContent());
                             temp.timestamp = node.getTextContent();
                         } else if (node.getNodeName().equals("unit")) {
-                            Log.d("unit", node.getTextContent());
+                            // Log.d("unit", node.getTextContent());
                             temp.unit = node.getTextContent();
                         } else if (node.getNodeName().equals("maximum")) {
-                            Log.d("maximum", node.getTextContent());
+                            // Log.d("maximum", node.getTextContent());
                             temp.Maximum = Double.parseDouble(node.getTextContent());
                         } else if (node.getNodeName().equals("minimum")) {
-                            Log.d("minimum", node.getTextContent());
+                            // Log.d("minimum", node.getTextContent());
                             temp.Minimum = Double.parseDouble(node.getTextContent());
                         } else if (node.getNodeName().equals("average")) {
-                            Log.d("average", node.getTextContent());
+                            // Log.d("average", node.getTextContent());
                             temp.Average = Double.parseDouble(node.getTextContent());
                         }
                     }
@@ -270,27 +270,27 @@ public class ApiParser {
         Metric Metric_Array[] = null;
         try {
             NodeList forwardNode = doc.getElementsByTagName("listmetricsresponse");
-       //     String label = forwardNode.item(0).getFirstChild().getTextContent();
-          //  Node node_temp = forwardNode.item(0).getFirstChild();
+            //     String label = forwardNode.item(0).getFirstChild().getTextContent();
+            //  Node node_temp = forwardNode.item(0).getFirstChild();
             int count = Integer.parseInt(forwardNode.item(0).getFirstChild().getTextContent());
 
             NodeList descNodes = doc.getElementsByTagName("metric");
-            Metric_Array= new Metric[count];
-            if(descNodes != null) {
-                for(int i=0; i<count;i++){
+            Metric_Array = new Metric[count];
+            if (descNodes != null) {
+                for (int i = 0; i < count; i++) {
                     Metric temp = new Metric();
-                    for(Node node = descNodes.item(i).getFirstChild(); node!=null; node=node.getNextSibling()){
-                        if(node.getNodeName().equals("metricname")){
-                            Log.d("metricname", node.getTextContent());
+                    for (Node node = descNodes.item(i).getFirstChild(); node != null; node = node.getNextSibling()) {
+                        if (node.getNodeName().equals("metricname")) {
+                            // Log.d("metricname", node.getTextContent());
                             temp.metricname = node.getTextContent();
-                        }else if(node.getNodeName().equals("namespace")) {
-                            Log.d("namespace", node.getTextContent());
+                        } else if (node.getNodeName().equals("namespace")) {
+                            // Log.d("namespace", node.getTextContent());
                             temp.namespace = node.getTextContent();
-                        }else if(node.getNodeName().equals("unit")) {
-                            Log.d("unit", node.getTextContent());
+                        } else if (node.getNodeName().equals("unit")) {
+                            // Log.d("unit", node.getTextContent());
                             temp.unit = node.getTextContent();
-                        }else if(node.getNodeName().equals("dimensions")) {
-                            Log.d("dimensions", node.getTextContent());
+                        } else if (node.getNodeName().equals("dimensions")) {
+                            // Log.d("dimensions", node.getTextContent());
                             temp.dimensions = node.getTextContent();
                         }
                     }
@@ -306,7 +306,7 @@ public class ApiParser {
 
     public int getNumberOfResponse(String objects, Document doc) {
         NodeList descNodes = null;
-        if(doc.getElementsByTagName("errorcode").getLength() > 0) {
+        if (doc.getElementsByTagName("errorcode").getLength() > 0) {
             Log.d("API 에러: ", "권한 없음");
             return 0;
         }
@@ -355,5 +355,6 @@ public class ApiParser {
         }
         return tmp;
     }
+
 
 }

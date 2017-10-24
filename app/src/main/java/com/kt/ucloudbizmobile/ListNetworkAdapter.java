@@ -17,13 +17,6 @@ import java.util.ArrayList;
 public class ListNetworkAdapter extends BaseAdapter {
 
     private MyEventListener mListener;
-
-    static class ViewHolder_Network {
-        TextView txtNetworkIP;
-        TextView txtNetworkID;
-        ImageView imgStatus;
-    }
-
     private ArrayList<ListNetworkItem> listViewNetworkItemList = new ArrayList<>();
 
     public ListNetworkAdapter() {
@@ -52,18 +45,17 @@ public class ListNetworkAdapter extends BaseAdapter {
             holder.txtNetworkIP = v.findViewById(R.id.txt_network_ip);
             holder.txtNetworkID = v.findViewById(R.id.txt_network_id);
             holder.imgStatus = v.findViewById(R.id.img_network_status);
+
             v.setTag(holder);
         }
-
 
         // Get item
         ListNetworkItem item = listViewNetworkItemList.get(position);
         ViewHolder_Network holder = (ViewHolder_Network) v.getTag();
         if (item != null) {
-            final String test = item.getNetworkIP();
 
             holder.txtNetworkIP.setText(item.getNetworkIP());
-            holder.txtNetworkID.setText(/*item.getNetworkID() + "\n" + */item.getNetworkZone());
+            holder.txtNetworkID.setText(item.getNetworkZone());
 
             if (item.getNetworkBasicIP()) {
                 holder.imgStatus.setImageResource(R.drawable.ic_power_on);
@@ -93,7 +85,6 @@ public class ListNetworkAdapter extends BaseAdapter {
         listViewNetworkItemList.add(new ListNetworkItem(n_displayname, n_zonename, n_type, n_cidr));
     }
 
-
     public void addItemArray(ArrayList<ListNetworkItem> itemArray) {
         for (ListNetworkItem item : itemArray) {
             listViewNetworkItemList.add(item);
@@ -102,5 +93,11 @@ public class ListNetworkAdapter extends BaseAdapter {
 
     public void setMyEventListener(MyEventListener listener) {
         mListener = listener;
+    }
+
+    static class ViewHolder_Network {
+        TextView txtNetworkIP;
+        TextView txtNetworkID;
+        ImageView imgStatus;
     }
 }

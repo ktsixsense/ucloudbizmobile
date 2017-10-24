@@ -40,42 +40,47 @@ import static com.kt.ucloudbizmobile.R.id.spinner;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MyEventListener {
 
+    static String apiKey;
+    static String secretKey;
+    final String IP = "211.252.84.108";
+    final int PORT = 8088;
     // Push Server Connection
     String refreshedToken;
-    String IP = "211.252.84.108";
-    int PORT = 8088;
-
-    SetSocket setSocket;
-
+    // UI
+    private Toolbar toolbar;
     private TabHost tabHost;
     private BackPressCloseHandler backPressCloseHandler;
     private ProgressBar progressBar;
     private Spinner zoneSpinner;
-
-    ArrayList<Server> serverData;
-    ArrayList<Disk> diskData;
-    ArrayList<Network> networkData;
-    ArrayList<Network> networkData2;
-
-    ArrayList<Server> serverTempData;
-    ArrayList<Disk> diskTempData;
-    ArrayList<Network> networkTempData;
-    ArrayList<Network> networkTempData2;
-
+    // Class
+    private AQuery aq;
+    private ApiParser parser;
+    private SetSocket setSocket;
+    // Data params
+    private ArrayList<Server> serverData;
+    private ArrayList<Disk> diskData;
+    private ArrayList<Network> networkData;
+    private ArrayList<Network> networkData2;
+    private ArrayList<Server> serverTempData;
+    private ArrayList<Disk> diskTempData;
+    private ArrayList<Network> networkTempData;
+    private ArrayList<Network> networkTempData2;
+    private ListView listView;
+    private ListView listView2;
+    private ListView listView3;
+    private ListView listView4;
     private int totalServer;
     private int totalDisk;
     private int totalNetwork;
     private int totalNetwork2;
-
-    static String apiKey;
-    static String secretKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        // Initialize
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         zoneSpinner = (Spinner) findViewById(spinner);
         Button button = (Button) findViewById(R.id.refresh_button);
         progressBar = (ProgressBar) findViewById(R.id.progressList);
@@ -90,21 +95,25 @@ public class MainActivity extends AppCompatActivity
         networkTempData = new ArrayList<>();
         networkTempData2 = new ArrayList<>();
 
-        final AQuery aq = new AQuery(this);
-        final ApiParser parser = new ApiParser();
+        listView = (ListView) findViewById(R.id.listServer);
+        listView2 = (ListView) findViewById(R.id.listDisk);
+        listView3 = (ListView) findViewById(R.id.listNetwork);
+        listView4 = (ListView) findViewById(R.id.listNetwork2);
 
-        // Firebase
+        aq = new AQuery(this);
+        parser = new ApiParser();
+
+        // Firebase token ID
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        // AppUtility.showMsg(getApplicationContext(), refreshedToken);
-        Log.d("push-server", "token id : " + refreshedToken);
         setSocket = new SetSocket(IP, PORT);
         setSocket.start();
+
+        // Log.d("push-server", "token id : " + refreshedToken);
 
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
-
         backPressCloseHandler = new BackPressCloseHandler(this);
 
         /*
@@ -137,7 +146,6 @@ public class MainActivity extends AppCompatActivity
         ts1.setIndicator("Server");
         tabHost.addTab(ts1);
 
-        final ListView listView = (ListView) findViewById(R.id.listServer);
         final ListServerAdapter adapter = new ListServerAdapter(getApplicationContext());
         listView.setAdapter(adapter);
         adapter.setMyEventListener(this);
@@ -169,7 +177,7 @@ public class MainActivity extends AppCompatActivity
         ts2.setIndicator("Disk");
         tabHost.addTab(ts2);
 
-        final ListView listView2 = (ListView) findViewById(R.id.listDisk);
+
         final ListDiskAdapter adapter2 = new ListDiskAdapter();
         listView2.setAdapter(adapter2);
         adapter2.setMyEventListener(this);
@@ -188,19 +196,14 @@ public class MainActivity extends AppCompatActivity
         });
 
         // #3
-        final TabHost.TabSpec ts3 = tabHost.newTabSpec("network");
+        final TabHost.TabSpec ts3 = tabHost.newTabSpec("ip");
         ts3.setContent(R.id.content3);
-        ts3.setIndicator("Network");
+        ts3.setIndicator("IP");
         tabHost.addTab(ts3);
 
-        final ListView listView3 = (ListView) findViewById(R.id.listNetwork);
-        final ListView listView4 = (ListView) findViewById(R.id.listNetwork2);
         final ListNetworkAdapter adapter3 = new ListNetworkAdapter();
-        final ListNetworkAdapter2 adapter4 = new ListNetworkAdapter2();
         listView3.setAdapter(adapter3);
-        listView4.setAdapter(adapter4);
         adapter3.setMyEventListener(this);
-        adapter4.setMyEventListener(this);
 
         listView3.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -214,6 +217,16 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
+
+        // #1
+        final TabHost.TabSpec ts4 = tabHost.newTabSpec("nw");
+        ts4.setContent(R.id.content4);
+        ts4.setIndicator("NW");
+        tabHost.addTab(ts4);
+
+        final ListNetworkAdapter2 adapter4 = new ListNetworkAdapter2();
+        listView4.setAdapter(adapter4);
+        adapter4.setMyEventListener(this);
 
         listView4.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -239,15 +252,19 @@ public class MainActivity extends AppCompatActivity
                     getServerData(apiKey, secretKey, adapter, aq, parser);
                 } else if (s.equalsIgnoreCase("disk")) {
                     getDiskData(apiKey, secretKey, adapter2, aq, parser);
-                } else if (s.equalsIgnoreCase("network")) {
-                    getNetworkData(apiKey, secretKey, adapter3, adapter4, aq, parser);
+                } else if (s.equalsIgnoreCase("ip")) {
+                    getIPData(apiKey, secretKey, adapter3, aq, parser);
+                } else if (s.equalsIgnoreCase("nw")) {
+                    getNetworkData(apiKey, secretKey, adapter4, aq, parser);
                 }
             }
         });
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                switch(tabHost.getCurrentTab()) {
+                setTabHostEnabled(false);
+
+                switch (tabHost.getCurrentTab()) {
                     case 0:
                         getServerData(apiKey, secretKey, adapter, aq, parser);
                         break;
@@ -255,10 +272,10 @@ public class MainActivity extends AppCompatActivity
                         getDiskData(apiKey, secretKey, adapter2, aq, parser);
                         break;
                     case 2:
-                        getNetworkData(apiKey, secretKey, adapter3, adapter4, aq, parser);
+                        getIPData(apiKey, secretKey, adapter3, aq, parser);
                         break;
-                    default:
-                        //네트워크 새로 나눈거
+                    case 3:
+                        getNetworkData(apiKey, secretKey, adapter4, aq, parser);
                         break;
                 }
             }
@@ -343,36 +360,21 @@ public class MainActivity extends AppCompatActivity
                     adapter2.addItemArray(tempSet2);
                     adapter2.notifyDataSetChanged();
                     listView2.invalidate();
-                } else if (curTab.equalsIgnoreCase("network")) {
-
+                } else if (curTab.equalsIgnoreCase("ip")) {
                     ArrayList<Network> temp3 = new ArrayList<>();
-                    ArrayList<Network> temp4 = new ArrayList<>();
-
                     ArrayList<ListNetworkItem> tempSet3 = new ArrayList<>();
-                    ArrayList<ListNetworkItem> tempSet4 = new ArrayList<>();
-
                     networkTempData = new ArrayList<>();
-                    networkTempData2 = new ArrayList<>();
 
                     int count3 = 0;
-                    int count4 = 0;
 
                     if (zonename.equalsIgnoreCase("all")) {
                         temp3 = networkData;
-                        temp4 = networkData2;
                         count3 = totalNetwork;
-                        count4 = totalNetwork2;
                     } else {
                         for (Network network : networkData) {
                             if (network.zonename.equalsIgnoreCase(zonename)) {
                                 temp3.add(count3, network);
                                 count3++;
-                            }
-                        }
-                        for (Network network : networkData2) {
-                            if (network.n_zonename.equalsIgnoreCase(zonename)) {
-                                temp4.add(count4, network);
-                                count4++;
                             }
                         }
                     }
@@ -381,18 +383,38 @@ public class MainActivity extends AppCompatActivity
                         tempSet3.add(k, new ListNetworkItem(temp3.get(k).ipaddress, temp3.get(k).addressid, temp3.get(k).zonename, temp3.get(k).usageplan.equals("") ? false : true));
                         networkTempData.add(k, temp3.get(k));
                     }
+
+                    adapter3.removeAll();
+                    adapter3.addItemArray(tempSet3);
+                    adapter3.notifyDataSetChanged();
+                    listView3.invalidate();
+                } else if (curTab.equalsIgnoreCase("nw")) {
+                    ArrayList<Network> temp4 = new ArrayList<>();
+                    ArrayList<ListNetworkItem> tempSet4 = new ArrayList<>();
+                    networkTempData2 = new ArrayList<>();
+
+                    int count4 = 0;
+
+                    if (zonename.equalsIgnoreCase("all")) {
+                        temp4 = networkData2;
+                        count4 = totalNetwork2;
+                    } else {
+                        for (Network network : networkData2) {
+                            if (network.n_zonename.equalsIgnoreCase(zonename)) {
+                                temp4.add(count4, network);
+                                count4++;
+                            }
+                        }
+                    }
+
                     for (int k = 0; k < count4; k++) {
                         tempSet4.add(k, new ListNetworkItem(temp4.get(k).n_displayname, temp4.get(k).n_zonename, temp4.get(k).n_type, temp4.get(k).n_cidr));
                         networkTempData2.add(k, temp4.get(k));
                     }
 
-                    adapter3.removeAll();
                     adapter4.removeAll();
-                    adapter3.addItemArray(tempSet3);
                     adapter4.addItemArray(tempSet4);
-                    adapter3.notifyDataSetChanged();
                     adapter4.notifyDataSetChanged();
-                    listView3.invalidate();
                     listView4.invalidate();
                 }
             }
@@ -403,6 +425,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        setTabHostEnabled(false);
         getServerData(apiKey, secretKey, adapter, aq, parser);
     }
 
@@ -419,7 +442,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-       // getMenuInflater().inflate(R.menu.main, menu);
+        // getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -448,7 +471,7 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, AlarmActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
-        }else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_send) {
             Toast.makeText(getApplicationContext(), "Ucloud Biz MOA made by SixSense \n" +
                     "\n<개발 담당>\n - 메시징플랫폼팀 전상일 사원\n - 플랫폼기획팀 김현재 사원\n - Cloud포탈팀 최영진 사원\n" +
                     "\n<기획 및 자료 담당>\n - Cloud플랫폼운용팀 이호중 사원\n - Cloud서비스운용팀 김성훈 사원\n - 보안분석기획팀 배수열 사원", Toast.LENGTH_LONG).show();
@@ -471,45 +494,6 @@ public class MainActivity extends AppCompatActivity
         }
         if (act == ActionType.Action_Servername_Click) {
 
-        }
-
-    }
-
-    public class SetSocket extends Thread {
-
-        Socket socket;
-        OutputStream os;
-        BufferedWriter bw;
-
-        String IP;
-        int PORT;
-
-        public SetSocket(String IP, int PORT) {
-            this.IP = IP;
-            this.PORT = PORT;
-        }
-
-        public void run() {
-            try {
-                socket = new Socket(IP, PORT);
-                os = new DataOutputStream(socket.getOutputStream());
-                bw = new BufferedWriter(new OutputStreamWriter(os));
-
-                bw.write(refreshedToken);
-                bw.flush();
-                bw.close();
-
-                Log.d("push-server", "Push server connection succeed.");
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (socket != null)
-                        socket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
@@ -573,14 +557,14 @@ public class MainActivity extends AppCompatActivity
                                 setTabHostEnabled(true);
                             } else {
                                 //ajax error, show error code
-                                AppUtility.showMsg(getApplicationContext(), "Error : " + status.getError());
+                                AppUtility.showMsg(getApplicationContext(), "데이터를 불러오지 못했습니다. 새로고침 해주세요");
                             }
                         }
                     });
 
                 } else {
                     //ajax error, show error code
-                    AppUtility.showMsg(getApplicationContext(), "Error : " + status.getError());
+                    AppUtility.showMsg(getApplicationContext(), "데이터를 불러오지 못했습니다. 새로고침 해주세요");
                 }
             }
         });
@@ -589,7 +573,6 @@ public class MainActivity extends AppCompatActivity
     public void getDiskData(String apiKey, String secretKey, final ListDiskAdapter adapter2, final AQuery aq, final ApiParser parser) {
 
         diskData = new ArrayList<>();
-
         adapter2.removeAll();
         adapter2.notifyDataSetChanged();
         progressBar.setVisibility(View.VISIBLE);
@@ -644,35 +627,28 @@ public class MainActivity extends AppCompatActivity
                                 setTabHostEnabled(true);
                             } else {
                                 //ajax error, show error code
-                                Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                                AppUtility.showMsg(getApplicationContext(), "데이터를 불러오지 못했습니다. 새로고침 해주세요");
                             }
                         }
                     });
 
                 } else {
                     //ajax error, show error code
-                    Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                    AppUtility.showMsg(getApplicationContext(), "데이터를 불러오지 못했습니다. 새로고침 해주세요");
                 }
             }
         });
     }
 
-    public void getNetworkData(String apiKey, String secretKey, final ListNetworkAdapter adapter3, final ListNetworkAdapter2 adapter4, final AQuery aq, final ApiParser parser) {
+    public void getIPData(String apiKey, String secretKey, final ListNetworkAdapter adapter3, final AQuery aq, final ApiParser parser) {
 
         networkData = new ArrayList<>();
-        networkData2 = new ArrayList<>();
-
         adapter3.removeAll();
-        adapter4.removeAll();
         adapter3.notifyDataSetChanged();
-        adapter4.notifyDataSetChanged();
         progressBar.setVisibility(View.VISIBLE);
 
         final String nwStack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listPublicIpAddresses", false, "all");
         final String nwStack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listPublicIpAddresses", true, "all");
-
-        final String n_nwStack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listNetworks", false, "all");
-        final String n_nwStack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listNetworks", true, "all");
 
         // cloudstack2
         aq.ajax(nwStack2, String.class, new AjaxCallback<String>() {
@@ -715,19 +691,35 @@ public class MainActivity extends AppCompatActivity
                                 networkTempData = networkData;
                                 adapter3.addItemArray(dataSet);
                                 adapter3.notifyDataSetChanged();
+
+                                progressBar.setVisibility(View.INVISIBLE);
+                                zoneSpinner.setSelection(0);
+
+                                setTabHostEnabled(true);
                             } else {
                                 //ajax error, show error code
-                                Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                                AppUtility.showMsg(getApplicationContext(), "데이터를 불러오지 못했습니다. 새로고침 해주세요");
                             }
                         }
                     });
 
                 } else {
                     //ajax error, show error code
-                    Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                    AppUtility.showMsg(getApplicationContext(), "데이터를 불러오지 못했습니다. 새로고침 해주세요");
                 }
             }
         });
+    }
+
+    public void getNetworkData(String apiKey, String secretKey, final ListNetworkAdapter2 adapter4, final AQuery aq, final ApiParser parser) {
+
+        networkData2 = new ArrayList<>();
+        adapter4.removeAll();
+        adapter4.notifyDataSetChanged();
+        progressBar.setVisibility(View.VISIBLE);
+
+        final String n_nwStack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listNetworks", false, "all");
+        final String n_nwStack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listNetworks", true, "all");
 
         aq.ajax(n_nwStack2, String.class, new AjaxCallback<String>() {
             Network[] networks = null;
@@ -744,7 +736,7 @@ public class MainActivity extends AppCompatActivity
                     networks = parser.parseNetworkList(doc, index, true);
 
                     for (int i = 0; i < index; i++) {
-                        Log.d("11", networks[i].n_cidr);
+                        // Log.d("11", networks[i].n_cidr);
                         dataSet.add(i, new ListNetworkItem(networks[i].n_displayname, networks[i].n_zonename, networks[i].n_type, networks[i].n_cidr));
                         networkData2.add(i, networks[i]);
                         dataCount++;
@@ -776,21 +768,60 @@ public class MainActivity extends AppCompatActivity
                                 setTabHostEnabled(true);
                             } else {
                                 //ajax error, show error code
-                                Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                                AppUtility.showMsg(getApplicationContext(), "데이터를 불러오지 못했습니다. 새로고침 해주세요");
                             }
                         }
                     });
                 } else {
                     //ajax error, show error code
-                    Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                    AppUtility.showMsg(getApplicationContext(), "데이터를 불러오지 못했습니다. 새로고침 해주세요");
                 }
             }
         });
     }
 
     public void setTabHostEnabled(boolean enabled) {
-        for (int i = 0; i < tabHost.getChildCount(); i++) {
+        zoneSpinner.setEnabled(enabled);
+        for (int i = 0; i < 4; i++) {
             tabHost.getTabWidget().getChildTabViewAt(i).setEnabled(enabled);
+        }
+    }
+
+    public class SetSocket extends Thread {
+
+        Socket socket;
+        OutputStream os;
+        BufferedWriter bw;
+
+        String IP;
+        int PORT;
+
+        public SetSocket(String IP, int PORT) {
+            this.IP = IP;
+            this.PORT = PORT;
+        }
+
+        public void run() {
+            try {
+                socket = new Socket(IP, PORT);
+                os = new DataOutputStream(socket.getOutputStream());
+                bw = new BufferedWriter(new OutputStreamWriter(os));
+
+                bw.write(refreshedToken);
+                bw.flush();
+                bw.close();
+
+                Log.d("push-server", "Connected to Push service");
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (socket != null)
+                        socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

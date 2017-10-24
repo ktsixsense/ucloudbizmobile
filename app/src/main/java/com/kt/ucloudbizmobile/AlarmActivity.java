@@ -2,7 +2,6 @@ package com.kt.ucloudbizmobile;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Explode;
 import android.util.Log;
@@ -11,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -67,7 +65,7 @@ public class AlarmActivity extends AppCompatActivity {
                     int index = parser.getNumberOfResponse("alarm", doc);
                     alarms = new Alarm[index];
                     alarms = parser.parseAlarmList(doc, index);
-                    Log.d("alarm 개수 ", ""+index);
+                    Log.d("alarm 개수 ", "" + index);
 
                     for (int i = 0; i < index; i++) {
                         dataSet.add(i, new ListAlarmItem(alarms[i].alarmname, alarms[i].statevalue, alarms[i].metricname, alarms[i].compOperator, alarms[i].period, alarms[i].evalPeriod, alarms[i].threshold, alarms[i].statistics, alarms[i].unit, alarms[i].alarmSenabled));
@@ -199,15 +197,6 @@ class ListAlarmItem {
 
 class ListAlarmAdapter extends BaseAdapter {
     public MyEventListener mListener;
-
-    static class ViewHolder_Alarm {
-        TextView txtAlarmName;
-        TextView txtAlarmStateAndPeriod;
-        TextView txtAlarmStatAndMetric;
-        TextView txtAlarmThresholdAndComp;
-        ImageView imgStatus;
-    }
-
     private ArrayList<ListAlarmItem> listViewAlarmItemList = new ArrayList<>();
 
     public ListAlarmAdapter() {
@@ -292,23 +281,24 @@ class ListAlarmAdapter extends BaseAdapter {
 
     public String nameParser(String alarmName) {
         String temp = "";
-        int index =  alarmName.indexOf("_");
-        temp = alarmName.substring(index+1);
+        int index = alarmName.indexOf("_");
+        temp = alarmName.substring(index + 1);
         return temp;
     }
+
     public String stateParser(String alarmState) {
-        if(alarmState.equals("OK")) {
+        if (alarmState.equals("OK")) {
             return "안정";
-        } else if(alarmState.equals("INSUFFICIENT_DATA")) {
+        } else if (alarmState.equals("INSUFFICIENT_DATA")) {
             return "데이터부족";
-        } else if(alarmState.equals("ALARM")) {
+        } else if (alarmState.equals("ALARM")) {
             return "알람";
         }
         return "안정";
     }
 
     public String statParser(String alarmStat) {
-        if(alarmStat.equals("Average")) {
+        if (alarmStat.equals("Average")) {
             return "평균";
         } else if (alarmStat.equals("Maximum")) {
             return " 최대";
@@ -322,7 +312,7 @@ class ListAlarmAdapter extends BaseAdapter {
     }
 
     public String compParser(String alarmComp) {
-        if(alarmComp.equals("GreaterThanThreshold")) {
+        if (alarmComp.equals("GreaterThanThreshold")) {
             return " 보다 클 때";
         } else if (alarmComp.equals("GreaterThanOrEqualToThreshold")) {
             return " 보다 크거나 같을 때";
@@ -331,5 +321,13 @@ class ListAlarmAdapter extends BaseAdapter {
         } else {
             return " 보다 작을 때";
         }
+    }
+
+    static class ViewHolder_Alarm {
+        TextView txtAlarmName;
+        TextView txtAlarmStateAndPeriod;
+        TextView txtAlarmStatAndMetric;
+        TextView txtAlarmThresholdAndComp;
+        ImageView imgStatus;
     }
 }

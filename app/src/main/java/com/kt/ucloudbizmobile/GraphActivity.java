@@ -1,5 +1,6 @@
 package com.kt.ucloudbizmobile;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -38,15 +39,15 @@ import java.util.TimeZone;
 public class GraphActivity extends Activity {
 
 
+    public static int m_year, m_month, m_day, m_hour, m_min;
+    public TextClock clk;
+    public EditText m_EditText_date, m_EditText_time;
     private Calendar calendar;
     private Date datenow;
     private double m_data[];
     private int m_count;
     private int m_gap;
     private Metric m_metric;
-    public TextClock clk;
-    public EditText m_EditText_date, m_EditText_time;
-    public static int m_year, m_month, m_day, m_hour, m_min;
 
     public GraphActivity() {
         m_count = 0;
@@ -57,6 +58,14 @@ public class GraphActivity extends Activity {
         m_metric.namespace = "ucloud/server";
         m_metric.metricname = "CPUUtilization";
         m_metric.metricname = "Percent";
+    }
+
+    public static void populateSetTime(EditText time_, int hour, int minute) {
+        time_.setText(hour + "시 : " + minute + "분");
+    }
+
+    public static void populateSetDate(EditText mEditText, int year, int month, int day) {
+        mEditText.setText(year + "/" + month + "/" + day);
     }
 
     private String MakeCommand_Statics(String mainCommand, String metricName, String namespace, String dimensions, String unit, String period, String statistics, String starttime, String endtime) {
@@ -82,7 +91,7 @@ public class GraphActivity extends Activity {
         TimeZone seoul = TimeZone.getTimeZone("Asia/Seoul");
         calendar = Calendar.getInstance(seoul);
         datenow = calendar.getTime();
-        TextView title = (TextView)  findViewById(R.id.textView_Title);
+        TextView title = (TextView) findViewById(R.id.textView_Title);
         GraphView graph = (GraphView) findViewById(R.id.graph_metric1);
 
         Button button30 = (Button) findViewById(R.id.btn_graph_30);
@@ -117,7 +126,7 @@ public class GraphActivity extends Activity {
             m_metric.metricname = b.getString("metricname");
             m_metric.namespace = b.getString("namespace");
             m_metric.unit = b.getString("unit");
-            title.setText("☞"+m_metric.namespace +" / " + m_metric.metricname + " (" +m_metric.unit+")");
+            title.setText("☞" + m_metric.namespace + " / " + m_metric.metricname + " (" + m_metric.unit + ")");
         }
         refresh_data(calendar, 30);
         // int[] test_data = {2, 3, 2, 2, 2, 3, 5, 10, 12, 3, 2, 4, 5, 2, 6, 1, 2, 7, 2, 5};
@@ -153,8 +162,7 @@ public class GraphActivity extends Activity {
         buttonmagnify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (m_gap)
-                {
+                switch (m_gap) {
                     case 30:
                         m_gap = 120;
                         refresh_data(calendar, 120);
@@ -177,11 +185,10 @@ public class GraphActivity extends Activity {
         buttonreduce.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (m_gap)
-                {
+                switch (m_gap) {
                     case 30:
                         m_gap = 30;
-                      //  refresh_data(calendar, 120);
+                        //  refresh_data(calendar, 120);
                         break;
                     case 120:
                         m_gap = 30;
@@ -201,15 +208,15 @@ public class GraphActivity extends Activity {
         buttonrefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    //Refresh 인 경우
-                    TimeZone seoul = TimeZone.getTimeZone("Asia/Seoul");
-                    calendar = Calendar.getInstance(seoul);
-                    datenow = calendar.getTime();
+                //Refresh 인 경우
+                TimeZone seoul = TimeZone.getTimeZone("Asia/Seoul");
+                calendar = Calendar.getInstance(seoul);
+                datenow = calendar.getTime();
 
-                     m_hour = calendar.get(Calendar.HOUR);
-                    m_min = calendar.get(Calendar.MINUTE);
-                   m_EditText_time.setText(m_hour + "시 : " + m_min + "분");
-                  refresh_data(calendar, m_gap);
+                m_hour = calendar.get(Calendar.HOUR);
+                m_min = calendar.get(Calendar.MINUTE);
+                m_EditText_time.setText(m_hour + "시 : " + m_min + "분");
+                refresh_data(calendar, m_gap);
             }
         });
         m_EditText_time.setOnClickListener(new View.OnClickListener() {
@@ -281,7 +288,6 @@ ${API_URL}command=getMetricStatistics
         });
     }
 
-
     public void setdata(int nCount, int ndata[]) {
         int i;
         if (m_count == 0) {
@@ -301,8 +307,8 @@ ${API_URL}command=getMetricStatistics
 
         m_count = nCount;
         for (i = 0; i < nCount; i++) {
-            if(mstat[i].Average == 0 && i != 0)
-                m_data[i] = m_data[i-1];
+            if (mstat[i].Average == 0 && i != 0)
+                m_data[i] = m_data[i - 1];
             else
                 m_data[i] = mstat[i].Average;
         }
@@ -427,12 +433,28 @@ ${API_URL}command=getMetricStatistics
         return c;
     }
 
+    public void selectTime() {
+        DialogFragment newFragment = new SelectTimeFragment(m_EditText_time, this);
+        newFragment.show(getFragmentManager(), "DatePicker");
+
+    }
+
+    public void selectDate() {
+        DialogFragment newFragment = new SelectDateFragment(m_EditText_date, this);
+        newFragment.show(getFragmentManager(), "DatePicker");
+    }
+
     public static class SelectTimeFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
 
         // Thanks to -> http://javapapers.com/android/android-datepicker/
         EditText mtime;
         GraphActivity mgraph;
 
+        public SelectTimeFragment() {
+
+        }
+
+        @SuppressLint("ValidFragment")
         public SelectTimeFragment(EditText time, GraphActivity graph) {
             this.mtime = time;
             this.mgraph = graph;
@@ -456,22 +478,17 @@ ${API_URL}command=getMetricStatistics
         }
     }
 
-    public void selectTime() {
-            DialogFragment newFragment = new SelectTimeFragment(m_EditText_time, this);
-            newFragment.show(getFragmentManager(), "DatePicker");
-
-    }
-
-    public static void populateSetTime(EditText time_, int hour, int minute) {
-        time_.setText(hour + "시 : " + minute + "분");
-    }
-
     public static class SelectDateFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
         // Thanks to -> http://javapapers.com/android/android-datepicker/
         EditText mEditText;
         GraphActivity mgraph;
 
+        public SelectDateFragment() {
+
+        }
+
+        @SuppressLint("ValidFragment")
         public SelectDateFragment(EditText mEditText, GraphActivity graph) {
             this.mEditText = mEditText;
             mgraph = graph;
@@ -493,15 +510,6 @@ ${API_URL}command=getMetricStatistics
             m_day = dd;
             mgraph.refresh_data(mgraph.MakenewCalendar(), mgraph.m_gap);
         }
-    }
-
-    public void selectDate() {
-        DialogFragment newFragment = new SelectDateFragment(m_EditText_date, this);
-        newFragment.show(getFragmentManager(), "DatePicker");
-    }
-
-    public static void populateSetDate(EditText mEditText, int year, int month, int day) {
-        mEditText.setText(year + "/" + month + "/" + day);
     }
 
 }
