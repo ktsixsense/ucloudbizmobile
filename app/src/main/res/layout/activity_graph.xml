@@ -46,7 +46,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="right"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:weightSum="1">
         <Button
             android:id="@+id/button_refresh"
             style="?android:attr/borderlessButtonStyle"
@@ -86,7 +87,8 @@
             android:id="@+id/textClock_graph"
             android:layout_width="43dp"
             android:layout_height="match_parent"
-            android:gravity="right|center_vertical|center_horizontal" />
+            android:gravity="right|center_vertical|center_horizontal"
+            android:layout_weight="0.18" />
         </LinearLayout>
     </LinearLayout>
 

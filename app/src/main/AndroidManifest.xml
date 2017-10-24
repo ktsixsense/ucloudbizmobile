@@ -27,7 +27,10 @@
         <activity android:name=".DetailServerActivity" />
         <activity android:name=".DetailDiskActivity" />
         <activity android:name=".DetailNetworkActivity" />
-        <activity android:name=".GraphActivity" />
+        <activity android:name=".GraphActivity"
+            android:theme="@style/AppTheme"
+            android:screenOrientation="landscape">
+    </activity>
         <activity android:name=".MetricActivity" />
         <activity android:name=".AlarmActivity" />
 
