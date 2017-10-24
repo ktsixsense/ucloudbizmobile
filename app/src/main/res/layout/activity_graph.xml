@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/textView_Title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20px"
@@ -23,7 +23,7 @@
 
         <EditText
             android:id="@+id/editTextdate_graph"
-            android:layout_width="102dp"
+            android:layout_width="92dp"
             android:layout_height="match_parent"
             android:autoText="false"
             android:editable="false"
@@ -34,7 +34,7 @@
 
         <EditText
             android:id="@+id/editTexttime_graph"
-            android:layout_width="82dp"
+            android:layout_width="71dp"
             android:layout_height="wrap_content"
             android:ems="10"
             android:focusable="false"
@@ -42,18 +42,71 @@
             android:textAllCaps="false"
             android:textSize="14sp" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:orientation="horizontal"
+            android:weightSum="1">
+        <Button
+            android:id="@+id/button_refresh"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+
+            android:background="@drawable/icon_refresh"
+            android:focusableInTouchMode="false"
+            android:minHeight="0dp"
+            android:minWidth="0dp" />
+
+        <Button
+            android:id="@+id/button_magnify"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="36dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/icon_magnify"
+            android:focusableInTouchMode="false"
+            android:gravity="right"
+            android:minHeight="0dp"
+            android:minWidth="0dp" />
+
+            <Button
+                android:id="@+id/button_reducion"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="36dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/icon_reducion"
+                android:focusableInTouchMode="true"
+                android:gravity="right"
+                android:minHeight="0dp"
+                android:minWidth="0dp" />
+
         <TextClock
             android:id="@+id/textClock_graph"
-            android:layout_width="match_parent"
+            android:layout_width="43dp"
             android:layout_height="match_parent"
-            android:gravity="right|center_vertical|center_horizontal" />
-
+            android:gravity="right|center_vertical|center_horizontal"
+            android:layout_weight="0.18" />
+        </LinearLayout>
     </LinearLayout>
 
     <com.jjoe64.graphview.GraphView
         android:id="@+id/graph_metric1"
         android:layout_width="match_parent"
         android:layout_height="224dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+
+
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
