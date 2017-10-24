@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextClock;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -81,12 +82,20 @@ public class GraphActivity extends Activity {
         TimeZone seoul = TimeZone.getTimeZone("Asia/Seoul");
         calendar = Calendar.getInstance(seoul);
         datenow = calendar.getTime();
-
+        TextView title = (TextView)  findViewById(R.id.textView_Title);
         GraphView graph = (GraphView) findViewById(R.id.graph_metric1);
 
         Button button30 = (Button) findViewById(R.id.btn_graph_30);
         Button button120 = (Button) findViewById(R.id.btn_grpah_120);
         Button button600 = (Button) findViewById(R.id.btn_grpah_600);
+        button30.setVisibility(View.GONE);
+        button120.setVisibility(View.GONE);
+        button600.setVisibility(View.GONE);
+
+        Button buttonmagnify = (Button) findViewById(R.id.button_magnify);
+        Button buttonreduce = (Button) findViewById(R.id.button_reducion);
+        Button buttonrefresh = (Button) findViewById(R.id.button_refresh);
+
 
         clk = (TextClock) findViewById(R.id.textClock_graph);
         m_EditText_date = (EditText) findViewById(R.id.editTextdate_graph);
@@ -108,6 +117,7 @@ public class GraphActivity extends Activity {
             m_metric.metricname = b.getString("metricname");
             m_metric.namespace = b.getString("namespace");
             m_metric.unit = b.getString("unit");
+            title.setText("☞"+m_metric.namespace +" / " + m_metric.metricname + " (" +m_metric.unit+")");
         }
         refresh_data(calendar, 30);
         // int[] test_data = {2, 3, 2, 2, 2, 3, 5, 10, 12, 3, 2, 4, 5, 2, 6, 1, 2, 7, 2, 5};
@@ -137,6 +147,69 @@ public class GraphActivity extends Activity {
                 setgap(600);
                 refresh_data(calendar, 600);
                 //  DrawGraph();
+            }
+        });
+
+        buttonmagnify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (m_gap)
+                {
+                    case 30:
+                        m_gap = 120;
+                        refresh_data(calendar, 120);
+                        break;
+                    case 120:
+                        m_gap = 600;
+                        refresh_data(calendar, 600);
+                        break;
+                    case 600:
+                        m_gap = 600;
+                        //refresh_data(calendar, 120);
+                        break;
+                    default:
+                        m_gap = 30;
+                        break;
+                }
+            }
+        });
+
+        buttonreduce.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (m_gap)
+                {
+                    case 30:
+                        m_gap = 30;
+                      //  refresh_data(calendar, 120);
+                        break;
+                    case 120:
+                        m_gap = 30;
+                        refresh_data(calendar, 30);
+                        break;
+                    case 600:
+                        m_gap = 120;
+                        refresh_data(calendar, 120);
+                        break;
+                    default:
+                        m_gap = 30;
+                        break;
+                }
+            }
+        });
+
+        buttonrefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    //Refresh 인 경우
+                    TimeZone seoul = TimeZone.getTimeZone("Asia/Seoul");
+                    calendar = Calendar.getInstance(seoul);
+                    datenow = calendar.getTime();
+
+                     m_hour = calendar.get(Calendar.HOUR);
+                    m_min = calendar.get(Calendar.MINUTE);
+                   m_EditText_time.setText(m_hour + "시 : " + m_min + "분");
+                  refresh_data(calendar, m_gap);
             }
         });
         m_EditText_time.setOnClickListener(new View.OnClickListener() {
@@ -227,8 +300,12 @@ ${API_URL}command=getMetricStatistics
         m_data = new double[nCount];
 
         m_count = nCount;
-        for (i = 0; i < nCount; i++)
-            m_data[i] = mstat[i].Average;
+        for (i = 0; i < nCount; i++) {
+            if(mstat[i].Average == 0 && i != 0)
+                m_data[i] = m_data[i-1];
+            else
+                m_data[i] = mstat[i].Average;
+        }
     }
 
     public void setdata(int nCount, int ndata[], int ngap) {
@@ -380,8 +457,9 @@ ${API_URL}command=getMetricStatistics
     }
 
     public void selectTime() {
-        DialogFragment newFragment = new SelectTimeFragment(m_EditText_time, this);
-        newFragment.show(getFragmentManager(), "DatePicker");
+            DialogFragment newFragment = new SelectTimeFragment(m_EditText_time, this);
+            newFragment.show(getFragmentManager(), "DatePicker");
+
     }
 
     public static void populateSetTime(EditText time_, int hour, int minute) {
