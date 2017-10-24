@@ -11,14 +11,22 @@
     <item android:title="설정">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_group"
-                android:title="계정 정보" />
-            <item
                 android:id="@+id/nav_send"
                 android:icon="@drawable/ic_menu_manage"
                 android:title="앱 정보" />
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@drawable/ic_menu_logout"
+                android:title="로그아웃" />
         </menu>
     </item>
+    <group android:checkableBehavior="none">
+        <item android:title="요금">
+            <menu>
+                <item
+                    android:title="@string/billing_title"/>
+            </menu>
 
+        </item>
+    </group>
 </menu>

@@ -335,6 +335,9 @@ public class ApiParser {
             case "listmetricsresponse":
                 descNodes = doc.getElementsByTagName("listmetricsresponse");
                 break;
+            case "jobid":
+                descNodes = doc.getElementsByTagName("jobid");
+                break;
             default:
                 descNodes = doc.getElementsByTagName("count");
         }

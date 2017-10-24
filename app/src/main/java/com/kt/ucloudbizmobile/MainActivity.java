@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -66,6 +67,9 @@ public class MainActivity extends AppCompatActivity
     private int totalNetwork;
     private int totalNetwork2;
 
+    static String apiKey;
+    static String secretKey;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +77,13 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         zoneSpinner = (Spinner) findViewById(spinner);
+        Button button = (Button) findViewById(R.id.refresh_button);
         progressBar = (ProgressBar) findViewById(R.id.progressList);
+
+        serverData = new ArrayList<>();
+        diskData = new ArrayList<>();
+        networkData = new ArrayList<>();
+        networkData2 = new ArrayList<>();
 
         serverTempData = new ArrayList<>();
         diskTempData = new ArrayList<>();
@@ -136,8 +146,8 @@ public class MainActivity extends AppCompatActivity
          * 1. adapter.addItem(ListServerItem)
          * 2. adapter.addItemArray(ArrayList<ListServerItem>)
          **/
-        final String apiKey = "kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg";
-        final String secretKey = "NmczQzPOE-CoYLbKpvo3UHJSaZ_6e9SC3tJIYsMIoiTJYMWMn8x-DpzBRTzzSkk0xegYz7g2yrvt_8jRrScxHQ";
+        apiKey = "kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg";
+        secretKey = "NmczQzPOE-CoYLbKpvo3UHJSaZ_6e9SC3tJIYsMIoiTJYMWMn8x-DpzBRTzzSkk0xegYz7g2yrvt_8jRrScxHQ";
 
         //
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -234,7 +244,25 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switch(tabHost.getCurrentTab()) {
+                    case 0:
+                        getServerData(apiKey, secretKey, adapter, aq, parser);
+                        break;
+                    case 1:
+                        getDiskData(apiKey, secretKey, adapter2, aq, parser);
+                        break;
+                    case 2:
+                        getNetworkData(apiKey, secretKey, adapter3, adapter4, aq, parser);
+                        break;
+                    default:
+                        //네트워크 새로 나눈거
+                        break;
+                }
+            }
+        });
         zoneSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
@@ -391,7 +419,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+       // getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -403,9 +431,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        /*if (id == R.id.action_settings) {
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -420,10 +448,15 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, AlarmActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
-        } else if (id == R.id.nav_share) {
-            Toast.makeText(getApplicationContext(), "444", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_send) {
-            Toast.makeText(getApplicationContext(), "555", Toast.LENGTH_SHORT).show();
+        }else if (id == R.id.nav_send) {
+            Toast.makeText(getApplicationContext(), "Ucloud Biz MOA made by SixSense \n" +
+                    "\n<개발 담당>\n - 메시징플랫폼팀 전상일 사원\n - 플랫폼기획팀 김현재 사원\n - Cloud포탈팀 최영진 사원\n" +
+                    "\n<기획 및 자료 담당>\n - Cloud플랫폼운용팀 이호중 사원\n - Cloud서비스운용팀 김성훈 사원\n - 보안분석기획팀 배수열 사원", Toast.LENGTH_LONG).show();
+        } else if (id == R.id.nav_logout) {
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

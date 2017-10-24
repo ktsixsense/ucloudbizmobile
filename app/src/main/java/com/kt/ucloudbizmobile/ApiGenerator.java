@@ -87,6 +87,39 @@ public class ApiGenerator {
         return temp;
     }
 
+    public static String apiStartServer(String _apiKey, String _secretKey, String uuid, boolean isM2) {
+        HashMap<String, String> requests = new HashMap<String, String>();
+        String basicURL = "";
+        if (isM2)
+            basicURL = "https://api.ucloudbiz.olleh.com/server/v2/client/api?";
+        else
+            basicURL = "https://api.ucloudbiz.olleh.com/server/v1/client/api?";
+
+        requests.put("apikey", _apiKey);
+        //requests.put("productcode", "SSD 100G");
+        requests.put("command", "startVirtualMachine");
+        requests.put("id", uuid);
+
+        // 5. Signature
+        Map<String, String> sigMap = new TreeMap<String, String>(requests);
+        String signature = getSignature(sigMap, _secretKey);
+
+        // 6. requests
+        String commandString = getCommandString(requests);
+
+        String finalURL = basicURL + commandString + "signature=" + signature;
+        finalURL = finalURL.substring(0, finalURL.length()-3);
+
+        Log.d("URL:", finalURL);
+
+        /*try {
+            new getHttpResponse().execute(new URL(finalURL));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }*/
+        return finalURL;
+    }
+
     public static String apiGenerator(String _apiKey, String _secretKey, String _command, boolean isM2, String id) {
         HashMap<String, String> requests = new HashMap<String, String>();
         String basicURL = "";
