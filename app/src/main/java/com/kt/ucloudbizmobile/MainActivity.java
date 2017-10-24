@@ -1,6 +1,5 @@
 package com.kt.ucloudbizmobile;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -9,12 +8,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.Explode;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -29,10 +26,23 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.w3c.dom.Document;
 
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MyEventListener {
+
+    // Push Server Connection
+    String refreshedToken;
+    String IP = "211.252.84.108";
+    int PORT = 8088;
+
+    SetSocket setSocket;
 
     private BackPressCloseHandler backPressCloseHandler;
     private ProgressBar progressBar;
@@ -55,7 +65,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
         setContentView(R.layout.activity_main);
 
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
@@ -72,9 +81,15 @@ public class MainActivity extends AppCompatActivity
         networkTempData = new ArrayList<>();
         networkTempData2 = new ArrayList<>();
 
+        final AQuery aq = new AQuery(this);
+        final ApiParser parser = new ApiParser();
+
         // Firebase
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d("push", refreshedToken);
+        refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        // AppUtility.showMsg(getApplicationContext(), refreshedToken);
+        Log.d("push-server", "token id : " + refreshedToken);
+        setSocket = new SetSocket(IP, PORT);
+        setSocket.start();
 
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -108,13 +123,13 @@ public class MainActivity extends AppCompatActivity
         tabHost.setup();
 
         // #1
-        TabHost.TabSpec ts1 = tabHost.newTabSpec("server");
+        final TabHost.TabSpec ts1 = tabHost.newTabSpec("server");
         ts1.setContent(R.id.content1);
         ts1.setIndicator("Server");
         tabHost.addTab(ts1);
 
         final ListView listView = (ListView) findViewById(R.id.listServer);
-        final ListServerAdapter adapter = new ListServerAdapter();
+        final ListServerAdapter adapter = new ListServerAdapter(getApplicationContext());
         listView.setAdapter(adapter);
         adapter.setMyEventListener(this);
 
@@ -122,79 +137,10 @@ public class MainActivity extends AppCompatActivity
          * 1. adapter.addItem(ListServerItem)
          * 2. adapter.addItemArray(ArrayList<ListServerItem>)
          **/
-        // Sample data
-//        for (int i = 0; i < 10; i++) {
-//            adapter.addItem(new ListServerItem("Server Name " + (i + 1), "Server OS " + (i + 1), i % 3 == 0));
-//        }
-
-        String apiKey = "kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg";
-        String secretKey = "NmczQzPOE-CoYLbKpvo3UHJSaZ_6e9SC3tJIYsMIoiTJYMWMn8x-DpzBRTzzSkk0xegYz7g2yrvt_8jRrScxHQ";
-
-        final AQuery aq = new AQuery(this);
-        final ApiParser parser = new ApiParser();
+        final String apiKey = "kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg";
+        final String secretKey = "NmczQzPOE-CoYLbKpvo3UHJSaZ_6e9SC3tJIYsMIoiTJYMWMn8x-DpzBRTzzSkk0xegYz7g2yrvt_8jRrScxHQ";
 
         //
-        //String url = "https://api.ucloudbiz.olleh.com/server/v1/client/api?command=listVirtualMachines&apikey=kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg&signature=WgLcczEWC3Jf%2F4%2F7NJTqPuj1FrU%3D";
-        final String cloudstack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", false, "all");
-        final String cloudstack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", true, "all");
-        final String cloudstack3 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", true, "6fa9ef2b-1824-4c7a-b288-9498738ca9b8");
-        String watch_url_tmp = ApiGenerator.apiGeneratorWatch(apiKey, secretKey, "getMetricStatistics", false);
-        // cloudstack2
-        aq.ajax(cloudstack2, String.class, new AjaxCallback<String>() {
-            Server[] servers = null;
-            ArrayList<ListServerItem> dataSet = new ArrayList<>();
-            int dataCount = 0;
-
-            @Override
-            public void callback(String url, String json, AjaxStatus status) {
-                if (json != null) {
-                    //successful ajax call, show status code and json content
-                    Document doc = parser.getDocument(json);
-                    int index = parser.getNumberOfResponse("server", doc);
-                    servers = new Server[index];
-                    servers = parser.parseServerList(doc, index);
-
-                    for (int i = 0; i < index; i++) {
-                        dataSet.add(i, new ListServerItem(servers[i].displayname, servers[i].os, servers[i].zonename, servers[i].state.equals("Running")));
-                        serverData.add(i, servers[i]);
-                        dataCount++;
-                    }
-
-                    aq.ajax(cloudstack1, String.class, new AjaxCallback<String>() {
-
-                        @Override
-                        public void callback(String url, String json, AjaxStatus status) {
-                            if (json != null) {
-                                //successful ajax call, show status code and json content
-                                Document doc = parser.getDocument(json);
-                                int index = parser.getNumberOfResponse("server", doc);
-                                totalServer = dataCount + index;
-                                servers = new Server[index];
-                                servers = parser.parseServerList(doc, index);
-
-                                for (int i = 0; i < index; i++) {
-                                    dataSet.add(i + dataCount, new ListServerItem(servers[i].displayname, servers[i].os, servers[i].zonename, servers[i].state.equals("Running")));
-                                    serverData.add(i + dataCount, servers[i]);
-                                }
-                                serverTempData = serverData;
-                                adapter.addItemArray(dataSet);
-                                adapter.notifyDataSetChanged();
-
-                                progressBar.setVisibility(View.INVISIBLE);
-                            } else {
-                                //ajax error, show error code
-                                AppUtility.showMsg(getApplicationContext(), "Error : " + status.getError());
-                            }
-                        }
-                    });
-
-                } else {
-                    //ajax error, show error code
-                    AppUtility.showMsg(getApplicationContext(), "Error : " + status.getError());
-                }
-            }
-        });
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -209,7 +155,7 @@ public class MainActivity extends AppCompatActivity
         });
 
         // #2
-        TabHost.TabSpec ts2 = tabHost.newTabSpec("disk");
+        final TabHost.TabSpec ts2 = tabHost.newTabSpec("disk");
         ts2.setContent(R.id.content2);
         ts2.setIndicator("Disk");
         tabHost.addTab(ts2);
@@ -218,72 +164,6 @@ public class MainActivity extends AppCompatActivity
         final ListDiskAdapter adapter2 = new ListDiskAdapter();
         listView2.setAdapter(adapter2);
         adapter2.setMyEventListener(this);
-
-        final String diskStack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVolumes", false, "all");
-        final String diskStack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVolumes", true, "all");
-
-        // Sample data
-        /*adapter2.addItem("Test A", "500GB", true);
-        adapter2.addItem("Test B", "250GB", false);
-        adapter2.addItem("Test C", "200GB", false);
-        adapter2.addItem("Test D", "128GB", true);*/
-
-        // cloudstack2
-        aq.ajax(diskStack2, String.class, new AjaxCallback<String>() {
-            Disk[] disks = null;
-            ArrayList<ListDiskItem> dataSet = new ArrayList<>();
-            int dataCount = 0;
-
-            @Override
-            public void callback(String url, String json, AjaxStatus status) {
-                if (json != null) {
-                    //successful ajax call, show status code and json content
-                    Document doc = parser.getDocument(json);
-                    int index = parser.getNumberOfResponse("disk", doc);
-                    disks = new Disk[index];
-                    disks = parser.parseDiskList(doc, index);
-
-                    for (int i = 0; i < index; i++) {
-                        dataSet.add(i, new ListDiskItem(disks[i].displayname, disks[i].size, disks[i].zonename, disks[i].state != null ? true : false, disks[i].vmname));
-                        diskData.add(i, disks[i]);
-                        dataCount++;
-                    }
-
-                    aq.ajax(diskStack1, String.class, new AjaxCallback<String>() {
-
-                        @Override
-                        public void callback(String url, String json, AjaxStatus status) {
-                            if (json != null) {
-                                //successful ajax call, show status code and json content
-                                Document doc = parser.getDocument(json);
-                                int index = parser.getNumberOfResponse("disk", doc);
-                                totalDisk = dataCount + index;
-                                disks = new Disk[index];
-                                disks = parser.parseDiskList(doc, index);
-
-                                for (int i = 0; i < index; i++) {
-                                    dataSet.add(i, new ListDiskItem(disks[i].displayname, disks[i].size, disks[i].zonename, disks[i].state != null ? true : false, disks[i].vmname));
-                                    diskData.add(i, disks[i]);
-                                    dataCount++;
-                                }
-                                diskTempData = diskData;
-                                adapter2.addItemArray(dataSet);
-                                adapter2.notifyDataSetChanged();
-
-                            } else {
-                                //ajax error, show error code
-                                Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
-
-                } else {
-                    //ajax error, show error code
-                    Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
 
         listView2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -299,7 +179,7 @@ public class MainActivity extends AppCompatActivity
         });
 
         // #3
-        TabHost.TabSpec ts3 = tabHost.newTabSpec("network");
+        final TabHost.TabSpec ts3 = tabHost.newTabSpec("network");
         ts3.setContent(R.id.content3);
         ts3.setIndicator("Network");
         tabHost.addTab(ts3);
@@ -313,120 +193,16 @@ public class MainActivity extends AppCompatActivity
         adapter3.setMyEventListener(this);
         adapter4.setMyEventListener(this);
 
-        final String nwStack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listPublicIpAddresses", false, "all");
-        final String nwStack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listPublicIpAddresses", true, "all");
-
-        final String n_nwStack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listNetworks", false, "all");
-        final String n_nwStack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listNetworks", true, "all");
-
-        // cloudstack2
-        aq.ajax(nwStack2, String.class, new AjaxCallback<String>() {
-            Network[] networks = null;
-            ArrayList<ListNetworkItem> dataSet = new ArrayList<>();
-            int dataCount = 0;
-
+        // Get data from API when tab changed.
+        tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
-            public void callback(String url, String json, AjaxStatus status) {
-                if (json != null) {
-                    //successful ajax call, show status code and json content
-                    Document doc = parser.getDocument(json);
-                    int index = parser.getNumberOfResponse("network", doc);
-                    networks = new Network[index];
-                    networks = parser.parseNetworkList(doc, index, false);
-
-                    for (int i = 0; i < index; i++) {
-                        dataSet.add(i, new ListNetworkItem(networks[i].ipaddress, networks[i].addressid, networks[i].zonename, networks[i].usageplan.equals("") ? false : true));
-                        networkData.add(i, networks[i]);
-                        dataCount++;
-                    }
-
-                    aq.ajax(nwStack1, String.class, new AjaxCallback<String>() {
-
-                        @Override
-                        public void callback(String url, String json, AjaxStatus status) {
-                            if (json != null) {
-                                //successful ajax call, show status code and json content
-                                Document doc = parser.getDocument(json);
-                                int index = parser.getNumberOfResponse("network", doc);
-                                totalNetwork = dataCount + index;
-                                networks = new Network[index];
-                                networks = parser.parseNetworkList(doc, index, false);
-
-                                for (int i = 0; i < index; i++) {
-                                    dataSet.add(i, new ListNetworkItem(networks[i].ipaddress, networks[i].addressid, networks[i].zonename, networks[i].usageplan != null ? true : false));
-                                    networkData.add(i, networks[i]);
-                                    dataCount++;
-                                }
-                                networkTempData = networkData;
-                                adapter3.addItemArray(dataSet);
-                                adapter3.notifyDataSetChanged();
-
-                            } else {
-                                //ajax error, show error code
-                                Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
-
-                } else {
-                    //ajax error, show error code
-                    Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
-        aq.ajax(n_nwStack2, String.class, new AjaxCallback<String>() {
-            Network[] networks = null;
-            ArrayList<ListNetworkItem> dataSet = new ArrayList<>();
-            int dataCount = 0;
-
-            @Override
-            public void callback(String url, String json, AjaxStatus status) {
-                if (json != null) {
-                    //successful ajax call, show status code and json content
-                    Document doc = parser.getDocument(json);
-                    int index = parser.getNumberOfResponse("n_network", doc);
-                    networks = new Network[index];
-                    networks = parser.parseNetworkList(doc, index, true);
-
-                    for (int i = 0; i < index; i++) {
-                        Log.d("11", networks[i].n_cidr);
-                        dataSet.add(i, new ListNetworkItem(networks[i].n_displayname, networks[i].n_zonename, networks[i].n_type, networks[i].n_cidr));
-                        networkData2.add(i, networks[i]);
-                        dataCount++;
-                    }
-
-                    aq.ajax(n_nwStack1, String.class, new AjaxCallback<String>() {
-
-                        @Override
-                        public void callback(String url, String json, AjaxStatus status) {
-                            if (json != null) {
-                                //successful ajax call, show status code and json content
-                                Document doc = parser.getDocument(json);
-                                int index = parser.getNumberOfResponse("n_network", doc);
-                                totalNetwork2 = dataCount + index;
-                                networks = new Network[index];
-                                networks = parser.parseNetworkList(doc, index, true);
-
-                                for (int i = 0; i < index; i++) {
-                                    dataSet.add(i, new ListNetworkItem(networks[i].n_displayname, networks[i].n_zonename, networks[i].n_type, networks[i].n_cidr));
-                                    networkData2.add(i, networks[i]);
-                                    dataCount++;
-                                }
-                                networkTempData2 = networkData2;
-                                adapter4.addItemArray(dataSet);
-                                adapter4.notifyDataSetChanged();
-
-                            } else {
-                                //ajax error, show error code
-                                Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
-
-                } else {
-                    //ajax error, show error code
-                    Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+            public void onTabChanged(String s) {
+                if (s.equalsIgnoreCase("server")) {
+                    getServerData(apiKey, secretKey, adapter, aq, parser);
+                } else if (s.equalsIgnoreCase("disk")) {
+                    getDiskData(apiKey, secretKey, adapter2, aq, parser);
+                } else if (s.equalsIgnoreCase("network")) {
+                    getNetworkData(apiKey, secretKey, adapter3, adapter4, aq, parser);
                 }
             }
         });
@@ -444,7 +220,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-       listView4.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView4.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Network data2 = networkTempData2.get(i);
@@ -575,6 +351,8 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
+        getServerData(apiKey, secretKey, adapter, aq, parser);
     }
 
     @Override
@@ -615,24 +393,10 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_slideshow) {
             Intent intent = new Intent(MainActivity.this, AlarmActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-            getWindow().setExitTransition(new Explode());
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
-        } else if (id == R.id.nav_gallery) {
-            Intent intent = new Intent(MainActivity.this, MetricActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-            getWindow().setExitTransition(new Explode());
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
-        } else if (id == R.id.nav_slideshow) {
-            Intent intent = new Intent(MainActivity.this, AlarmActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-            getWindow().setExitTransition(new Explode());
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+            startActivity(intent);
         } else if (id == R.id.nav_share) {
             Toast.makeText(getApplicationContext(), "444", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_send) {
@@ -655,9 +419,302 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private View.OnClickListener leftListener = new View.OnClickListener() {
-        public void onClick(View v) {
+    public class SetSocket extends Thread {
 
+        Socket socket;
+        OutputStream os;
+        BufferedWriter bw;
+
+        String IP;
+        int PORT;
+
+        public SetSocket(String IP, int PORT) {
+            this.IP = IP;
+            this.PORT = PORT;
         }
-    };
+
+        public void run() {
+            try {
+                socket = new Socket(IP, PORT);
+                os = new DataOutputStream(socket.getOutputStream());
+                bw = new BufferedWriter(new OutputStreamWriter(os));
+
+                bw.write(refreshedToken);
+                bw.flush();
+                bw.close();
+
+                Log.d("push-server", "Push server connection succeed.");
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (socket != null)
+                        socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void getServerData(String apiKey, String secretKey, final ListServerAdapter adapter, final AQuery aq, final ApiParser parser) {
+
+        adapter.removeAll();
+        adapter.notifyDataSetChanged();
+
+        //String url = "https://api.ucloudbiz.olleh.com/server/v1/client/api?command=listVirtualMachines&apikey=kizK9RwyBEt1tC5yCC3HfsySST-aaQfz7-pcL3aySgRXBRanIucts0bSjeCtmAtFYwpmouPTl-Q6iOmu9VdMkg&signature=WgLcczEWC3Jf%2F4%2F7NJTqPuj1FrU%3D";
+        final String cloudstack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", false, "all");
+        final String cloudstack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", true, "all");
+        final String cloudstack3 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVirtualMachines", true, "6fa9ef2b-1824-4c7a-b288-9498738ca9b8");
+        String watch_url_tmp = ApiGenerator.apiGeneratorWatch(apiKey, secretKey, "getMetricStatistics", false);
+        // cloudstack2
+        aq.ajax(cloudstack2, String.class, new AjaxCallback<String>() {
+            Server[] servers = null;
+            ArrayList<ListServerItem> dataSet = new ArrayList<>();
+            int dataCount = 0;
+
+            @Override
+            public void callback(String url, String json, AjaxStatus status) {
+                if (json != null) {
+                    //successful ajax call, show status code and json content
+                    Document doc = parser.getDocument(json);
+                    int index = parser.getNumberOfResponse("server", doc);
+                    servers = new Server[index];
+                    servers = parser.parseServerList(doc, index);
+
+                    for (int i = 0; i < index; i++) {
+                        dataSet.add(i, new ListServerItem(servers[i].displayname, servers[i].os, servers[i].zonename, servers[i].state.equals("Running")));
+                        serverData.add(i, servers[i]);
+                        dataCount++;
+                    }
+
+                    aq.ajax(cloudstack1, String.class, new AjaxCallback<String>() {
+
+                        @Override
+                        public void callback(String url, String json, AjaxStatus status) {
+                            if (json != null) {
+                                //successful ajax call, show status code and json content
+                                Document doc = parser.getDocument(json);
+                                int index = parser.getNumberOfResponse("server", doc);
+                                totalServer = dataCount + index;
+                                servers = new Server[index];
+                                servers = parser.parseServerList(doc, index);
+
+                                for (int i = 0; i < index; i++) {
+                                    dataSet.add(i + dataCount, new ListServerItem(servers[i].displayname, servers[i].os, servers[i].zonename, servers[i].state.equals("Running")));
+                                    serverData.add(i + dataCount, servers[i]);
+                                }
+                                serverTempData = serverData;
+                                adapter.addItemArray(dataSet);
+                                adapter.notifyDataSetChanged();
+
+                                progressBar.setVisibility(View.INVISIBLE);
+                            } else {
+                                //ajax error, show error code
+                                AppUtility.showMsg(getApplicationContext(), "Error : " + status.getError());
+                            }
+                        }
+                    });
+
+                } else {
+                    //ajax error, show error code
+                    AppUtility.showMsg(getApplicationContext(), "Error : " + status.getError());
+                }
+            }
+        });
+    }
+
+    public void getDiskData(String apiKey, String secretKey, final ListDiskAdapter adapter2, final AQuery aq, final ApiParser parser) {
+
+        adapter2.removeAll();
+        adapter2.notifyDataSetChanged();
+
+        final String diskStack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVolumes", false, "all");
+        final String diskStack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listVolumes", true, "all");
+
+        // cloudstack2
+        aq.ajax(diskStack2, String.class, new AjaxCallback<String>() {
+            Disk[] disks = null;
+            ArrayList<ListDiskItem> dataSet = new ArrayList<>();
+            int dataCount = 0;
+
+            @Override
+            public void callback(String url, String json, AjaxStatus status) {
+                if (json != null) {
+                    //successful ajax call, show status code and json content
+                    Document doc = parser.getDocument(json);
+                    int index = parser.getNumberOfResponse("disk", doc);
+                    disks = new Disk[index];
+                    disks = parser.parseDiskList(doc, index);
+
+                    for (int i = 0; i < index; i++) {
+                        dataSet.add(i, new ListDiskItem(disks[i].displayname, disks[i].size, disks[i].zonename, disks[i].state != null ? true : false, disks[i].vmname));
+                        diskData.add(i, disks[i]);
+                        dataCount++;
+                    }
+
+                    aq.ajax(diskStack1, String.class, new AjaxCallback<String>() {
+
+                        @Override
+                        public void callback(String url, String json, AjaxStatus status) {
+                            if (json != null) {
+                                //successful ajax call, show status code and json content
+                                Document doc = parser.getDocument(json);
+                                int index = parser.getNumberOfResponse("disk", doc);
+                                totalDisk = dataCount + index;
+                                disks = new Disk[index];
+                                disks = parser.parseDiskList(doc, index);
+
+                                for (int i = 0; i < index; i++) {
+                                    dataSet.add(i, new ListDiskItem(disks[i].displayname, disks[i].size, disks[i].zonename, disks[i].state != null ? true : false, disks[i].vmname));
+                                    diskData.add(i, disks[i]);
+                                    dataCount++;
+                                }
+                                diskTempData = diskData;
+                                adapter2.addItemArray(dataSet);
+                                adapter2.notifyDataSetChanged();
+
+                            } else {
+                                //ajax error, show error code
+                                Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+
+                } else {
+                    //ajax error, show error code
+                    Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+
+    }
+
+    public void getNetworkData(String apiKey, String secretKey, final ListNetworkAdapter adapter3, final ListNetworkAdapter2 adapter4, final AQuery aq, final ApiParser parser) {
+
+        adapter3.removeAll();
+        adapter4.removeAll();
+        adapter3.notifyDataSetChanged();
+        adapter4.notifyDataSetChanged();
+
+        final String nwStack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listPublicIpAddresses", false, "all");
+        final String nwStack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listPublicIpAddresses", true, "all");
+
+        final String n_nwStack1 = ApiGenerator.apiGenerator(apiKey, secretKey, "listNetworks", false, "all");
+        final String n_nwStack2 = ApiGenerator.apiGenerator(apiKey, secretKey, "listNetworks", true, "all");
+
+        // cloudstack2
+        aq.ajax(nwStack2, String.class, new AjaxCallback<String>() {
+            Network[] networks = null;
+            ArrayList<ListNetworkItem> dataSet = new ArrayList<>();
+            int dataCount = 0;
+
+            @Override
+            public void callback(String url, String json, AjaxStatus status) {
+                if (json != null) {
+                    //successful ajax call, show status code and json content
+                    Document doc = parser.getDocument(json);
+                    int index = parser.getNumberOfResponse("network", doc);
+                    networks = new Network[index];
+                    networks = parser.parseNetworkList(doc, index, false);
+
+                    for (int i = 0; i < index; i++) {
+                        dataSet.add(i, new ListNetworkItem(networks[i].ipaddress, networks[i].addressid, networks[i].zonename, networks[i].usageplan.equals("") ? false : true));
+                        networkData.add(i, networks[i]);
+                        dataCount++;
+                    }
+
+                    aq.ajax(nwStack1, String.class, new AjaxCallback<String>() {
+
+                        @Override
+                        public void callback(String url, String json, AjaxStatus status) {
+                            if (json != null) {
+                                //successful ajax call, show status code and json content
+                                Document doc = parser.getDocument(json);
+                                int index = parser.getNumberOfResponse("network", doc);
+                                totalNetwork = dataCount + index;
+                                networks = new Network[index];
+                                networks = parser.parseNetworkList(doc, index, false);
+
+                                for (int i = 0; i < index; i++) {
+                                    dataSet.add(i, new ListNetworkItem(networks[i].ipaddress, networks[i].addressid, networks[i].zonename, networks[i].usageplan != null ? true : false));
+                                    networkData.add(i, networks[i]);
+                                    dataCount++;
+                                }
+                                networkTempData = networkData;
+                                adapter3.addItemArray(dataSet);
+                                adapter3.notifyDataSetChanged();
+
+                            } else {
+                                //ajax error, show error code
+                                Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+
+                } else {
+                    //ajax error, show error code
+                    Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        aq.ajax(n_nwStack2, String.class, new AjaxCallback<String>() {
+            Network[] networks = null;
+            ArrayList<ListNetworkItem> dataSet = new ArrayList<>();
+            int dataCount = 0;
+
+            @Override
+            public void callback(String url, String json, AjaxStatus status) {
+                if (json != null) {
+                    //successful ajax call, show status code and json content
+                    Document doc = parser.getDocument(json);
+                    int index = parser.getNumberOfResponse("n_network", doc);
+                    networks = new Network[index];
+                    networks = parser.parseNetworkList(doc, index, true);
+
+                    for (int i = 0; i < index; i++) {
+                        Log.d("11", networks[i].n_cidr);
+                        dataSet.add(i, new ListNetworkItem(networks[i].n_displayname, networks[i].n_zonename, networks[i].n_type, networks[i].n_cidr));
+                        networkData2.add(i, networks[i]);
+                        dataCount++;
+                    }
+
+                    aq.ajax(n_nwStack1, String.class, new AjaxCallback<String>() {
+
+                        @Override
+                        public void callback(String url, String json, AjaxStatus status) {
+                            if (json != null) {
+                                //successful ajax call, show status code and json content
+                                Document doc = parser.getDocument(json);
+                                int index = parser.getNumberOfResponse("n_network", doc);
+                                totalNetwork2 = dataCount + index;
+                                networks = new Network[index];
+                                networks = parser.parseNetworkList(doc, index, true);
+
+                                for (int i = 0; i < index; i++) {
+                                    dataSet.add(i, new ListNetworkItem(networks[i].n_displayname, networks[i].n_zonename, networks[i].n_type, networks[i].n_cidr));
+                                    networkData2.add(i, networks[i]);
+                                    dataCount++;
+                                }
+                                networkTempData2 = networkData2;
+                                adapter4.addItemArray(dataSet);
+                                adapter4.notifyDataSetChanged();
+
+                            } else {
+                                //ajax error, show error code
+                                Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+
+                } else {
+                    //ajax error, show error code
+                    Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
 }
+

@@ -1,13 +1,10 @@
 package com.kt.ucloudbizmobile;
 
 import android.content.Context;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,7 +22,6 @@ public class ListNetworkAdapter extends BaseAdapter {
         TextView txtNetworkIP;
         TextView txtNetworkID;
         ImageView imgStatus;
-        ImageButton btnMonitor;
     }
 
     private ArrayList<ListNetworkItem> listViewNetworkItemList = new ArrayList<>();
@@ -56,8 +52,6 @@ public class ListNetworkAdapter extends BaseAdapter {
             holder.txtNetworkIP = v.findViewById(R.id.txt_network_ip);
             holder.txtNetworkID = v.findViewById(R.id.txt_network_id);
             holder.imgStatus = v.findViewById(R.id.img_network_status);
-            holder.btnMonitor = v.findViewById(R.id.btn_network_monitor);
-
             v.setTag(holder);
         }
 
@@ -67,7 +61,6 @@ public class ListNetworkAdapter extends BaseAdapter {
         ViewHolder_Network holder = (ViewHolder_Network) v.getTag();
         if (item != null) {
             final String test = item.getNetworkIP();
-
 
             holder.txtNetworkIP.setText(item.getNetworkIP());
             holder.txtNetworkID.setText(/*item.getNetworkID() + "\n" + */item.getNetworkZone());
@@ -95,6 +88,7 @@ public class ListNetworkAdapter extends BaseAdapter {
     public void addItem(String networkIP, String networkID, String networkZone, boolean networkBasicIP) {
         listViewNetworkItemList.add(new ListNetworkItem(networkIP, networkID, networkZone, networkBasicIP));
     }
+
     public void addItem(String n_displayname, String n_zonename, String n_type, String n_cidr) {
         listViewNetworkItemList.add(new ListNetworkItem(n_displayname, n_zonename, n_type, n_cidr));
     }

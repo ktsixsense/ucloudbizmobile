@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class DetailNetworkActivity extends AppCompatActivity {
 
@@ -25,31 +24,48 @@ public class DetailNetworkActivity extends AppCompatActivity {
         ListDetailAdapter adapter = new ListDetailAdapter();
         listDetail.setAdapter(adapter);
 
-        if(data.ipaddress != null){
+        if (data.ipaddress != null) {
             adapter.addItem("공인 IP", data.ipaddress);
             adapter.addItem("UUID", data.addressid);
             String zonename = "";
-            switch(data.zonename) {
-                case "kr-md2-1": zonename = "Seoul M2 zone"; break;
-                case "kr-1": zonename = "Central A zone"; break;
-                case "kr-2": zonename = "Central B zone"; break;
-                case "kr-0": zonename = "Seoul M zone"; break;
-                default: zonename = data.zonename;
+            switch (data.zonename) {
+                case "kr-md2-1":
+                    zonename = "Seoul M2 zone";
+                    break;
+                case "kr-1":
+                    zonename = "Central A zone";
+                    break;
+                case "kr-2":
+                    zonename = "Central B zone";
+                    break;
+                case "kr-0":
+                    zonename = "Seoul M zone";
+                    break;
+                default:
+                    zonename = data.zonename;
             }
             adapter.addItem("Zone", zonename);
             adapter.addItem("상태", data.state);
-        }
-        else {
+        } else {
             adapter.addItem("Network명", data.n_displayname);
             adapter.addItem("UUID", data.n_networkid);
             adapter.addItem("종류", data.n_type);
             String zonename = "";
-            switch(data.n_zonename) {
-                case "kr-md2-1": zonename = "Seoul M2 zone"; break;
-                case "kr-1": zonename = "Central A zone"; break;
-                case "kr-2": zonename = "Central B zone"; break;
-                case "kr-0": zonename = "Seoul M zone"; break;
-                default: zonename = data.n_zonename;
+            switch (data.n_zonename) {
+                case "kr-md2-1":
+                    zonename = "Seoul M2 zone";
+                    break;
+                case "kr-1":
+                    zonename = "Central A zone";
+                    break;
+                case "kr-2":
+                    zonename = "Central B zone";
+                    break;
+                case "kr-0":
+                    zonename = "Seoul M zone";
+                    break;
+                default:
+                    zonename = data.n_zonename;
             }
             adapter.addItem("Zone", zonename);
             adapter.addItem("CIDR", data.n_cidr);
@@ -57,8 +73,5 @@ public class DetailNetworkActivity extends AppCompatActivity {
             adapter.addItem("Gateway", data.n_gateway);
             adapter.addItem("상태", data.n_state);
         }
-
-
-
     }
 }

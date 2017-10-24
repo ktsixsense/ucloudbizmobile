@@ -37,10 +37,10 @@
             android:layout_width="82dp"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="time"
             android:focusable="false"
+            android:inputType="time"
             android:textAllCaps="false"
-            android:textSize="14sp"/>
+            android:textSize="14sp" />
 
         <TextClock
             android:id="@+id/textClock_graph"
@@ -66,21 +66,21 @@
             android:layout_height="wrap_content"
 
             android:onClick="OnClickGraph_30"
-            android:text="30분 보기"></Button>
+            android:text="30분 보기" />
 
         <Button
             android:id="@+id/btn_grpah_120"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="OnClickGraph_120"
-            android:text="120분 보기"></Button>
+            android:text="120분 보기" />
 
         <Button
             android:id="@+id/btn_grpah_600"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="OnClickGraph_600"
-            android:text="600분 보기"></Button>
+            android:text="600분 보기" />
 
     </LinearLayout>
 

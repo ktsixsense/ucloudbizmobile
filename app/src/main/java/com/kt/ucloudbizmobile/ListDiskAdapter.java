@@ -1,12 +1,10 @@
 package com.kt.ucloudbizmobile;
 
 import android.content.Context;
-import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,7 +22,6 @@ public class ListDiskAdapter extends BaseAdapter {
         TextView txtDiskName;
         TextView txtDiskSize;
         ImageView imgStatus;
-        ImageButton btnMonitor;
     }
 
     private ArrayList<ListDiskItem> listViewDiskItemList = new ArrayList<>();
@@ -57,7 +54,6 @@ public class ListDiskAdapter extends BaseAdapter {
             holder.txtDiskName = v.findViewById(R.id.txt_disk_name);
             holder.txtDiskSize = v.findViewById(R.id.txt_disk_size);
             holder.imgStatus = v.findViewById(R.id.img_disk_status);
-            holder.btnMonitor = v.findViewById(R.id.btn_disk_monitor);
 
             v.setTag(holder);
         }
@@ -77,17 +73,6 @@ public class ListDiskAdapter extends BaseAdapter {
             } else {
                 holder.imgStatus.setImageResource(R.drawable.ic_power_off);
             }
-
-            // [TO FIX] Move to monitoring Activity...
-            holder.btnMonitor.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Snackbar.make(view, test + "의 모니터링 화면", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }
-            });
-            // Allow touch event to be delivered to the listview.
-            holder.btnMonitor.setFocusable(false);
         }
 
         return v;

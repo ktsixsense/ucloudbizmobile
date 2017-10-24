@@ -51,16 +51,7 @@
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <ImageButton
-                android:id="@+id/btn_disk_monitor"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_centerInParent="true"
-                android:background="@android:color/transparent"
-                android:src="@drawable/ic_monitoring_service" />
-        </RelativeLayout>
+            android:layout_weight="1"></RelativeLayout>
 
     </LinearLayout>
 

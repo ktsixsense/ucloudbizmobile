@@ -289,7 +289,7 @@ public class ApiGenerator {
         String commandString = getCommandString(requests);
 
         String finalURL = basicURL + commandString + "signature=" + signature;
-        finalURL = finalURL.substring(0, finalURL.length()-3);
+        finalURL = finalURL.substring(0, finalURL.length() - 3);
 
         Log.d("URL:", finalURL);
 
