@@ -235,7 +235,7 @@ public class GraphActivity extends Activity {
 
     }
 
-    public void refresh_data(Calendar req_calendar, final int req_gap) {
+    public void refresh_data(final Calendar req_calendar, final int req_gap) {
         /*
 ${API_URL}command=getMetricStatistics
 &metricname=NetworkIn
@@ -279,7 +279,7 @@ ${API_URL}command=getMetricStatistics
 
                     setdata(mStat);
                     setgap(req_gap);
-                    DrawGraph();
+                    DrawGraph(req_calendar);
                 } else {
                     //ajax error, show error code
                     Toast.makeText(getApplicationContext(), "Error : " + status.getError(), Toast.LENGTH_LONG).show();
@@ -326,7 +326,7 @@ ${API_URL}command=getMetricStatistics
         m_gap = ngap;
     }
 
-    public boolean DrawGraph() {
+    public boolean DrawGraph(Calendar reqcalender) {
         DataPoint dp[];
 
         dp = new DataPoint[m_gap];
@@ -406,12 +406,66 @@ ${API_URL}command=getMetricStatistics
 
         StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
         graph.getGridLabelRenderer().setNumHorizontalLabels(4);
-        if (m_gap == 30)
-            staticLabelsFormatter.setHorizontalLabels(new String[]{"30분전", "20분전", "10분전", "현재"});
-        if (m_gap == 120)
-            staticLabelsFormatter.setHorizontalLabels(new String[]{"120분전", "80분전", "40분전", "현재"});
-        if (m_gap == 600)
-            staticLabelsFormatter.setHorizontalLabels(new String[]{"10시간전", "6시간40분전", "3시간20분전", "현재"});
+        if (m_gap == 30) {
+            Calendar reqc = reqcalender;
+            String str1,str2,str3,str4;
+            int hh = reqc.get(reqc.HOUR_OF_DAY);
+            int mm = reqc.get(reqc.MINUTE);
+            str1 = toStr_Time(hh,mm);
+            reqc.add(Calendar.MINUTE, 10);
+            hh = reqc.get(reqc.HOUR_OF_DAY);
+            mm = reqc.get(reqc.MINUTE);
+            str2 = toStr_Time(hh,mm);
+            reqc.add(Calendar.MINUTE, 10);
+            hh = reqc.get(reqc.HOUR_OF_DAY);
+            mm = reqc.get(reqc.MINUTE);
+            str3 = toStr_Time(hh,mm);
+            reqc.add(Calendar.MINUTE, 10);
+            hh = reqc.get(reqc.HOUR_OF_DAY);
+            mm = reqc.get(reqc.MINUTE);
+            str4 = toStr_Time(hh,mm);
+            staticLabelsFormatter.setHorizontalLabels(new String[]{str1,str2,str3,str4});
+        }
+        if (m_gap == 120) {
+            Calendar reqc = reqcalender;
+            String str1, str2, str3, str4;
+            int hh = reqc.get(reqc.HOUR_OF_DAY);
+            int mm = reqc.get(reqc.MINUTE);
+            str1 = toStr_Time(hh, mm);
+            reqc.add(Calendar.MINUTE, 40);
+            hh = reqc.get(reqc.HOUR_OF_DAY);
+            mm = reqc.get(reqc.MINUTE);
+            str2 = toStr_Time(hh, mm);
+            reqc.add(Calendar.MINUTE, 40);
+            hh = reqc.get(reqc.HOUR_OF_DAY);
+            mm = reqc.get(reqc.MINUTE);
+            str3 = toStr_Time(hh, mm);
+            reqc.add(Calendar.MINUTE, 40);
+            hh = reqc.get(reqc.HOUR_OF_DAY);
+            mm = reqc.get(reqc.MINUTE);
+            str4 = toStr_Time(hh, mm);
+            staticLabelsFormatter.setHorizontalLabels(new String[]{str1,str2,str3,str4});
+        }
+        if (m_gap == 600) {
+            Calendar reqc = reqcalender;
+            String str1, str2, str3, str4;
+            int hh = reqc.get(reqc.HOUR_OF_DAY);
+            int mm = reqc.get(reqc.MINUTE);
+            str1 = toStr_Time(hh, mm);
+            reqc.add(Calendar.MINUTE, 200);
+            hh = reqc.get(reqc.HOUR_OF_DAY);
+            mm = reqc.get(reqc.MINUTE);
+            str2 = toStr_Time(hh, mm);
+            reqc.add(Calendar.MINUTE, 200);
+            hh = reqc.get(reqc.HOUR_OF_DAY);
+            mm = reqc.get(reqc.MINUTE);
+            str3 = toStr_Time(hh, mm);
+            reqc.add(Calendar.MINUTE, 200);
+            hh = reqc.get(reqc.HOUR_OF_DAY);
+            mm = reqc.get(reqc.MINUTE);
+            str4 = toStr_Time(hh, mm);
+            staticLabelsFormatter.setHorizontalLabels(new String[]{str1,str2,str3,str4});
+        }
         //  staticLabelsFormatter.setVerticalLabels(new String[] {"low", "middle", "high"});
         graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
 
@@ -430,6 +484,7 @@ ${API_URL}command=getMetricStatistics
         TimeZone seoul = TimeZone.getTimeZone("Asia/Seoul");
         Calendar c = Calendar.getInstance(seoul);
         c.set(m_year, m_month, m_day, m_hour, m_min);
+        calendar = c;
         return c;
     }
 
@@ -442,6 +497,15 @@ ${API_URL}command=getMetricStatistics
     public void selectDate() {
         DialogFragment newFragment = new SelectDateFragment(m_EditText_date, this);
         newFragment.show(getFragmentManager(), "DatePicker");
+    }
+    public String toStr_Time(int hh, int mm)
+    {
+        String str1;
+        if(mm >= 10)
+            str1 = hh + " : " + mm;
+        else
+            str1 = hh + " : 0" + mm;
+        return str1;
     }
 
     public static class SelectTimeFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
@@ -513,3 +577,5 @@ ${API_URL}command=getMetricStatistics
     }
 
 }
+
+
